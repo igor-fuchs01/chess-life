@@ -1,11 +1,17 @@
 # chess-life
 
 ## Project Context
-Early-stage project: there is no code and there are no build commands yet. Update this file as those choices are made.
+Chess Life is a personal website about how chess shaped the author's life, built as an SPTech academic project (*Pesquisa e Inovação* course). It has public pages (home, story timeline, Instagram-style photo gallery, sign-up and login) and a restricted dashboard where users record their chess games and see Chart.js statistics. A game against an AI is a complementary module, built only after the main scope is done.
+
+Stack: HTML/CSS/JS front-end, Node.js + Express REST API that also serves the static files, and MySQL on a Linux VM, with bcrypt for passwords.
+
+Full specification (requirements, business rules, data model, plan): `docs/project.md`. Read it before implementing a feature.
+
+There is no code and there are no build commands yet. Update this file as those choices are made.
 
 ## Languages
 
-The project is written in HTML, CSS and JavaScript. Do not introduce another language unless that has been decided first.
+The project is written in HTML, CSS and JavaScript (Node.js on the server), with SQL for MySQL. Do not introduce another language unless that has been decided first.
 
 ## Prompt and decision log
 
