@@ -7,6 +7,8 @@ Stack: HTML/CSS/JS front-end, Node.js + Express REST API that also serves the st
 
 Full specification (requirements, business rules, data model, plan): `.docs/project.md`. Read it before implementing a feature.
 
+The database is modeled and implemented in **MySQL** (8.0 or later). The data model (entities, data dictionary, constraints and DDL) is in `.docs/database.md`. Read it before changing any table or query, and update it first when the model changes.
+
 The application lives in `site-pessoal/`, built on SPTech's legacy web-data-viz template. Run it with `npm install` and `npm start` inside that folder. Structure, front-end conventions, the legacy API and the planned adaptations are in `.docs/site-pessoal.md`.
 
 - Do not change or create APIs (`site-pessoal/src/`, `site-pessoal/app.js`) without asking the user first.

@@ -129,7 +129,7 @@ Nothing in this section is built yet. Each change to `src/` or `app.js` needs th
 
 ### Database
 
-Replace the AquaTech tables with the ones in [`project.md`](project.md#6-data-model): `usuario`, `partida` and `foto`.
+Replace the AquaTech tables with the MySQL model in [`database.md`](database.md): `usuario`, `abertura` and `partida`. Its section 8 lists the code changes this brings, such as `partida.abertura` becoming `fk_abertura`.
 
 ### Legacy code to remove
 

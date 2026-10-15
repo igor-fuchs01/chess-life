@@ -134,7 +134,7 @@ In the complementary module, the server also talks to the Gemini API or to a che
 | Front-end | HTML5, CSS3, JavaScript | Page structure, style and interactivity |
 | Visualization | Chart.js | Game statistics charts |
 | Back-end | Node.js, Express | REST API, business rules, static files |
-| Database | MySQL | Users, games and photos |
+| Database | MySQL 8.0+ | Users, games and openings; modeled in [`database.md`](database.md) |
 | Security | bcrypt; JWT or session | Password hashing and access control |
 | Infrastructure | Linux VM | Hosts the database and the application |
 | Version control | Git, GitHub | Source control |
@@ -150,15 +150,15 @@ In the complementary module, the server also talks to the Gemini API or to a che
 
 ## 6. Data model
 
-One user records many games (one-to-many between `usuario` and `partida`).
+The database is modeled in MySQL. The full model (entity-relationship diagram, data dictionary, constraints, legacy changes and DDL) is in [`database.md`](database.md). Summary:
 
 | Table | Columns | Notes |
 | --- | --- | --- |
 | `usuario` | `id` (PK), `nome`, `email` (unique), `senha_hash`, `data_cadastro` | Access data |
-| `partida` | `id` (PK), `fk_usuario` (FK → `usuario.id`), `resultado`, `adversario`, `cor`, `lances`, `abertura`, `data_partida` | `resultado` is win, loss or draw (RN04); `adversario` tells human from AI; `cor` is the color the user played; `lances` holds the moves in SAN, separated by spaces; `abertura` is identified by the API from `lances`; `data_partida` is the date and time the game was saved |
-| `foto` | `id` (PK), `caminho`, `legenda`, `data_publicacao` | The image file stays on the server. The database only stores its path. |
+| `abertura` | `id` (PK), `nome`, `lances` (unique) | Known openings and the moves that define them |
+| `partida` | `id` (PK), `fk_usuario` (FK → `usuario.id`), `fk_abertura` (FK → `abertura.id`), `resultado`, `adversario`, `cor`, `lances`, `data_partida` | A game played on the site. One user plays many games; one opening appears in many games |
 
-Table and column names are in Portuguese, as in the original specification.
+Gallery photos are not stored in the database: they stay in `public/gallery/` and in the page's HTML.
 
 ## 7. Dashboard charts
 
