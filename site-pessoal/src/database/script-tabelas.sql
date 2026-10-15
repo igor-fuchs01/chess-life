@@ -34,6 +34,22 @@ CREATE TABLE aviso (
 	FOREIGN KEY (fk_usuario) REFERENCES usuario(id)
 );
 
+-- Chess Life: one row per game played on the site. The API identifies abertura from lances.
+CREATE TABLE partida (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	fk_usuario INT NOT NULL,
+	resultado VARCHAR(7) NOT NULL,
+	adversario VARCHAR(6) NOT NULL,
+	cor VARCHAR(7) NOT NULL,
+	lances TEXT NOT NULL,
+	abertura VARCHAR(60) NOT NULL,
+	data_partida DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	CHECK (resultado IN ('vitoria', 'derrota', 'empate')),
+	CHECK (adversario IN ('humano', 'ia')),
+	CHECK (cor IN ('brancas', 'pretas')),
+	FOREIGN KEY (fk_usuario) REFERENCES usuario(id)
+);
+
 create table aquario (
 /* em nossa regra de negócio, um aquario tem apenas um sensor */
 	id INT PRIMARY KEY AUTO_INCREMENT,

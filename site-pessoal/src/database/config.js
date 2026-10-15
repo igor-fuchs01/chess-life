@@ -9,7 +9,13 @@ var mySqlConfig = {
     port: process.env.DB_PORT
 };
 
-function executar(instrucao) {
+/**
+ * Runs one SQL statement. The values in parametros replace its ? placeholders, escaped by mysql2.
+ * @param {string} instrucao - The SQL statement.
+ * @param {Array} [parametros] - Values for the ? placeholders.
+ * @returns {Promise<object>} The query result.
+ */
+function executar(instrucao, parametros) {
 
     if (process.env.AMBIENTE_PROCESSO !== "producao" && process.env.AMBIENTE_PROCESSO !== "desenvolvimento") {
         console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM .env OU dev.env OU app.js\n");
@@ -19,7 +25,7 @@ function executar(instrucao) {
     return new Promise(function (resolve, reject) {
         var conexao = mysql.createConnection(mySqlConfig);
         conexao.connect();
-        conexao.query(instrucao, function (erro, resultados) {
+        conexao.query(instrucao, parametros, function (erro, resultados) {
             conexao.end();
             if (erro) {
                 reject(erro);
