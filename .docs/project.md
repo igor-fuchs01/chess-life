@@ -216,7 +216,7 @@ Facts the story timeline is built from. The page text itself is written in Portu
 ## 11. Open decisions
 
 - Authentication mechanism: JWT or server session.
-- Chart.js loading: CDN or npm dependency.
+- Authentication API adaptation and the new `partidas` API: see `site-pessoal.md`.
 - AI opponent: Gemini, Stockfish or both.
 - HTTPS on the VM (R08).
 - Non-functional requirements: the original specification mentions them but does not list any.
