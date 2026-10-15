@@ -30,7 +30,7 @@ Files:
 
 ## Commits
 
-After finishing any task that changed files, use the `commit` skill. Commit messages start with a type and no scope in parentheses (`feat: add castling validation`).
+Do not commit on your own. Commit only when the user asks, using the `commit` skill. Commit messages start with a type and no scope in parentheses (`feat: add castling validation`).
 
 ## Language convention
 
@@ -74,6 +74,38 @@ Create new files only when there is no reasonable alternative.
 * Maintain backward compatibility.
 * Reuse existing DTO patterns.
 * Follow existing validation conventions.
+
+---
+
+# Simplicity Rules
+
+The user prefers simple code that is easy to understand over clever or compact code. Keep cognitive complexity low.
+
+* Write the most direct solution that works: plain loops and `if`s over chains of `reduce`, nested callbacks or clever one-liners.
+* Keep nesting shallow: return early instead of nesting `if`s, and avoid deeply nested callbacks.
+* Keep functions small and doing one thing. Split a function when it does more than one job, but do not split it into helpers used only once just to make it shorter.
+* Avoid generic helpers and configuration objects for things that happen once or twice; repeating a few clear lines is better than a hard-to-follow abstraction.
+* A reader should understand a function without jumping to several other places in the code.
+
+---
+
+# Clean Code Documentation Rules
+
+Follow Clean Code (Robert C. Martin) for naming and documentation.
+
+* Names reveal intent: functions are verbs that say what they do (`loadGames`, `renderTable`), variables and constants are nouns that say what they hold (`games`, `MIN_PASSWORD_LENGTH`). No abbreviations or one-letter names, except loop indexes.
+* Code explains *what*; comments explain *why*. Do not write comments that repeat the code, and prefer a better name over a comment.
+* Every function shared across files (for example in `shared/`) and every non-obvious function gets a short doc comment above it: one sentence on what it does, plus `@param` and `@returns` when they are not obvious from the names.
+* Use named constants instead of magic numbers and strings.
+* Keep related code together, in reading order: constants first, then functions from the highest level to the lowest, then the code that starts the page.
+
+---
+
+# CSS Rules
+
+* Keep CSS well structured: tokens and base styles in `shared/style.css`, feature styles in the feature's folder. Inside a file, group rules by section in page order, with media queries at the end.
+* Avoid unnecessary repetition: use the `:root` variables for colors and fonts, and reuse shared classes (`.btn`, `.card`, `.section-title`, `.message`…) before creating new ones. Do not redeclare values that are inherited or already set by a shared rule.
+* Keep it as simple as possible: short, low-specificity selectors, only the declarations that change something, and no `!important`.
 
 ---
 
