@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 460" width="1200" height="460" role="img" aria-label="Toda partida começa igual. Trinta e duas peças, sessenta e quatro casas, o mesmo silêncio antes do primeiro lance. O que muda é quem joga, e o que cada partida deixa em quem joga. O xadrez me ensinou a pensar antes de mexer, a perder sem abandonar o tabuleiro e a enxergar ângulos onde antes eu só via quadrados. Chess Life é o registro dessas partidas.">
+<style>
+  .serif { font-family: Georgia, 'Times New Roman', Times, serif; }
+  .sans { font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+  .mono { font-family: 'Courier New', Courier, monospace; }
+  .caps { letter-spacing: 3px; text-transform: uppercase; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  .line { animation: line 1.1s ease-out both; }
+  @keyframes line { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: none; } }
+  .tick { animation: tick 1.2s steps(1) infinite; }
+  @keyframes tick { 50% { opacity: 0; } }</style>
+<rect x="1" y="1" width="1198" height="458" rx="14" fill="#fffaf1" stroke="#d8ccb8" stroke-width="2"/>
+<text class="sans caps" x="80" y="78" font-size="14" font-weight="600" fill="#b08d57">Chess Life</text>
+<rect class="tick" x="194" y="66" width="12" height="12" fill="#2f4a3a"/>
+<text class="serif line" style="animation-delay:0.30s" x="80" y="140" font-size="40" fill="#1f1a14">Toda partida começa igual.</text>
+<text class="serif line" style="animation-delay:0.75s" x="80" y="196" font-size="23" fill="#6b6053">Trinta e duas peças, sessenta e quatro casas, o mesmo silêncio antes do primeiro lance.</text>
+<text class="serif line" style="animation-delay:1.20s" x="80" y="234" font-size="23" fill="#6b6053">O que muda é quem joga, e o que cada partida deixa em quem joga.</text>
+<text class="serif line" style="animation-delay:1.65s" x="80" y="292" font-size="23" fill="#6b6053">O xadrez me ensinou a pensar antes de mexer, a perder sem abandonar o tabuleiro</text>
+<text class="serif line" style="animation-delay:2.10s" x="80" y="330" font-size="23" fill="#6b6053">e a enxergar ângulos onde antes eu só via quadrados.</text>
+<text class="serif line" style="animation-delay:2.55s" x="80" y="400" font-size="32" fill="#2f4a3a" font-style="italic">Chess Life é o registro dessas partidas.</text>
+</svg>

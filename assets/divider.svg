@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 28" width="1200" height="28" role="img" aria-label="">
+<style>
+  .serif { font-family: Georgia, 'Times New Roman', Times, serif; }
+  .sans { font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+  .mono { font-family: 'Courier New', Courier, monospace; }
+  .caps { letter-spacing: 3px; text-transform: uppercase; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  .pip { animation: pip 2.4s ease-in-out infinite; }
+  @keyframes pip { 0%, 40%, 100% { opacity: 1; } 20% { opacity: 0.25; } }</style>
+<line x1="0" y1="14" x2="536" y2="14" stroke="#b08d57" stroke-opacity="0.5" stroke-width="1.5"/>
+<line x1="664" y1="14" x2="1200" y2="14" stroke="#b08d57" stroke-opacity="0.5" stroke-width="1.5"/>
+<rect class="pip" style="animation-delay:0.00s" x="553" y="9" width="10" height="10" fill="#b08d57"/><rect class="pip" style="animation-delay:0.15s" x="565" y="9" width="10" height="10" fill="none" stroke="#b08d57" stroke-width="1.5"/><rect class="pip" style="animation-delay:0.30s" x="577" y="9" width="10" height="10" fill="#b08d57"/><rect class="pip" style="animation-delay:0.45s" x="589" y="9" width="10" height="10" fill="none" stroke="#b08d57" stroke-width="1.5"/><rect class="pip" style="animation-delay:0.60s" x="601" y="9" width="10" height="10" fill="#b08d57"/><rect class="pip" style="animation-delay:0.75s" x="613" y="9" width="10" height="10" fill="none" stroke="#b08d57" stroke-width="1.5"/><rect class="pip" style="animation-delay:0.90s" x="625" y="9" width="10" height="10" fill="#b08d57"/><rect class="pip" style="animation-delay:1.05s" x="637" y="9" width="10" height="10" fill="none" stroke="#b08d57" stroke-width="1.5"/>
+</svg>

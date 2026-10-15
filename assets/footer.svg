@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 230" width="1200" height="230" role="img" aria-label="A partida continua. Sua vez.">
+<style>
+  .serif { font-family: Georgia, 'Times New Roman', Times, serif; }
+  .sans { font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+  .mono { font-family: 'Courier New', Courier, monospace; }
+  .caps { letter-spacing: 3px; text-transform: uppercase; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  .halo { animation: halo 2.8s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+  @keyframes halo { 0% { opacity: 0.8; transform: scale(1); } 100% { opacity: 0; transform: scale(1.9); } }</style>
+<rect width="1200" height="230" rx="18" fill="#2f4a3a"/>
+<circle class="halo" cx="600" cy="62" r="30" fill="none" stroke="#b08d57" stroke-width="2"/>
+<g transform="translate(570 32) scale(0.9375)"><circle cx="32" cy="32" r="32" fill="#2f4a3a"/><circle cx="32" cy="32" r="28" fill="none" stroke="#b08d57" stroke-width="1.5"/><g fill="#f4efe6" transform="translate(32 33) scale(0.72) translate(-32 -32)"><path d="M30 6h4v5h5v4h-5v4h-4v-4h-5v-4h5z"/><path d="M21 21q11-6 22 0l-4 9H25z"/><rect x="23" y="31" width="18" height="3" rx="1"/><path d="M26 35h12l3 15H23z"/><rect x="18" y="51" width="28" height="5" rx="1.5"/></g></g>
+<text class="serif" x="600" y="152" font-size="44" font-style="italic" fill="#f4efe6" text-anchor="middle">A partida continua.</text>
+<text class="sans caps" x="600" y="192" font-size="14" font-weight="600" fill="#b08d57" text-anchor="middle">Sua vez</text>
+</svg>

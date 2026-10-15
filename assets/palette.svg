@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 272" width="1200" height="272" role="img" aria-label="Paleta: papel, verde, latão, tinta, casa clara e casa escura">
+<style>
+  .serif { font-family: Georgia, 'Times New Roman', Times, serif; }
+  .sans { font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+  .mono { font-family: 'Courier New', Courier, monospace; }
+  .caps { letter-spacing: 3px; text-transform: uppercase; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  .swatch { animation: swatch 0.9s ease-out both; }
+  @keyframes swatch { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }</style>
+<rect x="1" y="1" width="1198" height="270" rx="14" fill="#fffaf1" stroke="#d8ccb8" stroke-width="2"/>
+<g class="swatch" style="animation-delay:0.00s">
+<rect x="32" y="32" width="176" height="150" rx="10" fill="#f4efe6" stroke="#d8ccb8" stroke-width="2"/>
+<text class="serif" x="36" y="216" font-size="22" fill="#1f1a14">Papel</text>
+<text class="mono" x="36" y="242" font-size="16" fill="#6b6053">#f4efe6</text></g>
+<g class="swatch" style="animation-delay:0.12s">
+<rect x="224" y="32" width="176" height="150" rx="10" fill="#2f4a3a"/>
+<text class="serif" x="228" y="216" font-size="22" fill="#1f1a14">Verde</text>
+<text class="mono" x="228" y="242" font-size="16" fill="#6b6053">#2f4a3a</text></g>
+<g class="swatch" style="animation-delay:0.24s">
+<rect x="416" y="32" width="176" height="150" rx="10" fill="#b08d57"/>
+<text class="serif" x="420" y="216" font-size="22" fill="#1f1a14">Latão</text>
+<text class="mono" x="420" y="242" font-size="16" fill="#6b6053">#b08d57</text></g>
+<g class="swatch" style="animation-delay:0.36s">
+<rect x="608" y="32" width="176" height="150" rx="10" fill="#1f1a14"/>
+<text class="serif" x="612" y="216" font-size="22" fill="#1f1a14">Tinta</text>
+<text class="mono" x="612" y="242" font-size="16" fill="#6b6053">#1f1a14</text></g>
+<g class="swatch" style="animation-delay:0.48s">
+<rect x="800" y="32" width="176" height="150" rx="10" fill="#e9dcc3" stroke="#d8ccb8" stroke-width="2"/>
+<text class="serif" x="804" y="216" font-size="22" fill="#1f1a14">Casa clara</text>
+<text class="mono" x="804" y="242" font-size="16" fill="#6b6053">#e9dcc3</text></g>
+<g class="swatch" style="animation-delay:0.60s">
+<rect x="992" y="32" width="176" height="150" rx="10" fill="#a88a63"/>
+<text class="serif" x="996" y="216" font-size="22" fill="#1f1a14">Casa escura</text>
+<text class="mono" x="996" y="242" font-size="16" fill="#6b6053">#a88a63</text></g>
+</svg>
