@@ -1,7 +1,11 @@
 const loginForm = document.getElementById("login-form");
 const loginMessage = document.getElementById("login-message");
 
-loginForm.addEventListener("submit", async (event) => {
+/**
+ * Checks the e-mail and password with the API and, when they are right, opens the dashboard.
+ * @param {SubmitEvent} event
+ */
+async function login(event) {
   event.preventDefault();
 
   const email = loginForm.email.value.trim();
@@ -20,8 +24,8 @@ loginForm.addEventListener("submit", async (event) => {
     });
 
     if (response.status !== 200) {
-      const text = await response.text();
-      showMessage(loginMessage, text || "Não foi possível entrar. Tente novamente.", "error");
+      const errorText = await response.text();
+      showMessage(loginMessage, errorText || "Não foi possível entrar. Tente novamente.", "error");
       return;
     }
 
@@ -31,4 +35,6 @@ loginForm.addEventListener("submit", async (event) => {
   } catch {
     showMessage(loginMessage, "Não foi possível conectar ao servidor.", "error");
   }
-});
+}
+
+loginForm.addEventListener("submit", login);
