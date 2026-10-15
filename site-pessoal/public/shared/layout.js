@@ -2,7 +2,7 @@ const FOOTER_TEXT = "Chess Life · Projeto Individual de Pesquisa e Inovação �
 
 /**
  * Fills the page's <header id="site-header"> with the logo and the navigation menu.
- * Visitors see "Entrar"; logged-in users see "Dashboard" and "Sair".
+ * Visitors see "Entrar"; logged-in users see "Jogar", "Dashboard" and "Sair". Everyone sees the theme button.
  */
 function renderHeader() {
   const user = getSessionUser();
@@ -16,6 +16,7 @@ function renderHeader() {
   if (user) {
     navigation += '<button type="button" id="logout-button">Sair</button>';
   }
+  navigation += '<button type="button" class="theme-toggle" id="theme-button"></button>';
 
   const header = document.getElementById("site-header");
   header.className = "site-header";
@@ -28,6 +29,26 @@ function renderHeader() {
   if (user) {
     document.getElementById("logout-button").addEventListener("click", endSession);
   }
+
+  const themeButton = document.getElementById("theme-button");
+  updateThemeButton(themeButton);
+  themeButton.addEventListener("click", () => {
+    toggleTheme();
+    updateThemeButton(themeButton);
+  });
+}
+
+/**
+ * Shows on the theme button the theme it switches to: a sun in the dark theme, a moon in the light one.
+ * @param {HTMLButtonElement} button
+ */
+function updateThemeButton(button) {
+  const isDark = getCurrentTheme() === DARK_THEME;
+  const label = isDark ? "Ativar modo claro" : "Ativar modo escuro";
+
+  button.textContent = isDark ? "☀" : "☾";
+  button.setAttribute("aria-label", label);
+  button.title = label;
 }
 
 /**
@@ -43,6 +64,7 @@ function getNavigationLinks(user) {
   ];
 
   if (user) {
+    links.push({ path: "play/play.html", label: "Jogar" });
     links.push({ path: "dashboard/dashboard.html", label: "Dashboard" });
   } else {
     links.push({ path: "auth/login.html", label: "Entrar" });

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogar | Chess Life</title>
+  <link rel="icon" type="image/svg+xml" href="../shared/logo.svg">
+  <link rel="stylesheet" href="../shared/style.css">
+  <link rel="stylesheet" href="play.css">
+  <script src="../shared/theme.js"></script>
+  <script src="../shared/session.js"></script>
+  <script>requireSession();</script>
+</head>
+<body>
+  <header id="site-header"></header>
+
+  <main>
+    <section>
+      <div class="wrap">
+        <div class="section-title">
+          <div class="ornament">♞</div>
+          <h1>Partida de xadrez</h1>
+          <p>Duas pessoas no mesmo computador, com todas as regras do xadrez. Ao terminar, a partida é salva no seu dashboard.</p>
+        </div>
+
+        <div class="play-area">
+          <div class="board game-board" id="board" aria-label="Tabuleiro"></div>
+
+          <aside class="card game-panel">
+            <p class="eyebrow">Situação</p>
+            <p class="game-status" id="game-status" aria-live="polite"></p>
+
+            <form id="new-game-form" novalidate>
+              <label for="color">Você joga com</label>
+              <select id="color" name="color">
+                <option value="white">Brancas</option>
+                <option value="black">Pretas</option>
+              </select>
+              <button class="btn" type="submit">Nova partida</button>
+            </form>
+
+            <h2>Lances</h2>
+            <p class="moves-empty" id="moves-empty">Nenhum lance ainda.</p>
+            <ol class="move-list" id="move-list"></ol>
+
+            <div class="game-actions">
+              <button class="btn ghost" type="button" id="resign-button">Abandonar</button>
+              <button class="btn ghost" type="button" id="draw-button">Empate por acordo</button>
+            </div>
+            <div class="message" id="game-message" role="alert"></div>
+            <button class="btn" type="button" id="save-retry-button" hidden>Tentar salvar de novo</button>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <dialog class="promotion-dialog" id="promotion-dialog" aria-labelledby="promotion-title">
+    <h2 id="promotion-title">Promover o peão a</h2>
+    <div class="promotion-options" id="promotion-options"></div>
+  </dialog>
+
+  <footer id="site-footer"></footer>
+
+  <script src="../shared/layout.js"></script>
+  <script src="rules.js"></script>
+  <script src="play.js"></script>
+</body>
+</html>

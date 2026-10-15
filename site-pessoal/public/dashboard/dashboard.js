@@ -6,26 +6,21 @@ const DAYS_IN_WEEK = 7;
 const OPENINGS_IN_CHART = 5;
 // The weekly chart is as wide as the page, so it is drawn flatter than Chart.js's default 2:1.
 const WEEKLY_CHART_ASPECT_RATIO = 3;
-const COLORS = {
-  green: readCssVariable("--green"),
-  brass: readCssVariable("--brass"),
-  danger: readCssVariable("--danger"),
-  paper: readCssVariable("--paper"),
-  muted: readCssVariable("--muted")
-};
-
 const currentUser = getSessionUser();
 const gamesMessage = document.getElementById("games-message");
 
 let games = [];
 let charts = [];
+// Read from the theme's CSS variables, and read again when the theme changes.
+let chartColors;
 
 /**
  * Prepares the page and loads the user's games.
  */
 function startDashboard() {
   Chart.defaults.font.family = readCssVariable("--font-body");
-  Chart.defaults.color = COLORS.muted;
+  readChartColors();
+  document.addEventListener("themechange", redrawChartsForTheme);
 
   document.getElementById("greeting").textContent = `Olá, ${currentUser.name}. Este é o resumo das partidas que você jogou no site.`;
 
@@ -185,6 +180,28 @@ function describeChange(difference, unit, comparison) {
 }
 
 /**
+ * Draws the charts again with the colors of the theme the user switched to.
+ */
+function redrawChartsForTheme() {
+  readChartColors();
+  renderCharts();
+}
+
+/**
+ * Reads the chart colors from the current theme. Wins use --green-text, which stands out on the panels in both themes.
+ */
+function readChartColors() {
+  chartColors = {
+    green: readCssVariable("--green-text"),
+    brass: readCssVariable("--brass"),
+    danger: readCssVariable("--danger"),
+    paper: readCssVariable("--paper"),
+    muted: readCssVariable("--muted")
+  };
+  Chart.defaults.color = chartColors.muted;
+}
+
+/**
  * Draws the three charts again from the current games.
  */
 function renderCharts() {
@@ -219,9 +236,9 @@ function createWeeklyChart() {
     data: {
       labels: labels,
       datasets: [
-        { label: "Vitórias", data: wins, backgroundColor: COLORS.green },
-        { label: "Derrotas", data: losses, backgroundColor: COLORS.danger },
-        { label: "Empates", data: draws, backgroundColor: COLORS.brass }
+        { label: "Vitórias", data: wins, backgroundColor: chartColors.green },
+        { label: "Derrotas", data: losses, backgroundColor: chartColors.danger },
+        { label: "Empates", data: draws, backgroundColor: chartColors.brass }
       ]
     },
     options: {
@@ -247,8 +264,8 @@ function createResultsChart() {
       labels: ["Vitórias", "Derrotas", "Empates"],
       datasets: [{
         data: [results.vitoria, results.derrota, results.empate],
-        backgroundColor: [COLORS.green, COLORS.danger, COLORS.brass],
-        borderColor: COLORS.paper
+        backgroundColor: [chartColors.green, chartColors.danger, chartColors.brass],
+        borderColor: chartColors.paper
       }]
     }
   });
@@ -272,7 +289,7 @@ function createOpeningsChart() {
     type: "bar",
     data: {
       labels: labels,
-      datasets: [{ data: totals, backgroundColor: COLORS.brass }]
+      datasets: [{ data: totals, backgroundColor: chartColors.brass }]
     },
     options: {
       indexAxis: "y",
