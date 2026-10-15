@@ -7,8 +7,9 @@ Development documentation for Chess Life, a personal chess website built for the
 | # | Document | What it covers | Read it before |
 | --- | --- | --- | --- |
 | 01 | [`01-project.md`](01-project.md) | Specification: overview, pages, assumptions and constraints, requirements, business rules, architecture, data model summary, dashboard, AI module, development plan and open decisions | Implementing any feature |
-| 02 | [`02-site-pessoal.md`](02-site-pessoal.md) | The application in `site-pessoal/`: how to run it, folder structure, front-end conventions, legacy API, games API, planned adaptation and known issues | Changing the application's code |
-| 03 | [`03-database.md`](03-database.md) | MySQL data model: entities, ER diagram, data dictionary, constraints, naming conventions, changes from the legacy model and DDL | Changing a table or a query |
+| 02 | [`02-site-pessoal.md`](02-site-pessoal.md) | The application in `site-pessoal/`: how to run it, folder structure, front-end and back-end conventions, game page, themes and pending work | Changing the application's code |
+| 03 | [`03-database.md`](03-database.md) | MySQL data model: entities, ER diagram, data dictionary, constraints, naming conventions, changes from the legacy model, scripts and how the API uses it | Changing a table or a query |
+| 04 | [`04-api.md`](04-api.md) | API contracts: conventions, status codes, every route with its body, replies and error messages, security | Changing a route or a page that calls the API |
 
 ## Logs
 

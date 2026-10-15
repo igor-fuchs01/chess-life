@@ -181,7 +181,7 @@ Delete behavior of the foreign keys:
 
 ## 6. What changes from the legacy model
 
-The legacy template (`site-pessoal/src/database/script-tabelas.sql`) was built for the AquaTech sample project.
+The legacy template's tables (its `script-tabelas.sql`, now deleted) were built for the AquaTech sample project.
 
 | Legacy table | In this model | Reason |
 | --- | --- | --- |
@@ -195,7 +195,7 @@ The legacy template (`site-pessoal/src/database/script-tabelas.sql`) was built f
 | `partida` (added on 2026-10-15) | Kept, adapted | The opening name in text (`abertura`) becomes a foreign key (`fk_abertura`), and the moves in text (`lances`) move to the `lance` table |
 | — | `lance`, new | One row per move, replacing `partida.lances` |
 
-What the legacy back-end keeps: the `database.executar(sql, parametros)` function in `src/database/config.js` (now with `?` placeholders) and the `routes → controllers → models` structure.
+What the back-end keeps from the legacy template: the `routes → controllers → models` structure and `src/database/config.js`, rewritten with a connection pool and `?` placeholders. The legacy `script-tabelas.sql` was deleted.
 
 ## 7. Physical model (MySQL scripts)
 
@@ -204,7 +204,7 @@ The physical model is implemented by two scripts in `site-pessoal/src/database/`
 | Script | What it does |
 | --- | --- |
 | `01-schema.sql` | Creates the `chess_life` database (`utf8mb4`) and the five tables, parents first, so every foreign key points to a table that already exists |
-| `02-seed.sql` | Loads the 50 rows of `abertura`: "Abertura irregular" plus one row per entry of `OPENINGS` in `src/models/openingBook.js` |
+| `02-seed.sql` | Loads the 50 rows of `abertura`: "Abertura irregular" plus 49 known openings. This table is the API's opening list |
 
 ```
 mysql -u <user> -p < site-pessoal/src/database/01-schema.sql
@@ -217,7 +217,7 @@ The same files can be opened and run in MySQL Workbench.
 - **InnoDB** is set on every table, since foreign keys need it.
 - **Constraint names**: `uq_<table>_<column>` for unique keys, `fk_<child>_<parent>` for foreign keys, `chk_<table>_<column>` for checks and `idx_<table>_<columns>` for indexes. MySQL ignores names given to primary keys and always calls them `PRIMARY`, so primary keys are not named.
 - **Validated** on MySQL 8.0.46, in a temporary instance. Both scripts ran twice without errors and created every constraint. Each rule was rejected when broken: duplicate e-mail, second profile for a user, invalid `resultado`, unknown user, `numero` 0, duplicate move number, and deleting an opening in use. Deleting a game deleted its moves.
-- `script-tabelas.sql`, the legacy AquaTech script, stays until the code is adapted (section 8). The current API still writes `partida.abertura` and `partida.lances` as text, so it does not work with these tables yet.
+- The API uses these tables (section 8). The environment file must point to them with `DB_DATABASE=chess_life`.
 
 Example query, the dashboard's game list:
 
@@ -241,13 +241,14 @@ ORDER BY l.numero;
 
 The rows are joined into text in JavaScript, not with `GROUP_CONCAT`, because MySQL cuts `GROUP_CONCAT` results at 1024 bytes by default (`group_concat_max_len`), which a long game exceeds.
 
-## 8. Impact on the current code
+## 8. How the API uses the model
 
-The code changes are not built yet. Each change to `src/` needs the user's approval first.
+Built on 2026-10-15; the routes are in [`04-api.md`](04-api.md).
 
-- The scripts in section 7 are built. Once the code below is adapted, the API's `.env` files point to the `chess_life` database and the legacy `script-tabelas.sql` is deleted.
-- `openingBook.js` reads the openings from the `abertura` table instead of its `OPENINGS` constant, keeping the longest-match rule, and returns the opening's `id`. Moving the moves to `lance` does not affect it: it identifies the opening from the move list in the request, before anything is saved.
-- `partidaModel.registerGame` inserts the game and then all its moves in one multi-row `INSERT` into `lance`, numbered from 1 in the order received. Both inserts run in one transaction, so a failure never leaves a game without moves. `database.executar` opens one connection per query and cannot hold a transaction, so `config.js` needs a function that runs several statements on one connection between `BEGIN` and `COMMIT`.
-- `listGames` joins `abertura` and keeps returning the name as `abertura`, so the API contract and the dashboard do not change. It does not read `lance`.
-- `perfil` has no API or page yet: no requirement in [`01-project.md`](01-project.md) uses it so far.
-- `usuarioModel` and `usuarioController` follow the new `usuario` table (see section 6, "Planned adaptation", in [`02-site-pessoal.md`](02-site-pessoal.md)).
+- **Connection**: `src/database/config.js` keeps one connection pool, with `query(sql, values)` for single statements and `transaction(runStatements)` for statements that must succeed or fail together.
+- **`usuario`**: sign-up stores a bcrypt hash in `senha_hash`. A duplicate e-mail fails on `uq_usuario_email` (`ER_DUP_ENTRY`) and becomes a `409` reply. Login reads the user by e-mail and compares the hash.
+- **`abertura`**: `aberturaModel.listOpenings` reads the rows, and `openingBook.identifyOpening` picks the longest `lances` the game starts with, or the row with empty `lances`. To recognize a new opening, insert a row: no code changes.
+- **`partida` and `lance`**: `partidaModel.registerGame` inserts the game, then all its moves in one multi-row `INSERT`, numbered from 1, inside one transaction. A failure rolls both back, so no game is left without moves. A user id with no account fails on `fk_partida_usuario` (`ER_NO_REFERENCED_ROW_2`) and becomes a `404` reply.
+- **Listing**: `listGames` joins `abertura` and returns its name as `abertura`. It does not read `lance`.
+- **Deleting**: `deleteGame` filters by game and user (RN03). `ON DELETE CASCADE` removes the moves.
+- **`perfil`**: no route uses it yet: no requirement in [`01-project.md`](01-project.md) asks for it so far.

@@ -226,7 +226,7 @@ Facts the story timeline is built from. The page text itself is written in Portu
 ## 11. Open decisions
 
 - Authentication mechanism: JWT or server session.
-- Authentication API adaptation: see [`02-site-pessoal.md`](02-site-pessoal.md).
+- Authentication mechanism (JWT or server session): until it is chosen, the API trusts the user id in the URL. See section 4 of [`04-api.md`](04-api.md).
 - AI opponent: Gemini, Stockfish or both.
 - HTTPS on the VM (R08).
 - Non-functional requirements: the original specification mentions them but does not list any.
