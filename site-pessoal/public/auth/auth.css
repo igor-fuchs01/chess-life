@@ -9,7 +9,7 @@
   text-align: center;
 }
 .switch a {
-  color: var(--green);
+  color: var(--green-text);
   font-weight: 600;
 }
 .switch a:hover {

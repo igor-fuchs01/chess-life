@@ -1,16 +1,22 @@
 :root {
+  color-scheme: light;
   --paper: #f4efe6;
   --paper-2: #ebe3d4;
   --card: #fffaf1;
   --ink: #1f1a14;
   --muted: #6b6053;
+  /* --green colors surfaces (buttons, the dashboard band, the board frame); --green-text colors text on the page background. */
   --green: #2f4a3a;
   --green-dark: #253b2e;
+  --green-text: #2f4a3a;
   --brass: #b08d57;
   --line: #d8ccb8;
   --danger: #a4472f;
   --danger-bg: #f3dcd5;
   --success-bg: #dbe6dc;
+  /* Same in both themes: text on green or photo surfaces, and pieces on the board's squares. */
+  --light-ink: #f4efe6;
+  --dark-ink: #1f1a14;
   --on-green-muted: #c9d3c7;
   --on-green-line: rgba(244, 239, 230, 0.25);
   --overlay: rgba(31, 26, 20, 0.65);
@@ -22,6 +28,26 @@
   --square-target: rgba(31, 26, 20, 0.28);
   --font-heading: Georgia, "Times New Roman", Times, serif;
   --font-body: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Dark theme, set by shared/theme.js. The board squares keep their wood colors. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #1a1814;
+  --paper-2: #221f1a;
+  --card: #27231d;
+  --ink: #ece4d6;
+  --muted: #a99d8b;
+  --green: #2f5a42;
+  --green-dark: #244834;
+  --green-text: #93c4a4;
+  --brass: #c9a46c;
+  --line: #3b352c;
+  --danger: #e2836a;
+  --danger-bg: #3e2621;
+  --success-bg: #1f3529;
+  --overlay: rgba(0, 0, 0, 0.65);
+  --shadow: rgba(0, 0, 0, 0.6);
 }
 
 /* Base */
@@ -115,6 +141,13 @@ section {
 .site-nav button:hover {
   color: var(--danger);
 }
+.site-nav .theme-toggle {
+  font-size: 18px;
+  line-height: 1;
+}
+.site-nav .theme-toggle:hover {
+  color: var(--brass);
+}
 
 /* Section titles */
 .alt {
@@ -153,7 +186,7 @@ section {
   padding: 12px 26px;
   border: 1px solid var(--green);
   background: var(--green);
-  color: var(--paper);
+  color: var(--light-ink);
   font: inherit;
   font-size: 15px;
   font-weight: 600;
@@ -164,8 +197,9 @@ section {
   background: var(--green-dark);
 }
 .btn.ghost {
+  border-color: var(--green-text);
   background: transparent;
-  color: var(--green);
+  color: var(--green-text);
 }
 .btn.ghost:hover {
   background: var(--paper-2);
@@ -214,6 +248,7 @@ select:focus {
   aspect-ratio: 1;
   border: 10px solid var(--green);
   box-shadow: 0 30px 60px -30px var(--shadow);
+  color: var(--dark-ink);
 }
 .board > * {
   display: flex;
@@ -243,7 +278,7 @@ select:focus {
 .message.success {
   display: block;
   background: var(--success-bg);
-  color: var(--green);
+  color: var(--green-text);
 }
 
 /* Footer */

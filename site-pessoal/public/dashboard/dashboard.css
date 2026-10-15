@@ -1,6 +1,6 @@
 .dash {
   background: var(--green);
-  color: var(--paper);
+  color: var(--light-ink);
 }
 .dash .section-title p {
   color: var(--on-green-muted);
@@ -91,7 +91,7 @@
 }
 .vitoria {
   background: var(--success-bg);
-  color: var(--green);
+  color: var(--green-text);
 }
 .derrota {
   background: var(--danger-bg);

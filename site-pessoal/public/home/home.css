@@ -11,7 +11,7 @@
   font-size: 60px;
 }
 .hero em {
-  color: var(--green);
+  color: var(--green-text);
 }
 .hero p {
   max-width: 480px;
@@ -35,7 +35,7 @@
   border-color: var(--brass);
 }
 .feature-icon {
-  color: var(--green);
+  color: var(--green-text);
   font-size: 40px;
 }
 .feature h3 {

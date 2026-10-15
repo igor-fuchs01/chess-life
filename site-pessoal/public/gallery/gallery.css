@@ -19,7 +19,7 @@
   border-radius: 50%;
   outline: 2px solid var(--brass);
   background: var(--green);
-  color: var(--paper);
+  color: var(--light-ink);
   font-size: 56px;
 }
 .profile h1 {
@@ -50,7 +50,7 @@
   justify-content: center;
   aspect-ratio: 1;
   overflow: hidden;
-  color: var(--paper);
+  color: var(--light-ink);
   font-size: 64px;
 }
 .photo img,
@@ -84,7 +84,7 @@
   background: var(--brass);
 }
 .tone-3 {
-  background: var(--ink);
+  background: var(--dark-ink);
 }
 
 @media (max-width: 800px) {
