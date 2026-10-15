@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS partida (
     CONSTRAINT fk_partida_abertura FOREIGN KEY (fk_abertura) REFERENCES abertura (id),
     CONSTRAINT chk_partida_resultado CHECK (resultado IN ('vitoria', 'derrota', 'empate')),
     CONSTRAINT chk_partida_adversario CHECK (adversario IN ('humano', 'ia')),
-    CONSTRAINT chk_partida_cor CHECK (cor IN ('brancas', 'pretas')),
+    CONSTRAINT chk_partida_cor CHECK (cor IN ('brancas', 'pretas'))
 ) ;
 
 -- One move of a game: weak entity, 1:N with partida, identifying relationship.
