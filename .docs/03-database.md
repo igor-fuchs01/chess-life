@@ -197,71 +197,27 @@ The legacy template (`site-pessoal/src/database/script-tabelas.sql`) was built f
 
 What the legacy back-end keeps: the `database.executar(sql, parametros)` function in `src/database/config.js` (now with `?` placeholders) and the `routes → controllers → models` structure.
 
-## 7. Physical preview (MySQL DDL)
+## 7. Physical model (MySQL scripts)
 
-The script that implements this model. It replaces `script-tabelas.sql` once the adaptation of the legacy back-end is approved. Tables are created parents first, so every foreign key points to a table that already exists.
+The physical model is implemented by two scripts in `site-pessoal/src/database/`. Run them in order:
 
-```sql
-CREATE DATABASE chess_life CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
-USE chess_life;
+| Script | What it does |
+| --- | --- |
+| `01-schema.sql` | Creates the `chess_life` database (`utf8mb4`) and the five tables, parents first, so every foreign key points to a table that already exists |
+| `02-seed.sql` | Loads the 50 rows of `abertura`: "Abertura irregular" plus one row per entry of `OPENINGS` in `src/models/openingBook.js` |
 
-CREATE TABLE usuario (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    nome VARCHAR(80) NOT NULL,
-    email VARCHAR(120) NOT NULL UNIQUE,
-    senha_hash CHAR(60) NOT NULL,
-    data_cadastro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE abertura (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    nome VARCHAR(60) NOT NULL,
-    lances VARCHAR(100) NOT NULL UNIQUE
-);
-
-CREATE TABLE perfil (
-    fk_usuario INT PRIMARY KEY,
-    rating INT,
-    ano_inicio YEAR,
-    bio VARCHAR(280),
-    fk_abertura_favorita INT,
-    FOREIGN KEY (fk_usuario) REFERENCES usuario(id),
-    FOREIGN KEY (fk_abertura_favorita) REFERENCES abertura(id)
-);
-
-CREATE TABLE partida (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    fk_usuario INT NOT NULL,
-    fk_abertura INT NOT NULL,
-    resultado VARCHAR(7) NOT NULL,
-    adversario VARCHAR(6) NOT NULL,
-    cor VARCHAR(7) NOT NULL,
-    data_partida DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CHECK (resultado IN ('vitoria', 'derrota', 'empate')),
-    CHECK (adversario IN ('humano', 'ia')),
-    CHECK (cor IN ('brancas', 'pretas')),
-    FOREIGN KEY (fk_usuario) REFERENCES usuario(id),
-    FOREIGN KEY (fk_abertura) REFERENCES abertura(id),
-    INDEX idx_partida_usuario_data (fk_usuario, data_partida)
-);
-
-CREATE TABLE lance (
-    fk_partida INT,
-    numero INT,
-    san VARCHAR(10) NOT NULL,
-    PRIMARY KEY (fk_partida, numero),
-    CHECK (numero >= 1),
-    FOREIGN KEY (fk_partida) REFERENCES partida(id) ON DELETE CASCADE
-);
-
--- Seed: one row per entry of OPENINGS in src/models/openingBook.js, plus the fallback.
-INSERT INTO abertura (nome, lances) VALUES
-    ('Abertura irregular', ''),
-    ('Abertura do Peão do Rei', 'e4'),
-    ('Defesa Siciliana', 'e4 c5'),
-    ('Siciliana: Dragão Acelerado', 'e4 c5 Nf3 Nc6 d4 cxd4 Nxd4 g6');
-    -- ...the other openings of the list
 ```
+mysql -u <user> -p < site-pessoal/src/database/01-schema.sql
+mysql -u <user> -p < site-pessoal/src/database/02-seed.sql
+```
+
+The same files can be opened and run in MySQL Workbench.
+
+- **Running them again is safe**: `01-schema.sql` uses `CREATE ... IF NOT EXISTS`, and `02-seed.sql` uses `INSERT IGNORE`, which skips openings whose `lances` already exist. Neither script drops or changes existing data. A change to an existing table needs its own `ALTER TABLE`.
+- **InnoDB** is set on every table, since foreign keys need it.
+- **Constraint names**: `uq_<table>_<column>` for unique keys, `fk_<child>_<parent>` for foreign keys, `chk_<table>_<column>` for checks and `idx_<table>_<columns>` for indexes. MySQL ignores names given to primary keys and always calls them `PRIMARY`, so primary keys are not named.
+- **Validated** on MySQL 8.0.46, in a temporary instance. Both scripts ran twice without errors and created every constraint. Each rule was rejected when broken: duplicate e-mail, second profile for a user, invalid `resultado`, unknown user, `numero` 0, duplicate move number, and deleting an opening in use. Deleting a game deleted its moves.
+- `script-tabelas.sql`, the legacy AquaTech script, stays until the code is adapted (section 8). The current API still writes `partida.abertura` and `partida.lances` as text, so it does not work with these tables yet.
 
 Example query, the dashboard's game list:
 
@@ -287,9 +243,9 @@ The rows are joined into text in JavaScript, not with `GROUP_CONCAT`, because My
 
 ## 8. Impact on the current code
 
-Not built yet. Each change to `src/` needs the user's approval first.
+The code changes are not built yet. Each change to `src/` needs the user's approval first.
 
-- `script-tabelas.sql` is replaced by the script in section 7, with the full opening seed.
+- The scripts in section 7 are built. Once the code below is adapted, the API's `.env` files point to the `chess_life` database and the legacy `script-tabelas.sql` is deleted.
 - `openingBook.js` reads the openings from the `abertura` table instead of its `OPENINGS` constant, keeping the longest-match rule, and returns the opening's `id`. Moving the moves to `lance` does not affect it: it identifies the opening from the move list in the request, before anything is saved.
 - `partidaModel.registerGame` inserts the game and then all its moves in one multi-row `INSERT` into `lance`, numbered from 1 in the order received. Both inserts run in one transaction, so a failure never leaves a game without moves. `database.executar` opens one connection per query and cannot hold a transaction, so `config.js` needs a function that runs several statements on one connection between `BEGIN` and `COMMIT`.
 - `listGames` joins `abertura` and keeps returning the name as `abertura`, so the API contract and the dashboard do not change. It does not read `lance`.
