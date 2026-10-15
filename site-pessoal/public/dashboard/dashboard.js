@@ -135,11 +135,10 @@ function renderDashboard() {
 
 async function loadGames() {
   try {
-    const response = await fetch(`/partidas/listar/${currentUser.id}`);
-    games = response.status === 200 ? await response.json() : [];
-  } catch {
+    games = (await apiRequest(`/partidas/listar/${currentUser.id}`)) || [];
+  } catch (error) {
     games = [];
-    showMessage(gameMessage, "Não foi possível carregar as partidas.", "error");
+    showMessage(gameMessage, error.message, "error");
   }
   renderDashboard();
 }
@@ -168,14 +167,13 @@ async function deleteGame(gameId) {
     return;
   }
   try {
-    const response = await fetch(`/partidas/deletar/${gameId}`, { method: "DELETE" });
-    if (!response.ok) {
-      showMessage(gameMessage, "Não foi possível excluir a partida.", "error");
-      return;
-    }
+    await apiRequest(`/partidas/deletar/${gameId}`, {
+      method: "DELETE",
+      errorMessages: { 404: "Esta partida não existe mais." }
+    });
     await loadGames();
-  } catch {
-    showMessage(gameMessage, "Não foi possível conectar ao servidor.", "error");
+  } catch (error) {
+    showMessage(gameMessage, error.message, "error");
   }
 }
 
@@ -196,27 +194,18 @@ gameForm.addEventListener("submit", async (event) => {
   }
 
   try {
-    const response = await fetch(`/partidas/cadastrar/${currentUser.id}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(game)
-    });
-
-    if (!response.ok) {
-      showMessage(gameMessage, "Não foi possível salvar a partida.", "error");
-      return;
-    }
+    await apiRequest(`/partidas/cadastrar/${currentUser.id}`, { method: "POST", body: game });
 
     gameForm.reset();
     gameForm.date.value = todayIso();
     showMessage(gameMessage, "Partida registrada!", "success");
     await loadGames();
-  } catch {
-    showMessage(gameMessage, "Não foi possível conectar ao servidor.", "error");
+  } catch (error) {
+    showMessage(gameMessage, error.message, "error");
   }
 });
 
-Chart.defaults.font.family = "'Source Sans 3', sans-serif";
+Chart.defaults.font.family = getComputedStyle(document.documentElement).getPropertyValue("--font-body");
 Chart.defaults.color = "#6b6053";
 
 document.getElementById("greeting").textContent = `Olá, ${currentUser.name}. Estas são as suas partidas.`;

@@ -13,22 +13,20 @@ loginForm.addEventListener("submit", async (event) => {
   }
 
   try {
-    const response = await fetch("/usuarios/autenticar", {
+    const user = await apiRequest("/usuarios/autenticar", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ emailServer: email, senhaServer: password })
+      body: { emailServer: email, senhaServer: password },
+      errorMessages: { 403: "E-mail ou senha inválidos." }
     });
 
-    if (response.status !== 200) {
-      const text = await response.text();
-      showMessage(loginMessage, text || "Não foi possível entrar. Tente novamente.", "error");
+    if (!user || !user.id) {
+      showMessage(loginMessage, "Não foi possível entrar. Tente novamente.", "error");
       return;
     }
 
-    const user = await response.json();
     startSession({ id: user.id, name: user.nome, email: user.email });
     window.location = `${SITE_ROOT}dashboard/dashboard.html`;
-  } catch {
-    showMessage(loginMessage, "Não foi possível conectar ao servidor.", "error");
+  } catch (error) {
+    showMessage(loginMessage, error.message, "error");
   }
 });
