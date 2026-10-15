@@ -27,7 +27,7 @@ loginForm.addEventListener("submit", async (event) => {
 
     const user = await response.json();
     startSession({ id: user.id, name: user.nome, email: user.email });
-    window.location = "/dashboard/dashboard.html";
+    window.location = `${SITE_ROOT}dashboard/dashboard.html`;
   } catch {
     showMessage(loginMessage, "Não foi possível conectar ao servidor.", "error");
   }

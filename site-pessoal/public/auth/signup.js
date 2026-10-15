@@ -47,7 +47,7 @@ signupForm.addEventListener("submit", async (event) => {
     }
 
     showMessage(signupMessage, "Conta criada com sucesso! Redirecionando para o login...", "success");
-    setTimeout(() => { window.location = "/auth/login.html"; }, 1500);
+    setTimeout(() => { window.location = LOGIN_PAGE; }, 1500);
   } catch {
     showMessage(signupMessage, "Não foi possível conectar ao servidor.", "error");
   }

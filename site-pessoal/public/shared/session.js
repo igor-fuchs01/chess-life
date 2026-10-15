@@ -1,4 +1,5 @@
-const LOGIN_PAGE = "/auth/login.html";
+const SITE_ROOT = document.currentScript.src.replace(/shared\/session\.js.*$/, "");
+const LOGIN_PAGE = `${SITE_ROOT}auth/login.html`;
 
 function getSessionUser() {
   if (!sessionStorage.USER_ID) {
