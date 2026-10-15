@@ -1,10 +1,10 @@
 # site-pessoal — Application
 
-`site-pessoal/` holds the Chess Life application. The specification it implements is in [`project.md`](project.md).
+`site-pessoal/` holds the Chess Life application. The specification it implements is in [`01-project.md`](01-project.md).
 
 The folder started as a copy of SPTech's **web-data-viz** template (`BandTec/web-data-viz`, built for the "AquaTech" sample project). Its back-end (`app.js` and `src/`) is legacy code to be reused and adapted. Its legacy front-end was removed and rebuilt for Chess Life.
 
-## Running
+## 1. Running
 
 ```
 cd site-pessoal
@@ -19,7 +19,7 @@ npm start        # or: npm run dev (restarts on file changes, uses nodemon)
 
 There are no automated tests or lint setup yet.
 
-## Structure
+## 2. Structure
 
 ```
 site-pessoal/
@@ -44,7 +44,7 @@ site-pessoal/
     └── dashboard/          Restricted dashboard: indicators, charts and games played on the site
 ```
 
-## Front-end
+## 3. Front-end
 
 ### Design
 
@@ -76,7 +76,7 @@ The site uses the "classic" direction chosen by the user: cream paper (`--paper`
 
 The gallery currently shows colored placeholder tiles. To use a photo, add the image under `public/gallery/` and put an `<img>` inside its `<figure class="photo">`. The CSS already fills the tile with it.
 
-## Legacy API
+## 4. Legacy API
 
 Every route below exists in `src/` as received. None of them has been changed yet. The only shared change is that `database.executar(sql, parametros)` now takes optional values for `?` placeholders; calls without them work as before.
 
@@ -97,7 +97,7 @@ Every route below exists in `src/` as received. None of them has been changed ye
 
 Pattern to follow when adapting or adding a resource: `routes/<resource>.js` → `controllers/<resource>Controller.js` → `models/<resource>Model.js`, with every query run through `database.executar`. The `aviso` resource is the template's full CRUD example and the model for `partida`.
 
-## Games API (RF08–RF10, RF16)
+## 5. Games API (RF08–RF10, RF16)
 
 The `partida` resource is built: `routes/partidas.js` → `controllers/partidaController.js` → `models/partidaModel.js`, with parameterized queries. Its table is in `src/database/script-tabelas.sql`.
 
@@ -115,7 +115,7 @@ The `partida` resource is built: `routes/partidas.js` → `controllers/partidaCo
 - The listing leaves out `lances`, which the dashboard does not use.
 - Until the game page exists, nothing calls `POST /partidas/cadastrar`, so the dashboard stays empty.
 
-## Planned adaptation
+## 6. Planned adaptation
 
 Nothing in this section is built yet. Each change to `src/` or `app.js` needs the user's approval first.
 
@@ -129,13 +129,13 @@ Nothing in this section is built yet. Each change to `src/` or `app.js` needs th
 
 ### Database
 
-Replace the AquaTech tables with the MySQL model in [`database.md`](database.md): `usuario`, `abertura` and `partida`. Its section 8 lists the code changes this brings, such as `partida.abertura` becoming `fk_abertura`.
+Replace the AquaTech tables with the MySQL model in [`03-database.md`](03-database.md): `usuario`, `abertura` and `partida`. Its section 8 lists the code changes this brings, such as `partida.abertura` becoming `fk_abertura`.
 
 ### Legacy code to remove
 
 Once the user approves: the `aquario`, `medida` and `empresa` resources, and the `aviso` resource after `partida` has replaced it.
 
-## Known issues in the legacy back-end
+## 7. Known issues in the legacy back-end
 
 These were found while reviewing `src/`. Fix them as part of the adaptation.
 

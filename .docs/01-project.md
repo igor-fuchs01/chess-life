@@ -134,7 +134,7 @@ In the complementary module, the server also talks to the Gemini API or to a che
 | Front-end | HTML5, CSS3, JavaScript | Page structure, style and interactivity |
 | Visualization | Chart.js | Game statistics charts |
 | Back-end | Node.js, Express | REST API, business rules, static files |
-| Database | MySQL 8.0+ | Users, games and openings; modeled in [`database.md`](database.md) |
+| Database | MySQL 8.0+ | Users, games and openings; modeled in [`03-database.md`](03-database.md) |
 | Security | bcrypt; JWT or session | Password hashing and access control |
 | Infrastructure | Linux VM | Hosts the database and the application |
 | Version control | Git, GitHub | Source control |
@@ -150,7 +150,7 @@ In the complementary module, the server also talks to the Gemini API or to a che
 
 ## 6. Data model
 
-The database is modeled in MySQL. The full model (entity-relationship diagram, data dictionary, constraints, legacy changes and DDL) is in [`database.md`](database.md). Summary:
+The database is modeled in MySQL. The full model (entity-relationship diagram, data dictionary, constraints, legacy changes and DDL) is in [`03-database.md`](03-database.md). Summary:
 
 | Table | Columns | Notes |
 | --- | --- | --- |
@@ -223,7 +223,7 @@ Facts the story timeline is built from. The page text itself is written in Portu
 ## 11. Open decisions
 
 - Authentication mechanism: JWT or server session.
-- Authentication API adaptation: see `site-pessoal.md`.
+- Authentication API adaptation: see [`02-site-pessoal.md`](02-site-pessoal.md).
 - Game page: until it exists, no game reaches the database (two players on one computer, or only against the AI).
 - AI opponent: Gemini, Stockfish or both.
 - HTTPS on the VM (R08).

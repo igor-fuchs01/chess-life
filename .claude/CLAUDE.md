@@ -5,11 +5,13 @@ Chess Life is a personal website about how chess shaped the author's life, built
 
 Stack: HTML/CSS/JS front-end, Node.js + Express REST API that also serves the static files, and MySQL on a Linux VM, with bcrypt for passwords.
 
-Full specification (requirements, business rules, data model, plan): `.docs/project.md`. Read it before implementing a feature.
+Documentation index, reading order and documentation conventions: `.docs/README.md`.
 
-The database is modeled and implemented in **MySQL** (8.0 or later). The data model (entities, data dictionary, constraints and DDL) is in `.docs/database.md`. Read it before changing any table or query, and update it first when the model changes.
+Full specification (requirements, business rules, plan): `.docs/01-project.md`. Read it before implementing a feature.
 
-The application lives in `site-pessoal/`, built on SPTech's legacy web-data-viz template. Run it with `npm install` and `npm start` inside that folder. Structure, front-end conventions, the legacy API and the planned adaptations are in `.docs/site-pessoal.md`.
+The database is modeled and implemented in **MySQL** (8.0 or later). The data model (entities, data dictionary, constraints and DDL) is in `.docs/03-database.md`. Read it before changing any table or query, and update it first when the model changes.
+
+The application lives in `site-pessoal/`, built on SPTech's legacy web-data-viz template. Run it with `npm install` and `npm start` inside that folder. Structure, front-end conventions, the legacy API and the planned adaptations are in `.docs/02-site-pessoal.md`.
 
 - Do not change or create APIs (`site-pessoal/src/`, `site-pessoal/app.js`) without asking the user first.
 - Ask before changing or deleting existing front-end pages and scripts.

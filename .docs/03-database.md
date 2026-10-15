@@ -1,6 +1,6 @@
 # Chess Life — Database model
 
-The logical data model of Chess Life. The database is modeled and implemented in **MySQL** (version 8.0 or later), hosted on the project's Linux VM (assumptions P02 and R03 in [`project.md`](project.md)). This is the preliminary model: it guides the adaptation of the legacy tables, and it changes here first whenever the data model changes.
+The logical data model of Chess Life. The database is modeled and implemented in **MySQL** (version 8.0 or later), hosted on the project's Linux VM (assumptions P02 and R03 in [`01-project.md`](01-project.md)). This is the preliminary model: it guides the adaptation of the legacy tables, and it changes here first whenever the data model changes.
 
 ## 1. Scope
 
@@ -196,4 +196,4 @@ Not built yet. Each change to `src/` needs the user's approval first.
 - `script-tabelas.sql` is replaced by the script in section 7, with the full opening seed.
 - `openingBook.js` reads the openings from the `abertura` table instead of its `OPENINGS` constant, keeping the longest-match rule, and returns the opening's `id`.
 - `partidaModel.registerGame` saves `fk_abertura`. `listGames` joins `abertura` and keeps returning the name as `abertura`, so the API contract and the dashboard do not change.
-- `usuarioModel` and `usuarioController` follow the new `usuario` table (see "Planned adaptation" in [`site-pessoal.md`](site-pessoal.md)).
+- `usuarioModel` and `usuarioController` follow the new `usuario` table (see section 6, "Planned adaptation", in [`02-site-pessoal.md`](02-site-pessoal.md)).
