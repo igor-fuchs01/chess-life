@@ -34,15 +34,21 @@ signupForm.addEventListener("submit", async (event) => {
   }
 
   try {
-    await apiRequest("/usuarios/cadastrar", {
+    const response = await fetch("/usuarios/cadastrar", {
       method: "POST",
-      body: { nomeServer: name, emailServer: email, senhaServer: password },
-      errorMessages: { 409: "Este e-mail já está cadastrado." }
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nomeServer: name, emailServer: email, senhaServer: password })
     });
+
+    if (!response.ok) {
+      const text = await response.text();
+      showMessage(signupMessage, text || "Não foi possível criar a conta.", "error");
+      return;
+    }
 
     showMessage(signupMessage, "Conta criada com sucesso! Redirecionando para o login...", "success");
     setTimeout(() => { window.location = LOGIN_PAGE; }, 1500);
-  } catch (error) {
-    showMessage(signupMessage, error.message, "error");
+  } catch {
+    showMessage(signupMessage, "Não foi possível conectar ao servidor.", "error");
   }
 });

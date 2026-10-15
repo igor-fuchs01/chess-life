@@ -135,10 +135,11 @@ function renderDashboard() {
 
 async function loadGames() {
   try {
-    games = (await apiRequest(`/partidas/listar/${currentUser.id}`)) || [];
-  } catch (error) {
+    const response = await fetch(`/partidas/listar/${currentUser.id}`);
+    games = response.status === 200 ? await response.json() : [];
+  } catch {
     games = [];
-    showMessage(gameMessage, error.message, "error");
+    showMessage(gameMessage, "Não foi possível carregar as partidas.", "error");
   }
   renderDashboard();
 }
@@ -167,13 +168,14 @@ async function deleteGame(gameId) {
     return;
   }
   try {
-    await apiRequest(`/partidas/deletar/${gameId}`, {
-      method: "DELETE",
-      errorMessages: { 404: "Esta partida não existe mais." }
-    });
+    const response = await fetch(`/partidas/deletar/${gameId}`, { method: "DELETE" });
+    if (!response.ok) {
+      showMessage(gameMessage, "Não foi possível excluir a partida.", "error");
+      return;
+    }
     await loadGames();
-  } catch (error) {
-    showMessage(gameMessage, error.message, "error");
+  } catch {
+    showMessage(gameMessage, "Não foi possível conectar ao servidor.", "error");
   }
 }
 
@@ -194,14 +196,23 @@ gameForm.addEventListener("submit", async (event) => {
   }
 
   try {
-    await apiRequest(`/partidas/cadastrar/${currentUser.id}`, { method: "POST", body: game });
+    const response = await fetch(`/partidas/cadastrar/${currentUser.id}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(game)
+    });
+
+    if (!response.ok) {
+      showMessage(gameMessage, "Não foi possível salvar a partida.", "error");
+      return;
+    }
 
     gameForm.reset();
     gameForm.date.value = todayIso();
     showMessage(gameMessage, "Partida registrada!", "success");
     await loadGames();
-  } catch (error) {
-    showMessage(gameMessage, error.message, "error");
+  } catch {
+    showMessage(gameMessage, "Não foi possível conectar ao servidor.", "error");
   }
 });
 
