@@ -32,7 +32,7 @@ The project has to show every layer of a web application working together: front
 | Gallery | Galeria | Photo grid, visual only | Public |
 | Sign-up | Cadastro | Form with name, e-mail and password | Public |
 | Login | Login | Form with e-mail and password | Public |
-| Dashboard | Meu desempenho no xadrez | Indicators, Chart.js charts and the list of games played on the site | Restricted |
+| Dashboard | Desempenho no Xadrez | Indicators, Chart.js charts and the list of games played on the site | Restricted |
 | Play | Jogar | Board with every rule of chess for a game between two people on the same computer; a game against the AI comes with the complementary module | Restricted |
 
 UI copy is written in Portuguese (see the language convention in `.claude/CLAUDE.md`).
@@ -165,7 +165,7 @@ Gallery photos are not stored in the database: they stay in `public/gallery/` an
 
 ## 7. Dashboard charts
 
-The dashboard, titled "Meu desempenho no xadrez", fetches the user's games from the API and shows:
+The dashboard, titled "Desempenho no Xadrez", fetches the user's games from the API and shows:
 
 - **Indicators**:
   - Games played today, compared with yesterday.
@@ -178,6 +178,8 @@ The dashboard, titled "Meu desempenho no xadrez", fetches the user's games from 
 - **With the AI module**: performance against human opponents compared with performance against the AI (`adversario`).
 
 Games are not typed in by hand: they reach the dashboard only by being played on the site.
+
+On screens wider than 800px the dashboard fits the browser window and the page does not scroll: the indicators sit in a row on top, and the charts and the table share a 2x2 grid below them. The footer is hidden on this page to give the charts more height. When there are more games than fit, only the table scrolls, inside its panel. On phones the panels stack and the page scrolls.
 
 ## 8. Complementary module: chess against an AI
 

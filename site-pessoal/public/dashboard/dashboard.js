@@ -4,8 +4,6 @@ const COLOR_LABELS = { brancas: "Brancas", pretas: "Pretas" };
 const WEEKS_IN_CHART = 8;
 const DAYS_IN_WEEK = 7;
 const OPENINGS_IN_CHART = 5;
-// The weekly chart is as wide as the page, so it is drawn flatter than Chart.js's default 2:1.
-const WEEKLY_CHART_ASPECT_RATIO = 3;
 const currentUser = getSessionUser();
 const gamesMessage = document.getElementById("games-message");
 
@@ -19,10 +17,10 @@ let chartColors;
  */
 function startDashboard() {
   Chart.defaults.font.family = readCssVariable("--font-body");
+  // Each chart fills its panel's height, which the page layout sets, instead of keeping a fixed proportion.
+  Chart.defaults.maintainAspectRatio = false;
   readChartColors();
   document.addEventListener("themechange", redrawChartsForTheme);
-
-  document.getElementById("greeting").textContent = `Olá, ${currentUser.name}. Este é o resumo das partidas que você jogou no site.`;
 
   loadGames();
 }
@@ -242,7 +240,6 @@ function createWeeklyChart() {
       ]
     },
     options: {
-      aspectRatio: WEEKLY_CHART_ASPECT_RATIO,
       scales: {
         x: { stacked: true },
         y: { stacked: true, beginAtZero: true, ticks: { precision: 0 } }

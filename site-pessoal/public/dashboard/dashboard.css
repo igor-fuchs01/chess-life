@@ -1,74 +1,123 @@
+/* Page height: the dashboard fits the window, so the page never scrolls. */
+body {
+  height: 100vh;
+}
+main {
+  display: flex;
+  min-height: 0;
+}
 .dash {
+  display: flex;
+  flex: 1;
+  padding: 12px 0;
   background: var(--green);
   color: var(--light-ink);
 }
-.dash .section-title p {
-  color: var(--on-green-muted);
+.dash .wrap {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  max-width: 1400px;
+}
+/* Title: the ornament sits on the title's left, in one line. */
+.dash .section-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.dash .section-title h1 {
+  font-size: 26px;
+}
+.dash .ornament {
+  margin-bottom: 0;
+  font-size: 22px;
+  letter-spacing: 0;
 }
 
-/* Indicators */
-.stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-bottom: 24px;
-}
-.stat {
-  padding: 20px;
-  border: 1px solid var(--on-green-line);
-}
-.stat b {
-  display: block;
-  color: var(--brass);
-  font-family: var(--font-heading);
-  font-size: 34px;
-  overflow-wrap: anywhere;
-}
-.change {
-  display: block;
-  margin-top: 8px;
-  color: var(--on-green-muted);
-  font-size: 14px;
-}
-
-/* Panels */
+/* Panels: indicators in a row on top, charts and the games table in a 2x2 grid below */
 .panels {
   display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 16px;
+  flex: 1;
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: auto 1fr 1fr;
+  gap: 10px;
+  min-height: 0;
 }
 .panel {
+  display: flex;
+  flex-direction: column;
   min-width: 0;
-  padding: 24px;
+  min-height: 0;
+  padding: 10px 14px;
   background: var(--paper);
   color: var(--ink);
 }
 .panel h2 {
-  margin-bottom: 12px;
-  font-size: 20px;
+  margin-bottom: 4px;
+  font-size: 15px;
 }
-.panel.wide {
-  grid-column: 1 / -1;
+/* Chart.js sizes the canvas to this box, which takes the panel's free height. */
+.chart {
+  position: relative;
+  flex: 1;
+  min-height: 0;
 }
 
-/* Games table */
+/* Indicators: value and label on one line, the comparison below. */
+.stats {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.stat {
+  padding: 6px 14px;
+  border: 1px solid var(--on-green-line);
+  font-size: 14px;
+  line-height: 1.4;
+}
+.stat b {
+  margin-right: 6px;
+  color: var(--brass);
+  font-family: var(--font-heading);
+  font-size: 22px;
+  overflow-wrap: anywhere;
+}
+.change {
+  display: block;
+  color: var(--on-green-muted);
+  font-size: 12px;
+}
+
+/* Games table: it scrolls inside its panel when there are more games than fit. */
 .empty {
   color: var(--muted);
+  font-size: 14px;
+}
+.table-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 .games {
   width: 100%;
   border-collapse: collapse;
-  font-size: 15px;
+  font-size: 13px;
 }
 .games th,
 .games td {
-  padding: 10px 8px;
+  padding: 5px 8px;
   border-bottom: 1px solid var(--line);
   text-align: left;
 }
 .games th {
+  position: sticky;
+  top: 0;
+  background: var(--paper);
   color: var(--muted);
-  font-size: 13px;
+  font-size: 11px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -85,8 +134,8 @@
 
 /* Result tags */
 .tag {
-  padding: 2px 10px;
-  font-size: 13px;
+  padding: 1px 8px;
+  font-size: 12px;
   font-weight: 600;
 }
 .vitoria {
@@ -102,13 +151,25 @@
   color: var(--muted);
 }
 
+/* The footer is hidden here so the panels get the whole window below the header. */
+.site-footer {
+  display: none;
+}
+
+/* On phones the panels stack, so the page scrolls again. */
 @media (max-width: 800px) {
-  .stats,
-  .panels {
+  body {
+    height: auto;
+  }
+  .panels,
+  .stats {
     grid-template-columns: 1fr;
   }
-  .games {
-    font-size: 14px;
+  .panels {
+    grid-template-rows: none;
+  }
+  .chart {
+    height: 260px;
   }
   .games th:nth-child(3),
   .games td:nth-child(3),
