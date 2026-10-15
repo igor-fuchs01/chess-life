@@ -8,7 +8,7 @@
 
 ## O que é isto
 
-**Chess Life** é um site pessoal sobre como o xadrez mudou a minha vida. É o projeto individual da disciplina de Pesquisa e Inovação, do curso de Análise e Desenvolvimento de Sistemas da SPTech.
+**Chess Life** é um site pessoal sobre como o xadrez impactou a minha vida. É o projeto individual da disciplina de Pesquisa e Inovação, do curso de Análise e Desenvolvimento de Sistemas da SPTech.
 
 O site tem duas partes. A pública conta a história: uma linha do tempo de como tudo começou e uma galeria de fotos no estilo do Instagram. A restrita é um dashboard: quem cria uma conta joga no site, cada partida vai para o banco de dados e vira gráfico.
 
