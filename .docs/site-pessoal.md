@@ -29,7 +29,7 @@ site-pessoal/
 │   ├── database/config.js  MySQL connection; executar(sql) runs one query
 │   ├── routes/             URL → controller function
 │   ├── controllers/        Reads the request, validates and replies
-│   └── models/             Builds and runs the SQL
+│   └── models/             Builds and runs the SQL; openingBook.js identifies openings
 └── public/                 Chess Life front-end, one folder per feature
     ├── index.html          Home page
     ├── shared/             Used by every page
@@ -41,7 +41,7 @@ site-pessoal/
     ├── story/              "Minha história" page
     ├── gallery/            Photo gallery page
     ├── auth/               Login and sign-up pages
-    └── dashboard/          Restricted dashboard: games, stats and charts
+    └── dashboard/          Restricted dashboard: indicators, charts and games played on the site
 ```
 
 ## Front-end
@@ -59,7 +59,7 @@ The site uses the "classic" direction chosen by the user: cream paper (`--paper`
 | `/gallery/gallery.html` | `gallery/` | Public | — |
 | `/auth/login.html` | `auth/` | Public | `POST /usuarios/autenticar` |
 | `/auth/signup.html` | `auth/` | Public | `POST /usuarios/cadastrar` |
-| `/dashboard/dashboard.html` | `dashboard/` | Restricted | `/partidas/*` (not built yet) |
+| `/dashboard/dashboard.html` | `dashboard/` | Restricted | `GET /partidas/listar`, `DELETE /partidas/deletar` |
 
 ### Conventions
 
@@ -67,7 +67,7 @@ The site uses the "classic" direction chosen by the user: cream paper (`--paper`
 - Session: `startSession`, `getSessionUser`, `endSession` and `requireSession` in `shared/session.js`, stored in `sessionStorage` (`USER_ID`, `USER_NAME`, `USER_EMAIL`). Restricted pages call `requireSession()` in `<head>`, which sends visitors to the login page.
 - Form feedback uses `showMessage(element, text, "error" | "success")` from `shared/layout.js` (RF11).
 - Pages use relative paths for their files, so they also open straight from disk. Scripts build links from `SITE_ROOT` (`shared/session.js`). API calls only work when the site is served by `app.js`.
-- Forms are validated on the client too, for a quick reply: password of at least 8 characters (RN02), valid e-mail, matching confirmation, allowed result values (RN04) and no future date (RN05). The server must repeat these checks.
+- Forms are validated on the client too, for a quick reply: password of at least 8 characters (RN02), valid e-mail and matching confirmation. The server must repeat these checks.
 - User-provided text goes into the page with `textContent`, never `innerHTML`.
 - Chart.js 4.4.1 is loaded from cdnjs only on the dashboard.
 - Code and identifiers are in English; text shown to users is in Portuguese.
@@ -78,7 +78,7 @@ The gallery currently shows colored placeholder tiles. To use a photo, add the i
 
 ## Legacy API
 
-Every route below exists in `src/` as received. None of them has been changed yet.
+Every route below exists in `src/` as received. None of them has been changed yet. The only shared change is that `database.executar(sql, parametros)` now takes optional values for `?` placeholders; calls without them work as before.
 
 | Method and path | Controller | Body or parameters | Reply |
 | --- | --- | --- | --- |
@@ -97,6 +97,24 @@ Every route below exists in `src/` as received. None of them has been changed ye
 
 Pattern to follow when adapting or adding a resource: `routes/<resource>.js` → `controllers/<resource>Controller.js` → `models/<resource>Model.js`, with every query run through `database.executar`. The `aviso` resource is the template's full CRUD example and the model for `partida`.
 
+## Games API (RF08–RF10, RF16)
+
+The `partida` resource is built: `routes/partidas.js` → `controllers/partidaController.js` → `models/partidaModel.js`, with parameterized queries. Its table is in `src/database/script-tabelas.sql`.
+
+| Method and path | Body | Reply |
+| --- | --- | --- |
+| `GET /partidas/listar/:idUsuario` | — | 200 with `[{ id, resultado, adversario, cor, abertura, data_partida }]`, newest first, or 204 when there are none |
+| `POST /partidas/cadastrar/:idUsuario` | `{ resultado, adversario, cor, lances }` | 201 with `{ id, abertura }`; 400 with the validation message |
+| `DELETE /partidas/deletar/:idUsuario/:idPartida` | — | 200; 404 when the game does not exist or belongs to another user (RN03) |
+
+- `resultado` is one of `vitoria`, `derrota` or `empate` (RN04).
+- `adversario` is `humano` or `ia`; `cor` is `brancas` or `pretas`, the color the user played.
+- `lances` is the list of moves in standard algebraic notation (SAN), as chess.js writes them, such as `["e4", "c5", "Nf3"]`. The server checks the format of each move, not its legality: the game page validates moves while the game is played (RF14). The moves are stored joined by spaces.
+- The client does not send a date: `data_partida` is set by the database when the game is saved (RN05). It is a `DATETIME`, so the dashboard groups games by day in the user's time zone.
+- **Opening identification**: `models/openingBook.js` holds about 50 known openings, each with the SAN moves that define it, and `identifyOpening(moves)` returns the one with the longest sequence the game starts with, such as "Giuoco Piano" over "Abertura Italiana". A game that matches none is "Abertura irregular". To recognize a new opening, add a line to `OPENINGS`.
+- The listing leaves out `lances`, which the dashboard does not use.
+- Until the game page exists, nothing calls `POST /partidas/cadastrar`, so the dashboard stays empty.
+
 ## Planned adaptation
 
 Nothing in this section is built yet. Each change to `src/` or `app.js` needs the user's approval first.
@@ -108,19 +126,6 @@ Nothing in this section is built yet. Each change to `src/` or `app.js` needs th
 - **Passwords**: store a bcrypt hash in `senha_hash` instead of plain text, and never return it.
 - **Access control**: protect the restricted API routes on the server (JWT or session; still an open decision), so every user only reaches their own games (RN03).
 
-### Games (RF08–RF10, RF16)
-
-A new `partida` resource, following the `aviso` pattern. The dashboard already calls this contract:
-
-| Method and path | Body | Reply |
-| --- | --- | --- |
-| `GET /partidas/listar/:idUsuario` | — | 200 with `[{ id, resultado, abertura, adversario, data_partida }]`, or 204 when there are none |
-| `POST /partidas/cadastrar/:idUsuario` | `{ resultado, abertura, adversario, dataPartida }` | 201 |
-| `DELETE /partidas/deletar/:idPartida` | — | 200 |
-
-- `resultado` is one of `vitoria`, `derrota` or `empate` (RN04).
-- `adversario` is `humano` or `ia`.
-- `dataPartida` is `YYYY-MM-DD` and cannot be in the future (RN05).
 
 ### Database
 

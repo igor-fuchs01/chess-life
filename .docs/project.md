@@ -7,7 +7,7 @@ Development reference for Chess Life, a personal website about how chess shaped 
 The site has two parts:
 
 - **Public pages**: the author's story told as a timeline, a photo gallery with an Instagram-style design, and the sign-up and login forms.
-- **Restricted area** for authenticated users: a dashboard where each user records chess games and sees Chart.js statistics built from the database.
+- **Restricted area** for authenticated users: a dashboard with Chart.js statistics of the chess games each user played on the site, built from the database.
 - **Complementary module**, built only after the main scope is done: playing chess against an AI.
 
 The project has to show every layer of a web application working together: front-end, REST API, database on a virtual machine (VM), authentication and data visualization.
@@ -17,7 +17,7 @@ The project has to show every layer of a web application working together: front
 1. Tell the author's chess story as a timeline.
 2. Build a photo gallery in a grid.
 3. Add sign-up, login and logout, with passwords stored securely.
-4. Let authenticated users record their games.
+4. Record the games authenticated users play on the site, with their moves and opening.
 5. Show game statistics in Chart.js charts fed by the database.
 6. Host the database and the application on a VM.
 7. Keep requirements, assumptions, architecture and data model documented.
@@ -32,7 +32,7 @@ The project has to show every layer of a web application working together: front
 | Gallery | Galeria | Photo grid, visual only | Public |
 | Sign-up | Cadastro | Form with name, e-mail and password | Public |
 | Login | Login | Form with e-mail and password | Public |
-| Dashboard | Dashboard | Game recording and Chart.js charts | Restricted |
+| Dashboard | Meu desempenho no xadrez | Indicators, Chart.js charts and the list of games played on the site | Restricted |
 | Play (complementary) | Jogar | Board for a game against the AI | Restricted |
 
 UI copy is written in Portuguese (see the language convention in `.claude/CLAUDE.md`).
@@ -59,7 +59,7 @@ If one of these stops being true, the plan has to be reviewed.
 | P04 | Users have an up-to-date browser and an internet connection. |
 | P05 | The author provides the gallery photos and holds the rights to them. |
 | P06 | The gallery only borrows the social-network look. It has no social interactions. |
-| P07 | Users feed the chart data by recording their own games. |
+| P07 | Users feed the chart data by playing games on the site. |
 | P08 | Chart.js is loaded from a CDN or installed as a project dependency. |
 | P09 | As an academic project, it has few users and little traffic. |
 | P10 | The AI module is complementary and does not put the main scope at risk. |
@@ -93,7 +93,7 @@ Priorities: **Essential** (must ship), **Important** (should ship), **Desirable*
 | RF05 | Only authenticated users can access the dashboard. | Essential |
 | RF06 | The "Minha história" page shows the author's story. | Essential |
 | RF07 | The gallery shows photos in an Instagram-style grid. | Important |
-| RF08 | Authenticated users can record a game (result, opening and date). | Essential |
+| RF08 | A game played on the site is recorded when it ends, with its result, opponent, color and moves; the API identifies the opening from the moves. | Essential |
 | RF09 | Chart.js charts are built from database data. | Essential |
 | RF10 | Users can list and delete the games they recorded. | Important |
 | RF11 | Forms show error and success messages. | Important |
@@ -111,7 +111,7 @@ Priorities: **Essential** (must ship), **Important** (should ship), **Desirable*
 | RN02 | Passwords have at least 8 characters. |
 | RN03 | Users can only see and delete their own games. |
 | RN04 | A game result is one of: win, loss or draw. |
-| RN05 | A recorded game cannot have a future date. |
+| RN05 | A recorded game cannot have a future date: the database sets it to the moment the game is saved. |
 | RN06 | Unauthenticated users can only reach home, story, gallery, sign-up and login. |
 | RN07 | In a game against the AI, a move is accepted only if it is legal. |
 
@@ -155,19 +155,26 @@ One user records many games (one-to-many between `usuario` and `partida`).
 | Table | Columns | Notes |
 | --- | --- | --- |
 | `usuario` | `id` (PK), `nome`, `email` (unique), `senha_hash`, `data_cadastro` | Access data |
-| `partida` | `id` (PK), `fk_usuario` (FK → `usuario.id`), `resultado`, `abertura`, `adversario`, `data_partida` | `resultado` is win, loss or draw (RN04); `adversario` tells human from AI |
+| `partida` | `id` (PK), `fk_usuario` (FK → `usuario.id`), `resultado`, `adversario`, `cor`, `lances`, `abertura`, `data_partida` | `resultado` is win, loss or draw (RN04); `adversario` tells human from AI; `cor` is the color the user played; `lances` holds the moves in SAN, separated by spaces; `abertura` is identified by the API from `lances`; `data_partida` is the date and time the game was saved |
 | `foto` | `id` (PK), `caminho`, `legenda`, `data_publicacao` | The image file stays on the server. The database only stores its path. |
 
 Table and column names are in Portuguese, as in the original specification.
 
 ## 7. Dashboard charts
 
-The dashboard fetches the user's data from the API and draws:
+The dashboard, titled "Meu desempenho no xadrez", fetches the user's games from the API and shows:
 
+- **Indicators**:
+  - Games played today, compared with yesterday.
+  - Win rate of all games, compared with the win rate of the games played until yesterday (in percentage points).
+  - Favorite opening (the most played), with its number of games and win rate.
+- **Stacked bar chart**: games per week over the last 8 weeks (weeks start on Monday), split into wins, losses and draws.
 - **Pie chart**: share of wins, losses and draws.
-- **Line chart**: number of games over time.
 - **Bar chart**: most played openings.
+- **Table**: the games, with date and time, opening, opponent, color and result, and a button to delete each one (RF10).
 - **With the AI module**: performance against human opponents compared with performance against the AI (`adversario`).
+
+Games are not typed in by hand: they reach the dashboard only by being played on the site.
 
 ## 8. Complementary module: chess against an AI
 
@@ -198,7 +205,7 @@ In every option, chess.js applies the rules, validates moves and detects the end
 | 2 | VM setup and database creation | MySQL running on the VM |
 | 3 | Sign-up, login and logout API | Working authentication |
 | 4 | Home, story and gallery pages | Public pages |
-| 5 | Game recording and Chart.js dashboard | Charts fed by the database |
+| 5 | Games API (opening identification) and Chart.js dashboard | Charts fed by the database |
 | 6 | Deployment to the VM and testing | Site online and tested |
 | 7 | Game against the AI (complementary) | Playable board |
 
@@ -216,7 +223,8 @@ Facts the story timeline is built from. The page text itself is written in Portu
 ## 11. Open decisions
 
 - Authentication mechanism: JWT or server session.
-- Authentication API adaptation and the new `partidas` API: see `site-pessoal.md`.
+- Authentication API adaptation: see `site-pessoal.md`.
+- Game page: until it exists, no game reaches the database (two players on one computer, or only against the AI).
 - AI opponent: Gemini, Stockfish or both.
 - HTTPS on the VM (R08).
 - Non-functional requirements: the original specification mentions them but does not list any.
