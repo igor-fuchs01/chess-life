@@ -144,6 +144,7 @@ The game is deleted only when it belongs to the user, and its moves are deleted 
 ## 4. Security
 
 - Passwords are hashed with bcrypt (`bcryptjs`, cost 10) and only the hash is stored.
+- The API connects to MySQL as `chess_life_user_db`, which may only run this document's statements (see "Application user" in section 7 of [`03-database.md`](03-database.md)). A route that needs another statement also needs its `GRANT`.
 - Every query uses `?` placeholders, so request values are never read as SQL.
 - Error replies and logs never include passwords, hashes or SQL.
 - **Open gap**: the routes do not check who is calling yet. A game route trusts the user id in the URL, so anyone who knows an id can read or delete that user's games. Closing this gap needs the authentication mechanism, which is still an open decision (JWT or server session, see section 11 of [`01-project.md`](01-project.md)). Once it is chosen, the id will come from the token or session instead of the URL.
