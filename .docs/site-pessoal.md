@@ -35,8 +35,7 @@ site-pessoal/
     ├── shared/             Used by every page
     │   ├── style.css       Design tokens and base styles (classic design)
     │   ├── session.js      Session in sessionStorage
-    │   ├── layout.js       Header, footer and form messages
-    │   └── api.js          apiRequest(): every API call and its error messages
+    │   └── layout.js       Header, footer and form messages
     ├── home/               Home page styles and the opening board
     ├── story/              "Minha história" page
     ├── gallery/            Photo gallery page
@@ -67,29 +66,6 @@ The site uses the "classic" direction chosen by the user: cream paper (`--paper`
 - Session: `startSession`, `getSessionUser`, `endSession` and `requireSession` in `shared/session.js`, stored in `sessionStorage` (`USER_ID`, `USER_NAME`, `USER_EMAIL`). Restricted pages call `requireSession()` in `<head>`, which sends visitors to the login page.
 - Form feedback uses `showMessage(element, text, "error" | "success")` from `shared/layout.js` (RF11).
 - Pages use relative paths for their files, so they also open straight from disk. Scripts build links from `SITE_ROOT` (`shared/session.js`). API calls only work when the site is served by `app.js`.
-
-### API calls
-
-Every call goes through `apiRequest(path, { method, body, errorMessages })` in `shared/api.js`. Pages never call `fetch` directly.
-
-- `body` is sent as JSON. The reply is parsed as JSON, and an empty reply (for example 204) returns `null`.
-- Any status outside 2xx, and any network failure, throws an `ApiError` with `status` and a `message` ready to show the user, usually through `showMessage(element, error.message, "error")`.
-- Default messages by status:
-
-| Status | Message |
-| --- | --- |
-| 0 (no connection) | Não foi possível conectar ao servidor. Verifique a sua conexão. |
-| 400 | Dados inválidos. Confira os campos e tente novamente. |
-| 401 | A sua sessão expirou. Entre novamente. |
-| 403 | Você não tem permissão para fazer isso. |
-| 404 | O recurso solicitado não foi encontrado. |
-| 409 | Este registro já existe. |
-| 500 | Erro no servidor. Tente novamente mais tarde. |
-| other | Algo deu errado. Tente novamente. |
-
-- A call can replace a default message with `errorMessages`. For example, login uses `{ 403: "E-mail ou senha inválidos." }` and sign-up uses `{ 409: "Este e-mail já está cadastrado." }`.
-- Text sent back by the server is never shown, so database errors (`sqlMessage`) do not reach the user.
-- When the API is adapted, it should reply with these statuses: 400 for invalid data, 401 without a session, 403 for wrong credentials or another user's data, 404 for a missing record, 409 for a duplicate e-mail and 500 for unexpected errors.
 - Forms are validated on the client too, for a quick reply: password of at least 8 characters (RN02), valid e-mail, matching confirmation, allowed result values (RN04) and no future date (RN05). The server must repeat these checks.
 - User-provided text goes into the page with `textContent`, never `innerHTML`.
 - Chart.js 4.4.1 is loaded from cdnjs only on the dashboard.
