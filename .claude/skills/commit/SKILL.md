@@ -1,11 +1,11 @@
 ---
 name: commit
-description: Commits finished work following this project's commit conventions - a type prefix such as "feat:" with no scope in parentheses, small single-purpose commits, no Co-Authored-By line and no push. Use after finishing any task that changed files in this repository, and whenever the user asks to commit.
+description: Commits work following this project's commit conventions - a type prefix such as "feat:" with no scope in parentheses, small single-purpose commits, no Co-Authored-By line and no push. Use only when the user asks to commit; never commit on your own after a task.
 ---
 
 # Commit
 
-After finishing any task, commit the work following the rules below.
+Commit only when the user asks for it. When they do, follow the rules below.
 
 ## Rules
 

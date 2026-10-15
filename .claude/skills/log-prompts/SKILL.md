@@ -56,4 +56,4 @@ If a new decision replaces an earlier one, do not delete the old one: append the
 
 - Never log secrets: passwords, tokens, API keys or personal data that appear in the prompt must be replaced with `[REDACTED]`.
 - The log does not replace the answer to the user and does not need to be announced in detail; mentioning in one line that it was done is enough.
-- The files in `.docs/` are versioned in git with the rest of the project and are committed by the `commit` skill.
+- The files in `.docs/` are versioned in git with the rest of the project and are committed by the `commit` skill when the user asks for a commit.
