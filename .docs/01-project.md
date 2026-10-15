@@ -134,7 +134,7 @@ In the complementary module, the server also talks to the Gemini API or to a che
 | Front-end | HTML5, CSS3, JavaScript | Page structure, style and interactivity |
 | Visualization | Chart.js | Game statistics charts |
 | Back-end | Node.js, Express | REST API, business rules, static files |
-| Database | MySQL 8.0+ | Users, games and openings; modeled in [`03-database.md`](03-database.md) |
+| Database | MySQL 8.0+ | Users, profiles, games, moves and openings; modeled in [`03-database.md`](03-database.md) |
 | Security | bcrypt; JWT or session | Password hashing and access control |
 | Infrastructure | Linux VM | Hosts the database and the application |
 | Version control | Git, GitHub | Source control |
@@ -155,8 +155,10 @@ The database is modeled in MySQL. The full model (entity-relationship diagram, d
 | Table | Columns | Notes |
 | --- | --- | --- |
 | `usuario` | `id` (PK), `nome`, `email` (unique), `senha_hash`, `data_cadastro` | Access data |
+| `perfil` | `fk_usuario` (PK, FK → `usuario.id`), `rating`, `ano_inicio`, `bio`, `fk_abertura_favorita` (FK → `abertura.id`) | Optional chess details of a user: 1:1 with `usuario`, identifying relationship |
 | `abertura` | `id` (PK), `nome`, `lances` (unique) | Known openings and the moves that define them |
-| `partida` | `id` (PK), `fk_usuario` (FK → `usuario.id`), `fk_abertura` (FK → `abertura.id`), `resultado`, `adversario`, `cor`, `lances`, `data_partida` | A game played on the site. One user plays many games; one opening appears in many games |
+| `partida` | `id` (PK), `fk_usuario` (FK → `usuario.id`), `fk_abertura` (FK → `abertura.id`), `resultado`, `adversario`, `cor`, `data_partida` | A game played on the site. One user plays many games; one opening appears in many games (non-identifying relationships) |
+| `lance` | `fk_partida` (PK, FK → `partida.id`), `numero` (PK), `san` | One move of a game: weak entity, 1:N with `partida`, identifying relationship, deleted with its game |
 
 Gallery photos are not stored in the database: they stay in `public/gallery/` and in the page's HTML.
 
