@@ -33,7 +33,7 @@ The project has to show every layer of a web application working together: front
 | Sign-up | Cadastro | Form with name, e-mail and password | Public |
 | Login | Login | Form with e-mail and password | Public |
 | Dashboard | Meu desempenho no xadrez | Indicators, Chart.js charts and the list of games played on the site | Restricted |
-| Play (complementary) | Jogar | Board for a game against the AI | Restricted |
+| Play | Jogar | Board with every rule of chess for a game between two people on the same computer; a game against the AI comes with the complementary module | Restricted |
 
 UI copy is written in Portuguese (see the language convention in `.claude/CLAUDE.md`).
 
@@ -138,7 +138,8 @@ In the complementary module, the server also talks to the Gemini API or to a che
 | Security | bcrypt; JWT or session | Password hashing and access control |
 | Infrastructure | Linux VM | Hosts the database and the application |
 | Version control | Git, GitHub | Source control |
-| Complementary | chess.js; Gemini API or Stockfish | Chess rules and AI moves |
+| Chess rules | Own JavaScript code (`play/rules.js`), board as an 8×8 matrix | Legal moves, check, special moves and game end |
+| Complementary | Gemini API or Stockfish | AI moves |
 
 ### Security
 
@@ -188,13 +189,13 @@ The user moves pieces on an on-screen board and the AI replies. Start it only af
 - **Stockfish**: an open-source chess engine that can run in the browser or on the server. Its moves are always legal, and its difficulty can be adjusted.
 - **Combined**: Stockfish picks the move and Gemini comments on the game in natural language.
 
-In every option, chess.js applies the rules, validates moves and detects the end of the game. The Gemini key lives only on the server.
+In every option, the game page's own rules (`play/rules.js`, see [`02-site-pessoal.md`](02-site-pessoal.md)) validate moves and detect the end of the game. The Gemini key lives only on the server.
 
 ### Risks
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
-| AI suggests an illegal move | Game stalls or becomes wrong | Validate with chess.js and request a new move |
+| AI suggests an illegal move | Game stalls or becomes wrong | Validate with `play/rules.js` and request a new move |
 | API usage limit reached | AI stops answering | Fall back to Stockfish |
 | API key exposed | Account misuse | Keep the key in a server environment variable |
 | Not enough time | Module left unfinished | Treat it as complementary, after the main scope |
@@ -226,7 +227,6 @@ Facts the story timeline is built from. The page text itself is written in Portu
 
 - Authentication mechanism: JWT or server session.
 - Authentication API adaptation: see [`02-site-pessoal.md`](02-site-pessoal.md).
-- Game page: until it exists, no game reaches the database (two players on one computer, or only against the AI).
 - AI opponent: Gemini, Stockfish or both.
 - HTTPS on the VM (R08).
 - Non-functional requirements: the original specification mentions them but does not list any.
@@ -236,6 +236,5 @@ Facts the story timeline is built from. The page text itself is written in Portu
 - Chart.js — https://www.chartjs.org/docs/latest/
 - Express — https://expressjs.com/
 - MySQL — https://dev.mysql.com/doc/
-- chess.js — https://github.com/jhlywa/chess.js
 - Stockfish — https://stockfishchess.org/
 - Gemini API — https://ai.google.dev/gemini-api/docs
