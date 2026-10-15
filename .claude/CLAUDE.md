@@ -5,9 +5,13 @@ Chess Life is a personal website about how chess shaped the author's life, built
 
 Stack: HTML/CSS/JS front-end, Node.js + Express REST API that also serves the static files, and MySQL on a Linux VM, with bcrypt for passwords.
 
-Full specification (requirements, business rules, data model, plan): `docs/project.md`. Read it before implementing a feature.
+Full specification (requirements, business rules, data model, plan): `.docs/project.md`. Read it before implementing a feature.
 
-There is no code and there are no build commands yet. Update this file as those choices are made.
+The application lives in `site-pessoal/`, built on SPTech's legacy web-data-viz template. Run it with `npm install` and `npm start` inside that folder. Structure, front-end conventions, the legacy API and the planned adaptations are in `.docs/site-pessoal.md`.
+
+- Do not change or create APIs (`site-pessoal/src/`, `site-pessoal/app.js`) without asking the user first.
+- Ask before changing or deleting existing front-end pages and scripts.
+- There are no automated tests or lint setup yet.
 
 ## Languages
 
@@ -85,7 +89,7 @@ When modifying code:
 
 # Documentation Rules
 
-* Do not create documentation files outside /docs.
+* Do not create documentation files outside `.docs/`.
 * Never forget to update the documentation, when necessary.
 * If no relevant documentation exists, create it.
 * Keep documentation synchronized with the current implementation.
