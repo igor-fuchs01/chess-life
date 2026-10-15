@@ -21,7 +21,7 @@ function renderHeader() {
   header.className = "site-header";
   header.innerHTML = `
     <div class="wrap">
-      <a href="${SITE_ROOT}index.html" class="logo">Chess <span>Life</span></a>
+      <a href="${SITE_ROOT}index.html" class="logo"><img src="${SITE_ROOT}shared/logo.svg" alt=""><titulo>Chess <span>Life</span></titulo></a>
       <nav class="site-nav">${navigation}</nav>
     </div>`;
 

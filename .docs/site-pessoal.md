@@ -34,6 +34,7 @@ site-pessoal/
     ├── index.html          Home page
     ├── shared/             Used by every page
     │   ├── style.css       Design tokens and base styles (classic design)
+    │   ├── logo.svg        Logo emblem (king in a green seal), used in the header and as the favicon
     │   ├── session.js      Session in sessionStorage
     │   └── layout.js       Header, footer and form messages
     ├── home/               Home page styles and the opening board
