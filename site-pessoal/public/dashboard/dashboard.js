@@ -1,20 +1,21 @@
 const RESULT_LABELS = { vitoria: "Vitória", derrota: "Derrota", empate: "Empate" };
 const OPPONENT_LABELS = { humano: "Humano", ia: "IA" };
-const MONTH_NAMES = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
-const MONTHS_IN_CHART = 6;
+const COLOR_LABELS = { brancas: "Brancas", pretas: "Pretas" };
+const WEEKS_IN_CHART = 8;
+const DAYS_IN_WEEK = 7;
 const OPENINGS_IN_CHART = 5;
+// The weekly chart is as wide as the page, so it is drawn flatter than Chart.js's default 2:1.
+const WEEKLY_CHART_ASPECT_RATIO = 3;
 const COLORS = {
   green: readCssVariable("--green"),
   brass: readCssVariable("--brass"),
   danger: readCssVariable("--danger"),
   paper: readCssVariable("--paper"),
-  muted: readCssVariable("--muted"),
-  paper2: readCssVariable("--paper-2")
+  muted: readCssVariable("--muted")
 };
 
 const currentUser = getSessionUser();
-const gameForm = document.getElementById("game-form");
-const gameMessage = document.getElementById("game-message");
+const gamesMessage = document.getElementById("games-message");
 
 let games = [];
 let charts = [];
@@ -26,10 +27,7 @@ function startDashboard() {
   Chart.defaults.font.family = readCssVariable("--font-body");
   Chart.defaults.color = COLORS.muted;
 
-  document.getElementById("greeting").textContent = `Olá, ${currentUser.name}. Estas são as suas partidas.`;
-  gameForm.date.max = getToday();
-  gameForm.date.value = getToday();
-  gameForm.addEventListener("submit", saveGame);
+  document.getElementById("greeting").textContent = `Olá, ${currentUser.name}. Este é o resumo das partidas que você jogou no site.`;
 
   loadGames();
 }
@@ -49,53 +47,12 @@ async function loadGames() {
     }
   } catch {
     games = [];
-    showMessage(gameMessage, "Não foi possível carregar as partidas.", "error");
+    showMessage(gamesMessage, "Não foi possível carregar as partidas.", "error");
   }
 
   renderStats();
   renderCharts();
   renderTable();
-}
-
-/**
- * Validates the form and sends the new game to the API.
- * @param {SubmitEvent} event
- */
-async function saveGame(event) {
-  event.preventDefault();
-
-  const game = {
-    resultado: gameForm.result.value,
-    abertura: gameForm.opening.value.trim(),
-    adversario: gameForm.opponent.value,
-    dataPartida: gameForm.date.value
-  };
-
-  const error = validateGame(game);
-  if (error) {
-    showMessage(gameMessage, error, "error");
-    return;
-  }
-
-  try {
-    const response = await fetch(`/partidas/cadastrar/${currentUser.id}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(game)
-    });
-
-    if (!response.ok) {
-      showMessage(gameMessage, "Não foi possível salvar a partida.", "error");
-      return;
-    }
-
-    gameForm.reset();
-    gameForm.date.value = getToday();
-    showMessage(gameMessage, "Partida registrada!", "success");
-    loadGames();
-  } catch {
-    showMessage(gameMessage, "Não foi possível conectar ao servidor.", "error");
-  }
 }
 
 /**
@@ -108,71 +65,123 @@ async function deleteGame(gameId) {
   }
 
   try {
-    const response = await fetch(`/partidas/deletar/${gameId}`, { method: "DELETE" });
+    const response = await fetch(`/partidas/deletar/${currentUser.id}/${gameId}`, { method: "DELETE" });
 
     if (!response.ok) {
-      showMessage(gameMessage, "Não foi possível excluir a partida.", "error");
+      showMessage(gamesMessage, "Não foi possível excluir a partida.", "error");
       return;
     }
 
     loadGames();
   } catch {
-    showMessage(gameMessage, "Não foi possível conectar ao servidor.", "error");
+    showMessage(gamesMessage, "Não foi possível conectar ao servidor.", "error");
   }
 }
 
 /**
- * Checks a game before sending it (business rules RN04 and RN05).
- * @param {object} game - The game read from the form.
- * @returns {string|null} The error message, or null when the game is valid.
- */
-function validateGame(game) {
-  if (!RESULT_LABELS[game.resultado]) {
-    return "Escolha um resultado válido.";
-  }
-  if (!game.abertura) {
-    return "Informe a abertura.";
-  }
-  if (!OPPONENT_LABELS[game.adversario]) {
-    return "Escolha um adversário válido.";
-  }
-  if (!game.dataPartida) {
-    return "Informe a data da partida.";
-  }
-  if (game.dataPartida > getToday()) {
-    return "A data da partida não pode ser futura.";
-  }
-  return null;
-}
-
-/**
- * Fills the four indicator cards at the top of the page.
+ * Fills the three indicator cards at the top of the page.
  */
 function renderStats() {
-  const results = countResults();
-  const openings = countOpenings();
+  renderGamesToday();
+  renderWinRate();
+  renderFavoriteOpening();
+}
 
-  let winRate = 0;
-  if (games.length > 0) {
-    winRate = Math.round((results.vitoria / games.length) * 100);
-  }
+/**
+ * Shows how many games were played today, compared with yesterday.
+ */
+function renderGamesToday() {
+  const todayKey = getDayKey(new Date());
+  const yesterdayKey = getDayKey(getYesterday());
+  let gamesToday = 0;
+  let gamesYesterday = 0;
 
-  let favoriteOpening = "—";
-  if (openings.length > 0) {
-    favoriteOpening = openings[0].name;
-  }
-
-  let gamesAgainstAi = 0;
   for (const game of games) {
-    if (game.adversario === "ia") {
-      gamesAgainstAi++;
+    const gameDayKey = getDayKey(new Date(game.data_partida));
+
+    if (gameDayKey === todayKey) {
+      gamesToday++;
+    }
+    if (gameDayKey === yesterdayKey) {
+      gamesYesterday++;
     }
   }
 
-  document.getElementById("stat-total").textContent = games.length;
-  document.getElementById("stat-win-rate").textContent = `${winRate}%`;
-  document.getElementById("stat-opening").textContent = favoriteOpening;
-  document.getElementById("stat-ai").textContent = gamesAgainstAi;
+  document.getElementById("games-today").textContent = gamesToday;
+  document.getElementById("games-today-change").textContent =
+    describeChange(gamesToday - gamesYesterday, "", "em relação a ontem");
+}
+
+/**
+ * Shows the win rate of all games, compared with the win rate of the games played until yesterday.
+ */
+function renderWinRate() {
+  const todayKey = getDayKey(new Date());
+  let wins = 0;
+  let gamesUntilYesterday = 0;
+  let winsUntilYesterday = 0;
+
+  for (const game of games) {
+    const isWin = game.resultado === "vitoria";
+    // Day keys are "YYYY-MM-DD", so comparing them as text compares the dates.
+    const isBeforeToday = getDayKey(new Date(game.data_partida)) < todayKey;
+
+    if (isWin) {
+      wins++;
+    }
+    if (isBeforeToday) {
+      gamesUntilYesterday++;
+    }
+    if (isWin && isBeforeToday) {
+      winsUntilYesterday++;
+    }
+  }
+
+  const winRate = calculateWinRate(wins, games.length);
+  let change = "Sem partidas até ontem";
+  if (gamesUntilYesterday > 0) {
+    const winRateUntilYesterday = calculateWinRate(winsUntilYesterday, gamesUntilYesterday);
+    change = describeChange(winRate - winRateUntilYesterday, " p.p.", "desde ontem");
+  }
+
+  document.getElementById("win-rate").textContent = `${winRate}%`;
+  document.getElementById("win-rate-change").textContent = change;
+}
+
+/**
+ * Shows the most played opening, with how many games it had and its win rate.
+ */
+function renderFavoriteOpening() {
+  const openings = countOpenings();
+  let name = "—";
+  let detail = "Jogue uma partida para descobrir";
+
+  if (openings.length > 0) {
+    const favorite = openings[0];
+    const gamesWord = favorite.total === 1 ? "partida" : "partidas";
+    name = favorite.name;
+    detail = `${favorite.total} ${gamesWord} · ${calculateWinRate(favorite.wins, favorite.total)}% de vitórias`;
+  }
+
+  document.getElementById("favorite-opening").textContent = name;
+  document.getElementById("favorite-opening-detail").textContent = detail;
+}
+
+/**
+ * Describes a change between two values, such as "▲ 2 em relação a ontem".
+ * @param {number} difference - Current value minus the previous one.
+ * @param {string} unit - Text after the number, such as " p.p.".
+ * @param {string} comparison - What the value is compared with, such as "desde ontem".
+ * @returns {string}
+ */
+function describeChange(difference, unit, comparison) {
+  if (difference > 0) {
+    return `▲ ${difference}${unit} ${comparison}`;
+  }
+  if (difference < 0) {
+    return `▼ ${-difference}${unit} ${comparison}`;
+  }
+  return `Sem variação ${comparison}`;
 }
 
 /**
@@ -184,7 +193,45 @@ function renderCharts() {
     chart.destroy();
   }
 
-  charts = [createResultsChart(), createMonthlyChart(), createOpeningsChart()];
+  charts = [createWeeklyChart(), createResultsChart(), createOpeningsChart()];
+}
+
+/**
+ * Stacked bar chart with the wins, losses and draws of each of the last weeks.
+ * @returns {Chart}
+ */
+function createWeeklyChart() {
+  const weeks = countGamesPerWeek();
+  const labels = [];
+  const wins = [];
+  const losses = [];
+  const draws = [];
+
+  for (const week of weeks) {
+    labels.push(week.label);
+    wins.push(week.vitoria);
+    losses.push(week.derrota);
+    draws.push(week.empate);
+  }
+
+  return new Chart(document.getElementById("weekly-chart"), {
+    type: "bar",
+    data: {
+      labels: labels,
+      datasets: [
+        { label: "Vitórias", data: wins, backgroundColor: COLORS.green },
+        { label: "Derrotas", data: losses, backgroundColor: COLORS.danger },
+        { label: "Empates", data: draws, backgroundColor: COLORS.brass }
+      ]
+    },
+    options: {
+      aspectRatio: WEEKLY_CHART_ASPECT_RATIO,
+      scales: {
+        x: { stacked: true },
+        y: { stacked: true, beginAtZero: true, ticks: { precision: 0 } }
+      }
+    }
+  });
 }
 
 /**
@@ -203,39 +250,6 @@ function createResultsChart() {
         backgroundColor: [COLORS.green, COLORS.danger, COLORS.brass],
         borderColor: COLORS.paper
       }]
-    }
-  });
-}
-
-/**
- * Line chart with the number of games in each of the last months.
- * @returns {Chart}
- */
-function createMonthlyChart() {
-  const months = countGamesPerMonth();
-  const labels = [];
-  const totals = [];
-
-  for (const month of months) {
-    labels.push(month.label);
-    totals.push(month.total);
-  }
-
-  return new Chart(document.getElementById("monthly-chart"), {
-    type: "line",
-    data: {
-      labels: labels,
-      datasets: [{
-        data: totals,
-        borderColor: COLORS.green,
-        backgroundColor: COLORS.paper2,
-        fill: true,
-        tension: 0.35
-      }]
-    },
-    options: {
-      plugins: { legend: { display: false } },
-      scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
     }
   });
 }
@@ -285,7 +299,7 @@ function renderTable() {
 }
 
 /**
- * Builds one table row: date, opening, opponent, result tag and delete button.
+ * Builds one table row: date, opening, opponent, color, result tag and delete button.
  * @param {object} game
  * @returns {HTMLTableRowElement}
  */
@@ -295,6 +309,7 @@ function createGameRow(game) {
   row.appendChild(createCell(formatDate(game.data_partida)));
   row.appendChild(createCell(game.abertura));
   row.appendChild(createCell(OPPONENT_LABELS[game.adversario]));
+  row.appendChild(createCell(COLOR_LABELS[game.cor]));
 
   const resultTag = document.createElement("span");
   resultTag.className = `tag ${game.resultado}`;
@@ -315,7 +330,7 @@ function createGameRow(game) {
 }
 
 /**
- * Creates a table cell. Uses textContent, so text typed by users is never read as HTML.
+ * Creates a table cell. Uses textContent, so text from the database is never read as HTML.
  * @param {string} text
  * @returns {HTMLTableCellElement}
  */
@@ -340,19 +355,23 @@ function countResults() {
 }
 
 /**
- * Counts the games of each opening, from the most to the least played.
- * @returns {{name: string, total: number}[]}
+ * Counts the games and wins of each opening, from the most to the least played.
+ * @returns {{name: string, total: number, wins: number}[]}
  */
 function countOpenings() {
   const openings = [];
 
   for (const game of games) {
-    const opening = openings.find((item) => item.name === game.abertura);
+    let opening = openings.find((item) => item.name === game.abertura);
 
-    if (opening) {
-      opening.total++;
-    } else {
-      openings.push({ name: game.abertura, total: 1 });
+    if (!opening) {
+      opening = { name: game.abertura, total: 0, wins: 0 };
+      openings.push(opening);
+    }
+
+    opening.total++;
+    if (game.resultado === "vitoria") {
+      opening.wins++;
     }
   }
 
@@ -361,42 +380,77 @@ function countOpenings() {
 }
 
 /**
- * Counts the games of each of the last MONTHS_IN_CHART months, from the oldest month to the current one.
- * @returns {{key: string, label: string, total: number}[]} key is "YYYY-MM", as in the start of game.data_partida.
+ * Counts the results of each of the last WEEKS_IN_CHART weeks, from the oldest week to the current one.
+ * Weeks start on Monday and are labeled with that day, as "DD/MM".
+ * @returns {{start: number, label: string, vitoria: number, derrota: number, empate: number}[]}
  */
-function countGamesPerMonth() {
-  const months = [];
-  const date = new Date();
-  // Day 1 avoids skipping a month when going back from a 31st.
-  date.setDate(1);
+function countGamesPerWeek() {
+  const weeks = [];
+  const weekStart = getWeekStart(new Date());
 
-  for (let i = 0; i < MONTHS_IN_CHART; i++) {
-    const monthNumber = String(date.getMonth() + 1).padStart(2, "0");
-    months.unshift({ key: `${date.getFullYear()}-${monthNumber}`, label: MONTH_NAMES[date.getMonth()], total: 0 });
-    date.setMonth(date.getMonth() - 1);
+  for (let i = 0; i < WEEKS_IN_CHART; i++) {
+    const label = weekStart.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+    weeks.unshift({ start: weekStart.getTime(), label: label, vitoria: 0, derrota: 0, empate: 0 });
+    weekStart.setDate(weekStart.getDate() - DAYS_IN_WEEK);
   }
 
   for (const game of games) {
-    const gameMonth = game.data_partida.slice(0, 7);
-    const month = months.find((item) => item.key === gameMonth);
+    const gameWeekStart = getWeekStart(new Date(game.data_partida)).getTime();
+    const week = weeks.find((item) => item.start === gameWeekStart);
 
-    if (month) {
-      month.total++;
+    if (week) {
+      week[game.resultado]++;
     }
   }
 
-  return months;
+  return weeks;
 }
 
 /**
- * Returns today's date in the user's time zone.
- * @returns {string} Date as "YYYY-MM-DD", the format of date inputs.
+ * Returns the Monday at midnight of the week a date is in.
+ * @param {Date} date
+ * @returns {Date}
  */
-function getToday() {
-  const today = new Date();
-  const month = String(today.getMonth() + 1).padStart(2, "0");
-  const day = String(today.getDate()).padStart(2, "0");
-  return `${today.getFullYear()}-${month}-${day}`;
+function getWeekStart(date) {
+  const weekStart = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  // getDay() counts from Sunday (0); this counts from Monday instead.
+  const daysSinceMonday = (weekStart.getDay() + 6) % DAYS_IN_WEEK;
+  weekStart.setDate(weekStart.getDate() - daysSinceMonday);
+  return weekStart;
+}
+
+/**
+ * Returns the current moment one day earlier.
+ * @returns {Date}
+ */
+function getYesterday() {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  return yesterday;
+}
+
+/**
+ * Turns a date into its day in the user's time zone, so games can be grouped by day.
+ * @param {Date} date
+ * @returns {string} Day as "YYYY-MM-DD".
+ */
+function getDayKey(date) {
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${date.getFullYear()}-${month}-${day}`;
+}
+
+/**
+ * Calculates the share of wins, rounded to a whole percentage.
+ * @param {number} wins
+ * @param {number} total - Number of games; 0 gives a rate of 0.
+ * @returns {number}
+ */
+function calculateWinRate(wins, total) {
+  if (total === 0) {
+    return 0;
+  }
+  return Number(((wins / total) * 100).toFixed(2));
 }
 
 /**
@@ -409,13 +463,12 @@ function readCssVariable(name) {
 }
 
 /**
- * Turns a date from the API into the Brazilian format.
- * @param {string} isoDate - Date starting with "YYYY-MM-DD".
- * @returns {string} Date as "DD/MM/YYYY".
+ * Turns a date and time from the API into the Brazilian format, in the user's time zone.
+ * @param {string} isoDate - Date as sent by the API, such as "2026-10-15T18:30:00.000Z".
+ * @returns {string} Date as "DD/MM/YYYY, HH:MM".
  */
 function formatDate(isoDate) {
-  const [year, month, day] = isoDate.slice(0, 10).split("-");
-  return `${day}/${month}/${year}`;
+  return new Date(isoDate).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
 }
 
 startDashboard();

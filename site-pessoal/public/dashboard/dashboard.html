@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard | Chess Life</title>
+  <title>Meu desempenho | Chess Life</title>
   <link rel="icon" type="image/svg+xml" href="../shared/logo.svg">
   <link rel="stylesheet" href="../shared/style.css">
   <link rel="stylesheet" href="dashboard.css">
@@ -18,56 +18,35 @@
       <div class="wrap">
         <div class="section-title">
           <div class="ornament">♛</div>
-          <h1>Meu dashboard</h1>
+          <h1>Meu desempenho no xadrez</h1>
           <p id="greeting"></p>
         </div>
 
         <div class="stats">
-          <div class="stat"><b id="stat-total">0</b>partidas</div>
-          <div class="stat"><b id="stat-win-rate">0%</b>vitórias</div>
-          <div class="stat"><b id="stat-opening">—</b>abertura favorita</div>
-          <div class="stat"><b id="stat-ai">0</b>contra a IA</div>
+          <div class="stat">
+            <b id="games-today">0</b>partidas hoje
+            <span class="change" id="games-today-change"></span>
+          </div>
+          <div class="stat">
+            <b id="win-rate">0%</b>de vitórias no total
+            <span class="change" id="win-rate-change"></span>
+          </div>
+          <div class="stat">
+            <b id="favorite-opening">—</b>abertura favorita
+            <span class="change" id="favorite-opening-detail"></span>
+          </div>
         </div>
 
         <div class="panels">
+          <div class="panel wide"><h2>Partidas por semana</h2><canvas id="weekly-chart"></canvas></div>
           <div class="panel"><h2>Resultados</h2><canvas id="results-chart"></canvas></div>
-          <div class="panel"><h2>Partidas por mês</h2><canvas id="monthly-chart"></canvas></div>
           <div class="panel"><h2>Aberturas mais jogadas</h2><canvas id="openings-chart"></canvas></div>
-          <div class="panel">
-            <h2>Registrar partida</h2>
-            <form id="game-form" class="game-form" novalidate>
-              <div>
-                <label for="result">Resultado</label>
-                <select id="result" name="result">
-                  <option value="vitoria">Vitória</option>
-                  <option value="derrota">Derrota</option>
-                  <option value="empate">Empate</option>
-                </select>
-              </div>
-              <div>
-                <label for="opening">Abertura</label>
-                <input id="opening" name="opening" placeholder="Italiana" maxlength="60">
-              </div>
-              <div>
-                <label for="opponent">Adversário</label>
-                <select id="opponent" name="opponent">
-                  <option value="humano">Humano</option>
-                  <option value="ia">IA</option>
-                </select>
-              </div>
-              <div>
-                <label for="date">Data</label>
-                <input id="date" name="date" type="date">
-              </div>
-              <button class="btn" type="submit">Salvar</button>
-            </form>
-            <div class="message" id="game-message" role="alert"></div>
-          </div>
           <div class="panel wide">
             <h2>Minhas partidas</h2>
-            <p class="empty" id="games-empty">Nenhuma partida registrada ainda.</p>
+            <div class="message" id="games-message" role="alert"></div>
+            <p class="empty" id="games-empty">Nenhuma partida jogada ainda. As partidas que você jogar no site aparecem aqui.</p>
             <table class="games" id="games-table" hidden>
-              <thead><tr><th>Data</th><th>Abertura</th><th>Adversário</th><th>Resultado</th><th></th></tr></thead>
+              <thead><tr><th>Data</th><th>Abertura</th><th>Adversário</th><th>Cor</th><th>Resultado</th><th></th></tr></thead>
               <tbody id="games-body"></tbody>
             </table>
           </div>

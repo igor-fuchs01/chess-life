@@ -9,7 +9,7 @@
 /* Indicators */
 .stats {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   margin-bottom: 24px;
 }
@@ -23,6 +23,12 @@
   font-family: var(--font-heading);
   font-size: 34px;
   overflow-wrap: anywhere;
+}
+.change {
+  display: block;
+  margin-top: 8px;
+  color: var(--on-green-muted);
+  font-size: 14px;
 }
 
 /* Panels */
@@ -43,17 +49,6 @@
 }
 .panel.wide {
   grid-column: 1 / -1;
-}
-
-/* Game form */
-.game-form {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr) auto;
-  align-items: end;
-  gap: 10px;
-}
-.game-form label {
-  margin-top: 0;
 }
 
 /* Games table */
@@ -108,20 +103,17 @@
 }
 
 @media (max-width: 800px) {
-  .stats {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  .stats,
   .panels {
     grid-template-columns: 1fr;
-  }
-  .game-form {
-    grid-template-columns: 1fr 1fr;
   }
   .games {
     font-size: 14px;
   }
   .games th:nth-child(3),
-  .games td:nth-child(3) {
+  .games td:nth-child(3),
+  .games th:nth-child(4),
+  .games td:nth-child(4) {
     display: none;
   }
 }
