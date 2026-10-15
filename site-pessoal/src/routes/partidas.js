@@ -1,18 +1,10 @@
-var express = require("express");
-var router = express.Router();
+const express = require("express");
+const partidaController = require("../controllers/partidaController");
 
-var partidaController = require("../controllers/partidaController");
+const router = express.Router();
 
-router.get("/listar/:idUsuario", function (req, res) {
-    partidaController.listGames(req, res);
-});
-
-router.post("/cadastrar/:idUsuario", function (req, res) {
-    partidaController.registerGame(req, res);
-});
-
-router.delete("/deletar/:idUsuario/:idPartida", function (req, res) {
-    partidaController.deleteGame(req, res);
-});
+router.get("/listar/:idUsuario", partidaController.listGames);
+router.post("/cadastrar/:idUsuario", partidaController.registerGame);
+router.delete("/deletar/:idUsuario/:idPartida", partidaController.deleteGame);
 
 module.exports = router;

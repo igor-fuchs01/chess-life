@@ -1,97 +1,92 @@
-var usuarioModel = require("../models/usuarioModel");
-var aquarioModel = require("../models/aquarioModel");
+const bcrypt = require("bcryptjs");
+const usuarioModel = require("../models/usuarioModel");
 
-function autenticar(req, res) {
-    var email = req.body.emailServer;
-    var senha = req.body.senhaServer;
+const MIN_PASSWORD_LENGTH = 8;
+const MAX_NAME_LENGTH = 80;
+const MAX_EMAIL_LENGTH = 120;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// bcrypt cost factor: each step doubles the time to hash, which slows down password guessing.
+const BCRYPT_COST = 10;
+const DUPLICATE_ENTRY_CODE = "ER_DUP_ENTRY";
 
-    if (email == undefined) {
-        res.status(400).send("Seu email está undefined!");
-    } else if (senha == undefined) {
-        res.status(400).send("Sua senha está indefinida!");
-    } else {
+/**
+ * Creates an account (RF01, RF02). Replies 201 with { id }, 400 with the validation error,
+ * or 409 when the e-mail is already registered. Error messages are plain text in Portuguese.
+ */
+async function registerUser(req, res) {
+    const name = String(req.body.nomeServer || "").trim();
+    const email = String(req.body.emailServer || "").trim();
+    const password = String(req.body.senhaServer || "");
 
-        usuarioModel.autenticar(email, senha)
-            .then(
-                function (resultadoAutenticar) {
-                    console.log(`\nResultados encontrados: ${resultadoAutenticar.length}`);
-                    console.log(`Resultados: ${JSON.stringify(resultadoAutenticar)}`); // transforma JSON em String
-
-                    if (resultadoAutenticar.length == 1) {
-                        console.log(resultadoAutenticar);
-
-                        aquarioModel.buscarAquariosPorEmpresa(resultadoAutenticar[0].empresaId)
-                            .then((resultadoAquarios) => {
-                                if (resultadoAquarios.length > 0) {
-                                    res.json({
-                                        id: resultadoAutenticar[0].id,
-                                        email: resultadoAutenticar[0].email,
-                                        nome: resultadoAutenticar[0].nome,
-                                        senha: resultadoAutenticar[0].senha,
-                                        aquarios: resultadoAquarios
-                                    });
-                                } else {
-                                    res.status(204).json({ aquarios: [] });
-                                }
-                            })
-                    } else if (resultadoAutenticar.length == 0) {
-                        res.status(403).send("Email e/ou senha inválido(s)");
-                    } else {
-                        res.status(403).send("Mais de um usuário com o mesmo login e senha!");
-                    }
-                }
-            ).catch(
-                function (erro) {
-                    console.log(erro);
-                    console.log("\nHouve um erro ao realizar o login! Erro: ", erro.sqlMessage);
-                    res.status(500).json(erro.sqlMessage);
-                }
-            );
+    const error = validateNewUser(name, email, password);
+    if (error) {
+        res.status(400).send(error);
+        return;
     }
 
+    try {
+        const passwordHash = await bcrypt.hash(password, BCRYPT_COST);
+        const result = await usuarioModel.createUser(name, email, passwordHash);
+        res.status(201).json({ id: result.insertId });
+    } catch (error) {
+        if (error.code === DUPLICATE_ENTRY_CODE) {
+            res.status(409).send("Este e-mail já está cadastrado.");
+            return;
+        }
+        console.error("Error registering a user:", error.message);
+        res.status(500).send("Não foi possível criar a conta.");
+    }
 }
 
-function cadastrar(req, res) {
-    // Crie uma variável que vá recuperar os valores do arquivo cadastro.html
-    var nome = req.body.nomeServer;
-    var email = req.body.emailServer;
-    var cpf = req.body.cpfServer;
-    var senha = req.body.senhaServer;
-    var fkEmpresa = req.body.idEmpresaVincularServer;
+/**
+ * Checks an e-mail and password (RF03). Replies 200 with { id, nome, email }, 400 when a field is missing,
+ * or 403 when they do not match. The reply never tells which of the two was wrong.
+ */
+async function authenticateUser(req, res) {
+    const email = String(req.body.emailServer || "").trim();
+    const password = String(req.body.senhaServer || "");
 
-    // Faça as validações dos valores
-    if (nome == undefined) {
-        res.status(400).send("Seu nome está undefined!");
-    } else if (email == undefined) {
-        res.status(400).send("Seu email está undefined!");
-    } else if (senha == undefined) {
-        res.status(400).send("Sua senha está undefined!");
-    } else if (cpf == undefined) {
-        res.status(400).send("Sua senha está undefined!");
-    } else if (fkEmpresa == undefined) {
-        res.status(400).send("Sua empresa a vincular está undefined!");
-    } else {
-
-        // Passe os valores como parâmetro e vá para o arquivo usuarioModel.js
-        usuarioModel.cadastrar(nome, email, cpf, senha, fkEmpresa)
-            .then(
-                function (resultado) {
-                    res.json(resultado);
-                }
-            ).catch(
-                function (erro) {
-                    console.log(erro);
-                    console.log(
-                        "\nHouve um erro ao realizar o cadastro! Erro: ",
-                        erro.sqlMessage
-                    );
-                    res.status(500).json(erro.sqlMessage);
-                }
-            );
+    if (!email || !password) {
+        res.status(400).send("Informe o e-mail e a senha.");
+        return;
     }
+
+    try {
+        const user = await usuarioModel.findUserByEmail(email);
+        const isPasswordRight = user !== undefined && await bcrypt.compare(password, user.senha_hash);
+
+        if (!isPasswordRight) {
+            res.status(403).send("E-mail e/ou senha inválidos.");
+            return;
+        }
+        res.status(200).json({ id: user.id, nome: user.nome, email: user.email });
+    } catch (error) {
+        console.error("Error authenticating a user:", error.message);
+        res.status(500).send("Não foi possível entrar.");
+    }
+}
+
+/**
+ * Checks the sign-up fields against the business rules and the column sizes.
+ * @returns {string|null} The error message, or null when every field is valid.
+ */
+function validateNewUser(name, email, password) {
+    if (!name || !email || !password) {
+        return "Preencha o nome, o e-mail e a senha.";
+    }
+    if (name.length > MAX_NAME_LENGTH) {
+        return `O nome pode ter no máximo ${MAX_NAME_LENGTH} caracteres.`;
+    }
+    if (email.length > MAX_EMAIL_LENGTH || !EMAIL_PATTERN.test(email)) {
+        return "Informe um e-mail válido.";
+    }
+    if (password.length < MIN_PASSWORD_LENGTH) {
+        return `A senha precisa ter no mínimo ${MIN_PASSWORD_LENGTH} caracteres.`;
+    }
+    return null;
 }
 
 module.exports = {
-    autenticar,
-    cadastrar
-}
+    registerUser,
+    authenticateUser
+};

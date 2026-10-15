@@ -1,5 +1,6 @@
 -- Chess Life — physical model, part 2: the opening list.
--- Run it after 01-schema.sql. One row per entry of OPENINGS in src/models/openingBook.js, plus the fallback.
+-- Run it after 01-schema.sql. This table is the API's opening list: to recognize a new opening, add a row here.
+-- "Abertura irregular" (empty lances) is the opening of games that match no other row.
 -- INSERT IGNORE skips openings already in the table (same lances), so the script can run again.
 
 USE chess_life;
