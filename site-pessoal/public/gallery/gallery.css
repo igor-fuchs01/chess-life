@@ -1,0 +1,23 @@
+.profile { display: flex; align-items: center; gap: 40px; max-width: 760px; margin: 0 auto 40px; padding-bottom: 32px; border-bottom: 1px solid var(--line); }
+.avatar { width: 120px; height: 120px; flex-shrink: 0; border-radius: 50%; background: var(--green); color: var(--paper); display: flex; align-items: center; justify-content: center; font-size: 56px; border: 4px solid var(--paper); outline: 2px solid var(--brass); }
+.profile h1 { font-size: 28px; }
+.counts { display: flex; gap: 28px; margin: 8px 0; color: var(--muted); }
+.counts b { color: var(--ink); }
+
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; max-width: 760px; margin: 0 auto; }
+.photo { aspect-ratio: 1; position: relative; display: flex; align-items: center; justify-content: center; font-size: 64px; color: rgba(244, 239, 230, .85); overflow: hidden; }
+.photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.photo figcaption { position: absolute; inset: 0; background: rgba(31, 26, 20, .65); color: var(--paper); display: flex; align-items: center; justify-content: center; text-align: center; padding: 16px; font-size: 15px; opacity: 0; transition: opacity .2s; }
+.photo:hover figcaption { opacity: 1; }
+.tone-1 { background: #2f4a3a; }
+.tone-2 { background: #b08d57; }
+.tone-3 { background: #6b5a45; }
+.tone-4 { background: #3e5c4a; }
+.tone-5 { background: #8a6d43; }
+.tone-6 { background: #1f1a14; }
+
+@media (max-width: 800px) {
+  .profile { flex-direction: column; text-align: center; gap: 20px; }
+  .counts { justify-content: center; }
+  .photo { font-size: 40px; }
+}
