@@ -1,4 +1,17 @@
-.auth { max-width: 460px; margin: 0 auto; }
-.auth .switch { text-align: center; margin-top: 18px; font-size: 15px; color: var(--muted); }
-.auth .switch a { color: var(--green); font-weight: 600; }
-.auth .switch a:hover { color: var(--brass); }
+.auth {
+  max-width: 460px;
+  margin: 0 auto;
+}
+.switch {
+  margin-top: 18px;
+  color: var(--muted);
+  font-size: 15px;
+  text-align: center;
+}
+.switch a {
+  color: var(--green);
+  font-weight: 600;
+}
+.switch a:hover {
+  color: var(--brass);
+}
