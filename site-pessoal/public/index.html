@@ -1,81 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>AquaTech | Página Inicial</title>
-
-    <script src="./js/sessao.js"></script>
-
-    <link rel="stylesheet" href="./css/estilo.css">
-    <link rel="icon" href="./assets/icon/favicon2.ico">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chess Life</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/shared/style.css">
+  <link rel="stylesheet" href="/home/home.css">
 </head>
-
 <body>
-    <div class="header">
-      <div class="container">
-        <h1 class="titulo">AquaTech</h1>
-        <ul class="navbar">
-          <li class="agora">
-            <a href="#">Inicial</a>
-          </li>
-          <li>
-            <a href="simulador.html">Simulador</a>
-          </li>
-          <li>|</li>
-          <li>
-            <a href="login.html">Login</a>
-          </li>
-          <li>
-            <a href="cadastro.html">Cadastro</a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  
-    <div class="banner">
-      <div class="container">
-        <p>Preservando <span>hoje</span> para existirem <span>amanhã</span>.</p>
-      </div>
-    </div>
-  
-    <div class="social">
-      <div class="container">
-        <div class="boxes">
-          <div class="box">
-            <img src="assets/imgs/planet-earth_color.png">
-            <h4>Missão</h4>
-            <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Et, quas cupiditate asperiores provident magnam
-              vitae illum iusto fugiat atque deleniti nulla sed iure suscipit, laborum, aliquid accusantium cum dicta
-              minima.</p>
-          </div>
-          <div class="box">
-            <img src="assets/imgs/lightbulb_color.png">
-            <h4>Visão</h4>
-            <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Et, quas cupiditate asperiores provident magnam
-              vitae illum iusto fugiat atque deleniti nulla sed iure suscipit, laborum, aliquid accusantium cum dicta
-              minima.</p>
-          </div>
-          <div class="box">
-            <img src="assets/imgs/growth_color.png">
-            <h4>Valores</h4>
-            <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Et, quas cupiditate asperiores provident magnam
-              vitae illum iusto fugiat atque deleniti nulla sed iure suscipit, laborum, aliquid accusantium cum dicta
-              minima.</p>
-          </div>
+  <header id="site-header"></header>
+
+  <main>
+    <div class="wrap hero">
+      <div>
+        <div class="eyebrow">Uma história contada em 64 casas</div>
+        <h1>Como o xadrez <em>mudou</em> a minha vida</h1>
+        <p>Da seleção na quarta série à medalha da OBMEP: as partidas, as aberturas e as pessoas que moldaram o meu jeito de pensar.</p>
+        <div class="actions">
+          <a href="/story/story.html" class="btn">Ler a história</a>
+          <a href="/auth/signup.html" class="btn ghost">Registrar partidas</a>
         </div>
       </div>
+      <div class="board" id="board" aria-label="Tabuleiro na posição do Dragão Acelerado"></div>
     </div>
-  
-    <div class="footer">
-      <div class="container">
-        <h4>Feito com amor por aluno &hearts; SPTech &copy; 2023-2026</h4>
-      </div>
-    </div>
-  </body>
 
+    <section class="alt">
+      <div class="wrap">
+        <div class="section-title">
+          <div class="ornament">♜ ♞ ♝</div>
+          <h2>O que você encontra aqui</h2>
+        </div>
+        <div class="features">
+          <a href="/story/story.html" class="feature">
+            <span class="feature-icon">♔</span>
+            <h3>Minha história</h3>
+            <p>A linha do tempo de como o xadrez começou e o que ele mudou na minha vida.</p>
+          </a>
+          <a href="/gallery/gallery.html" class="feature">
+            <span class="feature-icon">♕</span>
+            <h3>Galeria</h3>
+            <p>Fotos de torneios, medalhas e muitas horas de estudo.</p>
+          </a>
+          <a href="/dashboard/dashboard.html" class="feature">
+            <span class="feature-icon">♖</span>
+            <h3>Dashboard</h3>
+            <p>Crie uma conta, registre as suas partidas e acompanhe a sua evolução em gráficos.</p>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="/shared/session.js"></script>
+  <script src="/shared/layout.js"></script>
+  <script src="/home/home.js"></script>
+</body>
 </html>
