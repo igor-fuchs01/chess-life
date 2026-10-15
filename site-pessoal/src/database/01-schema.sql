@@ -26,7 +26,8 @@ CREATE TABLE IF NOT EXISTS abertura (
     CONSTRAINT uq_abertura_lances UNIQUE (lances)
 ) ;
 
--- Optional chess details of a user: 1:1 with usuario, identifying relationship (the FK is the PK).
+-- Optional chess details of a user: 1:1 with usuario, non-identifying relationship.
+-- The unique fk_usuario is what limits each user to one profile.
 CREATE TABLE IF NOT EXISTS perfil (
     id INT PRIMARY KEY AUTO_INCREMENT,
     rating INT NULL,
@@ -34,6 +35,7 @@ CREATE TABLE IF NOT EXISTS perfil (
     bio VARCHAR(280) NULL,
     fk_usuario INT NOT NULL,
     fk_abertura_favorita INT NULL,
+    CONSTRAINT uq_perfil_usuario UNIQUE (fk_usuario),
     CONSTRAINT fk_perfil_usuario FOREIGN KEY (fk_usuario) REFERENCES usuario (id),
     CONSTRAINT fk_perfil_abertura FOREIGN KEY (fk_abertura_favorita) REFERENCES abertura (id)
 ) ;
@@ -52,7 +54,7 @@ CREATE TABLE IF NOT EXISTS partida (
     CONSTRAINT fk_partida_abertura FOREIGN KEY (fk_abertura) REFERENCES abertura (id),
     CONSTRAINT chk_partida_resultado CHECK (resultado IN ('vitoria', 'derrota', 'empate')),
     CONSTRAINT chk_partida_adversario CHECK (adversario IN ('humano', 'ia')),
-    CONSTRAINT chk_partida_cor CHECK (cor IN ('brancas', 'pretas')),
+    CONSTRAINT chk_partida_cor CHECK (cor IN ('brancas', 'pretas'))
 ) ;
 
 -- One move of a game: weak entity, 1:N with partida, identifying relationship.

@@ -156,7 +156,7 @@ The database is modeled in MySQL. The full model (entity-relationship diagram, d
 | Table | Columns | Notes |
 | --- | --- | --- |
 | `usuario` | `id` (PK), `nome`, `email` (unique), `senha_hash`, `data_cadastro` | Access data |
-| `perfil` | `fk_usuario` (PK, FK → `usuario.id`), `rating`, `ano_inicio`, `bio`, `fk_abertura_favorita` (FK → `abertura.id`) | Optional chess details of a user: 1:1 with `usuario`, identifying relationship |
+| `perfil` | `id` (PK), `fk_usuario` (FK → `usuario.id`, unique), `rating`, `ano_inicio`, `bio`, `fk_abertura_favorita` (FK → `abertura.id`) | Optional chess details of a user: 1:1 with `usuario`, non-identifying relationship |
 | `abertura` | `id` (PK), `nome`, `lances` (unique) | Known openings and the moves that define them |
 | `partida` | `id` (PK), `fk_usuario` (FK → `usuario.id`), `fk_abertura` (FK → `abertura.id`), `resultado`, `adversario`, `cor`, `data_partida` | A game played on the site. One user plays many games; one opening appears in many games (non-identifying relationships) |
 | `lance` | `fk_partida` (PK, FK → `partida.id`), `numero` (PK), `san` | One move of a game: weak entity, 1:N with `partida`, identifying relationship, deleted with its game |

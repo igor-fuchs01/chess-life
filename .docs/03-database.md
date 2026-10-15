@@ -22,7 +22,7 @@ Out of the database:
 | Entity | Table | Kind | Description |
 | --- | --- | --- | --- |
 | User | `usuario` | Strong | A person with an account, who plays games on the site |
-| Profile | `perfil` | Weak (depends on `usuario`) | Optional chess details of one user |
+| Profile | `perfil` | Strong (own `id`) | Optional chess details of one user |
 | Opening | `abertura` | Strong | A known chess opening, defined by its first moves |
 | Game | `partida` | Strong | A game a user finished on the site |
 | Move | `lance` | Weak (depends on `partida`) | One move of a game, at a given position |
@@ -36,7 +36,7 @@ The model follows the MySQL Workbench convention:
 
 | Relationship | Cardinality | Kind | Foreign key | Why |
 | --- | --- | --- | --- | --- |
-| `usuario` → `perfil` | 1:1 (one user has zero or one profile) | Identifying | `perfil.fk_usuario`, which is also the PK | Using the FK as the PK is what limits each user to one profile |
+| `usuario` → `perfil` | 1:1 (one user has zero or one profile) | Non-identifying | `perfil.fk_usuario`, an ordinary column with `UNIQUE` | The profile has its own `id`; the unique FK is what limits each user to one profile |
 | `partida` → `lance` | 1:N (one game has one or many moves) | Identifying | `lance.fk_partida`, part of the PK `(fk_partida, numero)` | A move is only "move 12 of game 40": it has no meaning without its game |
 | `usuario` → `partida` | 1:N (one user plays zero or many games) | Non-identifying | `partida.fk_usuario` | A game has its own `id`, used by the API to delete it |
 | `abertura` → `partida` | 1:N (one opening appears in zero or many games) | Non-identifying | `partida.fk_abertura` | Each game has exactly one opening. A game that matches no known opening points to the "Abertura irregular" row |
@@ -46,7 +46,7 @@ In the diagram, a solid line is an identifying relationship and a dashed line is
 
 ```mermaid
 erDiagram
-    usuario ||--o| perfil : "tem"
+    usuario ||..o| perfil : "tem"
     abertura |o..o{ perfil : "favorita de"
     usuario ||..o{ partida : "joga"
     abertura ||..o{ partida : "identificada em"
@@ -60,7 +60,8 @@ erDiagram
         DATETIME data_cadastro
     }
     perfil {
-        INT fk_usuario PK, FK
+        INT id PK
+        INT fk_usuario FK, UK
         INT rating
         YEAR ano_inicio
         VARCHAR bio
@@ -103,10 +104,11 @@ erDiagram
 
 | Column | Type | Null | Key / default | Description |
 | --- | --- | --- | --- | --- |
-| `fk_usuario` | `INT` | No | PK, FK → `usuario.id` | The profile's owner. As the PK, it allows at most one profile per user |
+| `id` | `INT` | No | PK, `AUTO_INCREMENT` | Profile identifier |
 | `rating` | `INT` | Yes | | The user's chess rating, such as 1500 |
 | `ano_inicio` | `YEAR` | Yes | | The year the user started playing chess |
 | `bio` | `VARCHAR(280)` | Yes | | Short text about the user |
+| `fk_usuario` | `INT` | No | FK → `usuario.id`, `UNIQUE` | The profile's owner. Being unique, it allows at most one profile per user |
 | `fk_abertura_favorita` | `INT` | Yes | FK → `abertura.id` | The opening the user names as their favorite |
 
 - The profile is optional: a user may have no row in `perfil`.
@@ -136,7 +138,6 @@ erDiagram
 | `cor` | `VARCHAR(7)` | No | `CHECK` | `brancas` or `pretas`, the color the user played |
 | `data_partida` | `DATETIME` | No | `CURRENT_TIMESTAMP` | When the game was saved. Set by the database, so it is never in the future (RN05) |
 
-- Index `(fk_usuario, data_partida)`: the dashboard lists one user's games ordered by date.
 - The moves are in `lance`, not in a column of `partida`, so each move is stored once (first normal form).
 
 ### `lance`
@@ -160,7 +161,7 @@ erDiagram
 | RN04 — result is win, loss or draw | `CHECK` on `partida.resultado` |
 | RN05 — no future game date | `partida.data_partida` defaults to `CURRENT_TIMESTAMP` and the API never sends it |
 | Every game has a user and an opening | `NOT NULL` foreign keys |
-| A user has at most one profile | `perfil.fk_usuario` is the primary key |
+| A user has at most one profile | `UNIQUE` on `perfil.fk_usuario` (`uq_perfil_usuario`) |
 | A position holds one move per game | Primary key `(fk_partida, numero)` on `lance` |
 | Move positions start at 1 | `CHECK (numero >= 1)` on `lance` |
 
@@ -174,10 +175,10 @@ Delete behavior of the foreign keys:
 ## 5. Naming conventions
 
 - Table and column names are in Portuguese, lowercase, in `snake_case`, as in the original specification. Tables are singular (`partida`, not `partidas`).
-- The primary key of a strong entity is `id`. A weak entity's primary key is made of its parent's foreign key, plus a column that tells its rows apart when the parent has many (`lance`: `fk_partida, numero`). In a 1:1 relationship, the foreign key alone is the primary key (`perfil.fk_usuario`).
+- The primary key of a strong entity is `id`. A weak entity's primary key is made of its parent's foreign key, plus a column that tells its rows apart when the parent has many (`lance`: `fk_partida, numero`). A 1:1 relationship is a unique foreign key (`perfil.fk_usuario`).
 - A foreign key is `fk_<table>`, such as `fk_usuario`. When the column has a role of its own, the role follows the table name, such as `fk_abertura_favorita`.
 - Fixed value lists (`resultado`, `adversario`, `cor`) are `VARCHAR` with a `CHECK`, without accents, matching the values the API and the front-end already use.
-- Tables use the `utf8mb4` character set, so names with accents ("Grünfeld", "Índia") are stored correctly.
+- Tables use the `utf8mb4` character set, so names with accents ("Grünfeld", "Índia") are stored correctly. It is MySQL 8's default, so the script does not set it.
 
 ## 6. What changes from the legacy model
 
@@ -199,24 +200,47 @@ What the back-end keeps from the legacy template: the `routes → controllers �
 
 ## 7. Physical model (MySQL scripts)
 
-The physical model is implemented by two scripts in `site-pessoal/src/database/`. Run them in order:
+The physical model is implemented by three scripts in `site-pessoal/src/database/`. Run them in order, as an administrator such as `root`:
 
 | Script | What it does |
 | --- | --- |
-| `01-schema.sql` | Creates the `chess_life` database (`utf8mb4`) and the five tables, parents first, so every foreign key points to a table that already exists |
+| `01-schema.sql` | Creates the `chess_life` database and the five tables, parents first, so every foreign key points to a table that already exists |
 | `02-seed.sql` | Loads the 50 rows of `abertura`: "Abertura irregular" plus 49 known openings. This table is the API's opening list |
+| `03-app-user.sql` | Creates `chess_life_user_db`@`localhost`, the MySQL user the API connects with, and grants it only what the API needs |
 
 ```
 mysql -u <user> -p < site-pessoal/src/database/01-schema.sql
 mysql -u <user> -p < site-pessoal/src/database/02-seed.sql
+mysql -u <user> -p < site-pessoal/src/database/03-app-user.sql
 ```
 
 The same files can be opened and run in MySQL Workbench.
 
+### Application user
+
+The API does not connect as `root`. It uses `chess_life_user_db`, which can only run the statements in [`04-api.md`](04-api.md). A flaw in the API, such as an injected statement, cannot drop tables, change other databases or read MySQL's own users.
+
+| Table | Privileges | Used by |
+| --- | --- | --- |
+| `usuario` | `SELECT`, `INSERT` | Login, sign-up |
+| `abertura` | `SELECT` | Opening identification |
+| `partida` | `SELECT`, `INSERT`, `DELETE` | List, save and delete games |
+| `lance` | `SELECT`, `INSERT`, `DELETE` | Save the moves. `DELETE` lets a game's `ON DELETE CASCADE` remove its moves |
+| `perfil` | None | No route uses it yet |
+
+- No `UPDATE`, because no route changes a row. A new route that needs more gets its `GRANT` added to `03-app-user.sql` in the same change.
+- The account is `@'localhost'`: the API and MySQL run on the same machine (the VM, P02 and P03). Another host needs its own account.
+- **The password is written in the script**, by the author's choice, so it is public with the repository. It is only for local development: on the VM, give the user another password with `ALTER USER`. The same password goes in the environment file, with `DB_USER=chess_life_user_db` and `DB_PASSWORD`.
+- Running the script again keeps the existing user and its password (`CREATE USER IF NOT EXISTS`) and grants the same privileges again. To change the password: `ALTER USER 'chess_life_user_db'@'localhost' IDENTIFIED BY '...';`.
+- **Validated** on the temporary MySQL 8.0.46:
+  - The script ran twice without errors (when it still read the password from a session variable; only the `CREATE USER` line changed since).
+  - Connected as this user, the API passed every route in [`04-api.md`](04-api.md), including the cascade delete of a game's moves.
+  - `UPDATE`, `DROP`, `CREATE`, `DELETE` on `usuario`, reading `perfil` and reading `mysql.user` were all denied.
+
 - **Running them again is safe**: `01-schema.sql` uses `CREATE ... IF NOT EXISTS`, and `02-seed.sql` uses `INSERT IGNORE`, which skips openings whose `lances` already exist. Neither script drops or changes existing data. A change to an existing table needs its own `ALTER TABLE`.
-- **InnoDB** is set on every table, since foreign keys need it.
+- **InnoDB and `utf8mb4`** are MySQL 8's defaults, so the script relies on them instead of setting them. Foreign keys need InnoDB.
 - **Constraint names**: `uq_<table>_<column>` for unique keys, `fk_<child>_<parent>` for foreign keys, `chk_<table>_<column>` for checks and `idx_<table>_<columns>` for indexes. MySQL ignores names given to primary keys and always calls them `PRIMARY`, so primary keys are not named.
-- **Validated** on MySQL 8.0.46, in a temporary instance. Both scripts ran twice without errors and created every constraint. Each rule was rejected when broken: duplicate e-mail, second profile for a user, invalid `resultado`, unknown user, `numero` 0, duplicate move number, and deleting an opening in use. Deleting a game deleted its moves.
+- **Validated** on MySQL 8.0.46, in a temporary instance. Both scripts ran twice without errors and created every constraint. Each rule was rejected when broken: duplicate e-mail, second profile for a user (`uq_perfil_usuario`, checked again after the profile got its own `id`), invalid `resultado`, unknown user, `numero` 0, duplicate move number, and deleting an opening in use. Deleting a game deleted its moves.
 - The API uses these tables (section 8). The environment file must point to them with `DB_DATABASE=chess_life`.
 
 Example query, the dashboard's game list:
