@@ -25,28 +25,6 @@
   gap: 14px;
 }
 
-/* Board */
-.board {
-  display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  grid-template-rows: repeat(8, 1fr);
-  aspect-ratio: 1;
-  border: 10px solid var(--green);
-  box-shadow: 0 30px 60px -30px var(--shadow);
-}
-.board div {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: clamp(20px, 3.4vw, 34px);
-}
-.light {
-  background: var(--square-light);
-}
-.dark {
-  background: var(--square-dark);
-}
-
 /* Features */
 .features {
   display: grid;

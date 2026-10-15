@@ -1,0 +1,142 @@
+/* Layout */
+.play-area {
+  display: grid;
+  grid-template-columns: minmax(0, 600px) minmax(260px, 340px);
+  justify-content: center;
+  align-items: start;
+  gap: 32px;
+}
+
+/* Board squares */
+.game-board > * {
+  position: relative;
+  padding: 0;
+  border: 0;
+  color: var(--ink);
+  font-size: clamp(26px, 5.2vw, 50px);
+  line-height: 1;
+  cursor: pointer;
+}
+.game-board > *:focus-visible {
+  outline: 3px solid var(--brass);
+  outline-offset: -3px;
+}
+.game-board .last-move {
+  box-shadow: inset 0 0 0 100vmax var(--square-highlight);
+}
+.game-board .selected {
+  box-shadow: inset 0 0 0 4px var(--brass), inset 0 0 0 100vmax var(--square-highlight);
+}
+.game-board .check {
+  box-shadow: inset 0 0 0 100vmax var(--square-check);
+}
+.game-board .target::after {
+  content: "";
+  position: absolute;
+  width: 28%;
+  height: 28%;
+  border-radius: 50%;
+  background: var(--square-target);
+}
+.game-board .capture::after {
+  content: "";
+  position: absolute;
+  inset: 4%;
+  border: 5px solid var(--square-target);
+  border-radius: 50%;
+}
+.coordinate {
+  position: absolute;
+  color: var(--green);
+  font-size: 11px;
+  font-weight: 600;
+}
+.rank {
+  top: 3px;
+  left: 4px;
+}
+.file {
+  right: 4px;
+  bottom: 2px;
+}
+
+/* Side panel */
+.game-panel {
+  padding: 28px;
+}
+.game-panel .eyebrow {
+  margin-bottom: 6px;
+}
+.game-status {
+  font-family: var(--font-heading);
+  font-size: 24px;
+}
+.game-panel h2 {
+  margin: 28px 0 10px;
+  font-size: 20px;
+}
+.moves-empty {
+  color: var(--muted);
+  font-size: 15px;
+}
+.move-list {
+  max-height: 240px;
+  overflow-y: auto;
+  list-style: none;
+  font-size: 15px;
+}
+.move-list li {
+  display: grid;
+  grid-template-columns: 2.5em 1fr 1fr;
+  padding: 3px 0;
+  border-bottom: 1px solid var(--line);
+}
+.move-list li span:first-child {
+  color: var(--muted);
+}
+.game-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* Promotion dialog */
+.promotion-dialog {
+  margin: auto;
+  padding: 28px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+}
+.promotion-dialog::backdrop {
+  background: var(--overlay);
+}
+.promotion-dialog h2 {
+  margin-bottom: 16px;
+  font-size: 22px;
+}
+.promotion-options {
+  display: flex;
+  gap: 10px;
+}
+.promotion-options button {
+  width: 64px;
+  height: 64px;
+  border: 1px solid var(--line);
+  background: var(--square-light);
+  color: var(--ink);
+  font-size: 42px;
+  cursor: pointer;
+}
+.promotion-options button:hover {
+  border-color: var(--brass);
+}
+
+@media (max-width: 800px) {
+  .play-area {
+    grid-template-columns: 1fr;
+  }
+  .game-board {
+    border-width: 6px;
+  }
+}

@@ -17,6 +17,9 @@
   --shadow: rgba(31, 26, 20, 0.5);
   --square-light: #e9dcc3;
   --square-dark: #a88a63;
+  --square-highlight: rgba(176, 141, 87, 0.45);
+  --square-check: rgba(164, 71, 47, 0.6);
+  --square-target: rgba(31, 26, 20, 0.28);
   --font-heading: Georgia, "Times New Roman", Times, serif;
   --font-body: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
 }
@@ -201,6 +204,28 @@ input:focus,
 select:focus {
   outline: 2px solid var(--brass);
   outline-offset: -1px;
+}
+
+/* Chess board (home page and game page) */
+.board {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  aspect-ratio: 1;
+  border: 10px solid var(--green);
+  box-shadow: 0 30px 60px -30px var(--shadow);
+}
+.board > * {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(20px, 3.4vw, 34px);
+}
+.light {
+  background: var(--square-light);
+}
+.dark {
+  background: var(--square-dark);
 }
 
 /* Form messages */

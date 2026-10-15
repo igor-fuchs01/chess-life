@@ -2,7 +2,7 @@ const FOOTER_TEXT = "Chess Life · Projeto Individual de Pesquisa e Inovação �
 
 /**
  * Fills the page's <header id="site-header"> with the logo and the navigation menu.
- * Visitors see "Entrar"; logged-in users see "Dashboard" and "Sair".
+ * Visitors see "Entrar"; logged-in users see "Jogar", "Dashboard" and "Sair".
  */
 function renderHeader() {
   const user = getSessionUser();
@@ -43,6 +43,7 @@ function getNavigationLinks(user) {
   ];
 
   if (user) {
+    links.push({ path: "play/play.html", label: "Jogar" });
     links.push({ path: "dashboard/dashboard.html", label: "Dashboard" });
   } else {
     links.push({ path: "auth/login.html", label: "Entrar" });
