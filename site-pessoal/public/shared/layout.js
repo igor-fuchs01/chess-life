@@ -1,4 +1,4 @@
-const FOOTER_TEXT = "Chess Life · Projeto de Pesquisa e Inovação · SPTech 2026";
+const FOOTER_TEXT = "Chess Life · Projeto Individual de Pesquisa e Inovação · SPTech 2026 · Igor Fuchs Pereira";
 
 /**
  * Fills the page's <header id="site-header"> with the logo and the navigation menu.
