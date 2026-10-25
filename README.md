@@ -16,7 +16,7 @@ O site tem duas partes. A pública conta a história: uma linha do tempo de como
 
 ## A história em lances
 
-A página *Minha história* conta a trajetória como uma partida, lance por lance.
+A seção *Minha história*, na página inicial, conta a trajetória como uma partida, lance por lance.
 
 | Lance | Momento | O que aconteceu |
 | --- | --- | --- |
@@ -34,8 +34,7 @@ Inspirações pelo caminho: os GMs Krikor Mekhitarian e Evandro Barbosa, no Bras
 
 | Página | O que mostra | Acesso |
 | --- | --- | --- |
-| **Início** | apresentação do projeto e caminho para todas as seções | público |
-| **Minha história** | a linha do tempo da tabela acima | público |
+| **Minha história** (início) | apresentação, a linha do tempo da tabela acima, as competências socioemocionais e as inspirações | público |
 | **Galeria** | fotos de torneios, medalhas e horas de estudo, em grade | público |
 | **Cadastro e Login** | conta com nome, e-mail e senha | público |
 | **Meu desempenho no xadrez** | indicadores, gráficos e a lista de partidas jogadas no site | restrito |

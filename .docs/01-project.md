@@ -27,8 +27,7 @@ The project has to show every layer of a web application working together: front
 
 | Page | UI name | Content | Access |
 | --- | --- | --- | --- |
-| Home | Início | Project introduction and navigation to every section | Public |
-| My story | Minha história | Timeline of how chess started and what it changed in the author's life | Public |
+| Home | Minha história | Project introduction, the author's story timeline, the socio-emotional competencies and the inspirations. The menu calls it "Minha história"; there is no separate "Início" item | Public |
 | Gallery | Galeria | Photo grid, visual only | Public |
 | Sign-up | Cadastro | Form with name, e-mail and password | Public |
 | Login | Login | Form with e-mail and password | Public |
@@ -90,7 +89,7 @@ Priorities: **Essential** (must ship), **Important** (should ship), **Desirable*
 | RF03 | Users can log in with e-mail and password. | Essential |
 | RF04 | Users can log out. | Essential |
 | RF05 | Only authenticated users can access the dashboard. | Essential |
-| RF06 | The "Minha história" page shows the author's story. | Essential |
+| RF06 | The home page ("Minha história" in the menu) shows the author's story. | Essential |
 | RF07 | The gallery shows photos in an Instagram-style grid. | Important |
 | RF08 | A game played on the site is recorded when it ends, with its result, opponent, color and moves; the API identifies the opening from the moves. | Essential |
 | RF09 | Chart.js charts are built from database data. | Essential |
@@ -111,7 +110,7 @@ Priorities: **Essential** (must ship), **Important** (should ship), **Desirable*
 | RN03 | Users can only see and delete their own games. |
 | RN04 | A game result is one of: win, loss or draw. |
 | RN05 | A recorded game cannot have a future date: the database sets it to the moment the game is saved. |
-| RN06 | Unauthenticated users can only reach home, story, gallery, sign-up and login. |
+| RN06 | Unauthenticated users can only reach home, gallery, sign-up and login. |
 | RN07 | In a game against the AI, a move is accepted only if it is legal. |
 
 Validate business rules on the server. Client-side validation only improves the user experience (RF11).
@@ -205,7 +204,7 @@ In every option, the game page's own rules (`play/rules.js`, see [`02-site-pesso
 | 6 | Deployment to the VM and testing | Site online and tested |
 | 7 | Game against the AI (complementary) | Playable board |
 
-## 10. Content for "Minha história"
+## 10. Content for "Minha história" and the competencies
 
 Facts the story timeline is built from. The page text itself is written in Portuguese.
 
@@ -215,6 +214,19 @@ Facts the story timeline is built from. The page text itself is written in Portu
 - Studied openings, especially the Sicilian Defense (Accelerated Dragon variation) and the Italian Game.
 - Ratings: about 1500 in 10-minute games and about 1400 in games without increment.
 - Inspirations: grandmasters Krikor Mekhitarian and Evandro Barbosa (Brazil); Hikaru Nakamura, Magnus Carlsen and Andrea Botez (international).
+
+The "Competências socioemocionais" section of the home page links each competency of SPTech's socio-emotional evaluation model (*Desenvolvimento Socioemocional — Modelo de avaliação*) to the story. Each card is a chess piece whose move explains the competency, with the link to the story below it. The links were written from the facts above; the ones marked "general" rest on what chess demands rather than on a specific fact, and await the author's review.
+
+| Competency | Piece and move | Linked to | Basis |
+| --- | --- | --- | --- |
+| Profundidade | Bishop: sees far along the diagonal | The deep study of the Sicilian Defense (Accelerated Dragon) and the Italian Game | Story fact |
+| Conexão | Knight: jumps and links distant squares | Chess led to geometry and the OBMEP bronze medal | Story fact |
+| Exposição | Queen: the piece everyone watches | Representing the school in a competition | General |
+| Relacionamento | Pawns: in a chain, each protects the next | The six wins added up to the school's gold medal | Story fact |
+| Pontualidade | Rook: firm in its place | The clock in 10-minute games | General |
+| Iniciativa | King's pawn: the first move, e4 | The interest that led to the school's chess selection | Story fact |
+| Resiliência | King: holds out until the end of the game | Keeping on playing and studying after losses to reach about 1500 | General |
+| Profissionalismo | Castling: a move with precise rules | The expected conduct in a competition: greeting the opponent, respecting the clock, silence | General |
 
 ## References
 

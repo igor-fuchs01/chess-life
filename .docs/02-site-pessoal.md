@@ -34,8 +34,7 @@ site-pessoal/
     │   ├── theme.js        Light and dark theme, loaded in every page's <head>
     │   ├── session.js      Session in sessionStorage
     │   └── layout.js       Header, footer and form messages
-    ├── home/               Home page styles and the opening board
-    ├── story/              "Minha história" page
+    ├── home/               Home page styles (hero, story timeline, inspirations, competencies) and the opening board
     ├── gallery/            Photo gallery page
     ├── auth/               Login and sign-up pages
     ├── play/               Restricted game page: rules.js (chess rules) and play.js (board and saving)
@@ -67,7 +66,6 @@ The site uses the "classic" direction chosen by the user: cream paper (`--paper`
 | URL | Feature folder | Access | API used |
 | --- | --- | --- | --- |
 | `/` | `index.html`, `home/` | Public | — |
-| `/story/story.html` | `story/` | Public | — |
 | `/gallery/gallery.html` | `gallery/` | Public | — |
 | `/auth/login.html` | `auth/` | Public | `POST /usuarios/autenticar` |
 | `/auth/signup.html` | `auth/` | Public | `POST /usuarios/cadastrar` |
