@@ -56,7 +56,7 @@ erDiagram
         INT id PK
         VARCHAR nome
         VARCHAR email UK
-        CHAR senha_hash
+        VARCHAR senha
         DATETIME data_cadastro
     }
     perfil {
@@ -97,7 +97,7 @@ erDiagram
 | `id` | `INT` | No | PK, `AUTO_INCREMENT` | User identifier |
 | `nome` | `VARCHAR(80)` | No | | Name shown on the site |
 | `email` | `VARCHAR(120)` | No | `UNIQUE` | Login e-mail; one account per e-mail (RN01) |
-| `senha_hash` | `CHAR(60)` | No | | bcrypt hash of the password. bcrypt hashes are always 60 characters. The plain password is never stored (RN02 is checked before hashing) |
+| `senha` | `VARCHAR(100)` | No | | Password in plain text, without hashing, by the author's choice. Up to 100 characters, checked by the API |
 | `data_cadastro` | `DATETIME` | No | `CURRENT_TIMESTAMP` | When the account was created |
 
 ### `perfil`
@@ -156,7 +156,7 @@ erDiagram
 | Rule | How the model enforces it |
 | --- | --- |
 | RN01 — unique e-mail | `UNIQUE` on `usuario.email` |
-| RN02 — password of at least 8 characters | Checked by the API before hashing; the table only stores `senha_hash` |
+| RN02 — password of at least 8 characters | Checked by the API before saving `senha` |
 | RN03 — users only see and delete their own games | `partida.fk_usuario`; every query filters by it. Deleting a game deletes its moves (`ON DELETE CASCADE` on `lance`) |
 | RN04 — result is win, loss or draw | `CHECK` on `partida.resultado` |
 | RN05 — no future game date | `partida.data_partida` defaults to `CURRENT_TIMESTAMP` and the API never sends it |
@@ -186,7 +186,7 @@ The legacy template's tables (its `script-tabelas.sql`, now deleted) were built 
 
 | Legacy table | In this model | Reason |
 | --- | --- | --- |
-| `usuario` | Kept, adapted | Drops `cpf` and `fk_empresa`; `senha` (plain text) becomes `senha_hash`; adds `data_cadastro` and a unique `email` |
+| `usuario` | Kept, adapted | Drops `cpf` and `fk_empresa`; `senha` stays in plain text, now `VARCHAR(100)`; adds `data_cadastro` and a unique `email` |
 | `empresa` | Removed | Chess Life users do not belong to companies |
 | `aviso` | Removed | Notices are not part of Chess Life |
 | `aquario` | Removed | AquaTech only |
@@ -270,7 +270,7 @@ The rows are joined into text in JavaScript, not with `GROUP_CONCAT`, because My
 Built on 2026-10-15; the routes are in [`04-api.md`](04-api.md).
 
 - **Connection**: `src/database/config.js` keeps one connection pool, with `query(sql, values)` for single statements and `transaction(runStatements)` for statements that must succeed or fail together.
-- **`usuario`**: sign-up stores a bcrypt hash in `senha_hash`. A duplicate e-mail fails on `uq_usuario_email` (`ER_DUP_ENTRY`) and becomes a `409` reply. Login reads the user by e-mail and compares the hash.
+- **`usuario`**: sign-up stores the password as plain text in `senha`. A duplicate e-mail fails on `uq_usuario_email` (`ER_DUP_ENTRY`) and becomes a `409` reply. Login reads the user by e-mail and compares the password. A database created before 2026-10-25 still has `senha_hash CHAR(60)` with bcrypt hashes, which no longer match: delete its users and their games, then run `ALTER TABLE usuario RENAME COLUMN senha_hash TO senha, MODIFY senha VARCHAR(100) NOT NULL;`.
 - **`abertura`**: `aberturaModel.listOpenings` reads the rows, and `openingBook.identifyOpening` picks the longest `lances` the game starts with, or the row with empty `lances`. To recognize a new opening, insert a row: no code changes.
 - **`partida` and `lance`**: `partidaModel.registerGame` inserts the game, then all its moves in one multi-row `INSERT`, numbered from 1, inside one transaction. A failure rolls both back, so no game is left without moves. A user id with no account fails on `fk_partida_usuario` (`ER_NO_REFERENCED_ROW_2`) and becomes a `404` reply.
 - **Listing**: `listGames` joins `abertura` and returns its name as `abertura`. It does not read `lance`.

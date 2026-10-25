@@ -39,12 +39,12 @@ Body:
 | --- | --- |
 | `nomeServer` | Required, up to 80 characters |
 | `emailServer` | Required, a valid e-mail, up to 120 characters. Unique, ignoring upper and lower case (RN01) |
-| `senhaServer` | Required, at least 8 characters (RN02). Stored only as a bcrypt hash |
+| `senhaServer` | Required, 8 to 100 characters (RN02). Stored as plain text |
 
 | Reply | Body |
 | --- | --- |
 | `201` | `{ "id": 1 }` |
-| `400` | `Preencha o nome, o e-mail e a senha.`, `O nome pode ter no máximo 80 caracteres.`, `Informe um e-mail válido.` or `A senha precisa ter no mínimo 8 caracteres.` |
+| `400` | `Preencha o nome, o e-mail e a senha.`, `O nome pode ter no máximo 80 caracteres.`, `Informe um e-mail válido.`, `A senha precisa ter no mínimo 8 caracteres.` or `A senha pode ter no máximo 100 caracteres.` |
 | `409` | `Este e-mail já está cadastrado.` |
 | `500` | `Não foi possível criar a conta.` |
 
@@ -60,7 +60,7 @@ Body:
 
 | Reply | Body |
 | --- | --- |
-| `200` | `{ "id": 1, "nome": "Igor", "email": "igor@exemplo.com" }`. The password hash is never returned |
+| `200` | `{ "id": 1, "nome": "Igor", "email": "igor@exemplo.com" }`. The password is never returned |
 | `400` | `Informe o e-mail e a senha.` |
 | `403` | `E-mail e/ou senha inválidos.` The same reply for an unknown e-mail and a wrong password, so it does not reveal which accounts exist |
 | `500` | `Não foi possível entrar.` |
@@ -143,10 +143,10 @@ The game is deleted only when it belongs to the user, and its moves are deleted 
 
 ## 4. Security
 
-- Passwords are hashed with bcrypt (`bcryptjs`, cost 10) and only the hash is stored.
+- Passwords are stored as plain text in `usuario.senha`, without hashing, by the author's choice. Anyone who can read the table sees every password.
 - The API connects to MySQL as `chess_life_user_db`, which may only run this document's statements (see "Application user" in section 7 of [`03-database.md`](03-database.md)). A route that needs another statement also needs its `GRANT`.
 - Every query uses `?` placeholders, so request values are never read as SQL.
-- Error replies and logs never include passwords, hashes or SQL.
+- Error replies and logs never include passwords or SQL.
 - **Open gap**: the routes do not check who is calling yet. A game route trusts the user id in the URL, so anyone who knows an id can read or delete that user's games. Closing this gap needs the authentication mechanism, which is still an open decision (JWT or server session, see section 11 of [`01-project.md`](01-project.md)). Once it is chosen, the id will come from the token or session instead of the URL.
 
 ## 5. Removed routes

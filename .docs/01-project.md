@@ -16,7 +16,7 @@ The project has to show every layer of a web application working together: front
 
 1. Tell the author's chess story as a timeline.
 2. Build a photo gallery in a grid.
-3. Add sign-up, login and logout, with passwords stored securely.
+3. Add sign-up, login and logout, with passwords.
 4. Record the games authenticated users play on the site, with their moves and opening.
 5. Show game statistics in Chart.js charts fed by the database.
 6. Host the database and the application on a VM.
@@ -135,7 +135,7 @@ In the complementary module, the server also talks to the Gemini API or to a che
 | Visualization | Chart.js | Game statistics charts |
 | Back-end | Node.js, Express | REST API, business rules, static files |
 | Database | MySQL 8.0+ | Users, profiles, games, moves and openings; modeled in [`03-database.md`](03-database.md) |
-| Security | bcrypt; JWT or session | Password hashing and access control |
+| Security | JWT or session | Access control |
 | Infrastructure | Linux VM | Hosts the database and the application |
 | Version control | Git, GitHub | Source control |
 | Chess rules | Own JavaScript code (`play/rules.js`), board as an 8×8 matrix | Legal moves, check, special moves and game end |
@@ -143,7 +143,7 @@ In the complementary module, the server also talks to the Gemini API or to a che
 
 ### Security
 
-- Store passwords only as bcrypt hashes (`senha_hash`). Never store or log the plain-text password.
+- Passwords are stored as plain text (`senha`), without hashing, by the author's choice. Never log them or return them in a reply.
 - Use parameterized queries for every SQL statement.
 - Protect restricted pages and their API routes on the server. Hiding links in the UI is not enough.
 - Scope every game query to the authenticated user (RN03).
@@ -155,7 +155,7 @@ The database is modeled in MySQL. The full model (entity-relationship diagram, d
 
 | Table | Columns | Notes |
 | --- | --- | --- |
-| `usuario` | `id` (PK), `nome`, `email` (unique), `senha_hash`, `data_cadastro` | Access data |
+| `usuario` | `id` (PK), `nome`, `email` (unique), `senha`, `data_cadastro` | Access data |
 | `perfil` | `id` (PK), `fk_usuario` (FK → `usuario.id`, unique), `rating`, `ano_inicio`, `bio`, `fk_abertura_favorita` (FK → `abertura.id`) | Optional chess details of a user: 1:1 with `usuario`, non-identifying relationship |
 | `abertura` | `id` (PK), `nome`, `lances` (unique) | Known openings and the moves that define them |
 | `partida` | `id` (PK), `fk_usuario` (FK → `usuario.id`), `fk_abertura` (FK → `abertura.id`), `resultado`, `adversario`, `cor`, `data_partida` | A game played on the site. One user plays many games; one opening appears in many games (non-identifying relationships) |

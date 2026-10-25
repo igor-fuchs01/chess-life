@@ -3,7 +3,7 @@
 ## Project Context
 Chess Life is a personal website about how chess shaped the author's life, built as an SPTech academic project (*Pesquisa e Inovação* course). It has public pages (home, story timeline, Instagram-style photo gallery, sign-up and login) and a restricted dashboard where users record their chess games and see Chart.js statistics. A game against an AI is a complementary module, built only after the main scope is done.
 
-Stack: HTML/CSS/JS front-end, Node.js + Express REST API that also serves the static files, and MySQL on a Linux VM, with bcrypt for passwords.
+Stack: HTML/CSS/JS front-end, Node.js + Express REST API that also serves the static files, and MySQL on a Linux VM, with passwords stored as plain text.
 
 Documentation index, reading order and documentation conventions: `.docs/README.md`.
 

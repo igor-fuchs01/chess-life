@@ -24,7 +24,7 @@ There are no automated tests or lint setup yet.
 ```
 site-pessoal/
 ├── app.js                  Express server: static files from public/ and API routers
-├── package.json            express, mysql2, bcryptjs, dotenv, cors, nodemon
+├── package.json            express, mysql2, dotenv, cors, nodemon
 ├── src/                    Back-end: routes → controllers → models, and the database scripts (section 4)
 └── public/                 Chess Life front-end, one folder per feature
     ├── index.html          Home page
@@ -119,7 +119,7 @@ src/
 │   ├── usuarios.js
 │   └── partidas.js
 ├── controllers/             Read the request, validate it and reply (status and message)
-│   ├── usuarioController.js Sign-up with a bcrypt hash, login
+│   ├── usuarioController.js Sign-up, login
 │   └── partidaController.js List, save and delete games
 ├── models/                  Build and run the SQL
 │   ├── usuarioModel.js

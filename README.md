@@ -89,7 +89,6 @@ O logo é um rei creme dentro de um selo verde com aro de latão, e também é o
 | **Node.js e Express** | a API REST, que também serve as páginas |
 | **MySQL** | usuários e partidas, numa máquina virtual Linux |
 | **Chart.js** | os gráficos do dashboard |
-| **bcrypt** | as senhas, guardadas só como hash |
 | **chess.js e Stockfish ou Gemini** | regras e jogadas da IA, no módulo complementar |
 
 O back-end nasceu do template **web-data-viz** da SPTech e está sendo adaptado para o Chess Life.
@@ -105,7 +104,7 @@ O plano anda como um peão: uma casa por etapa, até a promoção na última. O 
 | Documentação, requisitos e protótipos | pronta |
 | Páginas públicas: início, história e galeria | prontas, a galeria ainda com espaços para as fotos |
 | API de partidas e dashboard | prontos, aguardando a página de jogo para receber partidas |
-| Cadastro e login | telas prontas, API em adaptação (bcrypt e controle de acesso) |
+| Cadastro e login | telas prontas, API em adaptação (controle de acesso) |
 | Página de jogo, VM, deploy e IA | a fazer |
 
 ## Como rodar
