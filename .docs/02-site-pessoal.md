@@ -54,12 +54,13 @@ The site uses the "classic" direction chosen by the user: cream paper (`--paper`
 - `shared/theme.js` is loaded in the `<head>` of every page, right after the stylesheets. It sets `data-theme="light"` or `"dark"` on `<html>` before the page is drawn, so a dark page never flashes light. `toggleTheme()` switches the theme and fires a `themechange` event on `document`.
 - The dark palette is a single `:root[data-theme="dark"]` block in `shared/style.css` that redefines the color variables, plus `color-scheme: dark` for form controls and scrollbars. Feature stylesheets have no theme rules of their own.
 - Variables by role:
-  - `--green`: surfaces, such as buttons, the dashboard band and the board frame.
+  - `--green`: surfaces, such as buttons and the board frame.
   - `--green-text`: green text on the page background. It is lighter in the dark theme.
   - `--light-ink`: text on green surfaces and photos, the same in both themes.
   - `--dark-ink`: pieces on the board and the dark photo tile, the same in both themes.
 - The board squares keep their wood colors in both themes.
 - The dashboard charts read their colors from the variables, and draw again on `themechange`.
+  - `--win`, `--draw` and `--loss` color the game results in the charts and the dashboard tags. Win and loss are opposite poles (green and rust) and a draw is a neutral stone between them, which is also its place in the stacked bars. They were checked with a color-vision validator: in both themes win and loss are far apart for normal vision (ΔE 23.3 light, 25.3 dark, against a floor of 15), and for color-blind readers they sit in the 6–8 band that needs a second channel, so every result also shows as text (legend counts, tag words) and stacked segments keep a 2px gap. The previous green, rust and brass failed it: in the dark theme loss and draw were only ΔE 8.8 apart.
 - Every text color pair passes the WCAG contrast minimum in the dark theme (4.5:1 for text, 3:1 for large text and chart bars). In the light theme, `--brass` on `--paper` (2.7:1) is below 3:1, which predates the dark theme.
 
 ### Pages
@@ -71,7 +72,7 @@ The site uses the "classic" direction chosen by the user: cream paper (`--paper`
 | `/auth/login.html` | `auth/` | Public | `POST /usuarios/autenticar` |
 | `/auth/signup.html` | `auth/` | Public | `POST /usuarios/cadastrar` |
 | `/play/play.html` | `play/` | Restricted | `POST /partidas/cadastrar` |
-| `/dashboard/dashboard.html` | `dashboard/` | Restricted | `GET /partidas/listar`, `DELETE /partidas/deletar` |
+| `/dashboard/dashboard.html` | `dashboard/` | Restricted | `GET /partidas/listar` |
 
 ### Conventions
 
@@ -139,7 +140,7 @@ src/
 │   └── partidas.js
 ├── controllers/             Read the request, validate it and reply (status and message)
 │   ├── usuarioController.js Sign-up, login
-│   └── partidaController.js List, save and delete games
+│   └── partidaController.js List and save games
 ├── models/                  Build and run the SQL
 │   ├── usuarioModel.js
 │   ├── partidaModel.js      Saves a game and its moves in one transaction

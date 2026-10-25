@@ -110,7 +110,7 @@ Priorities: **Essential** (must ship), **Important** (should ship), **Desirable*
 | RF07 | The gallery shows photos in an Instagram-style grid. | Important |
 | RF08 | A game played on the site is recorded when it ends, with its result, opponent, color and moves; the API identifies the opening from the moves. | Essential |
 | RF09 | Chart.js charts are built from database data. | Essential |
-| RF10 | Users can list and delete the games they recorded. | Important |
+| RF10 | Users can list the games they recorded. Games cannot be deleted. | Important |
 | RF11 | Forms show error and success messages. | Important |
 | RF12 | The home page links to every section. | Essential |
 | RF13 | Authenticated users can start a game against the AI. | Desirable |
@@ -124,7 +124,7 @@ Priorities: **Essential** (must ship), **Important** (should ship), **Desirable*
 | --- | --- |
 | RN01 | A user's e-mail is unique. |
 | RN02 | Passwords have at least 8 characters. |
-| RN03 | Users can only see and delete their own games. |
+| RN03 | Users can only see their own games. |
 | RN04 | A game result is one of: win, loss or draw. |
 | RN05 | A recorded game cannot have a future date: the database sets it to the moment the game is saved. |
 | RN06 | Unauthenticated users can only reach home, gallery, sign-up and login. |
@@ -166,7 +166,7 @@ The database is modeled in MySQL. The full model (entity-relationship diagram, d
 | `perfil` | `id` (PK), `fk_usuario` (FK → `usuario.id`, unique), `rating`, `ano_inicio`, `bio`, `fk_abertura_favorita` (FK → `abertura.id`) | Optional chess details of a user: 1:1 with `usuario`, non-identifying relationship |
 | `abertura` | `id` (PK), `nome`, `lances` (unique) | Known openings and the moves that define them |
 | `partida` | `id` (PK), `fk_usuario` (FK → `usuario.id`), `fk_abertura` (FK → `abertura.id`), `resultado`, `adversario`, `cor`, `data_partida` | A game played on the site. One user plays many games; one opening appears in many games (non-identifying relationships) |
-| `lance` | `fk_partida` (PK, FK → `partida.id`), `numero` (PK), `san` | One move of a game: weak entity, 1:N with `partida`, identifying relationship, deleted with its game |
+| `lance` | `fk_partida` (PK, FK → `partida.id`), `numero` (PK), `san` | One move of a game: weak entity, 1:N with `partida`, identifying relationship |
 
 Gallery photos are not stored in the database: the image files stay in `public/assets/` and the captions in the gallery's HTML.
 
@@ -178,15 +178,15 @@ The dashboard, titled "Desempenho no Xadrez", fetches the user's games from the 
   - Games played today, compared with yesterday.
   - Win rate of all games, compared with the win rate of the games played until yesterday (in percentage points).
   - Favorite opening (the most played), with its number of games and win rate.
-- **Stacked bar chart**: games per week over the last 8 weeks (weeks start on Monday), split into wins, losses and draws.
-- **Pie chart**: share of wins, losses and draws.
-- **Bar chart**: most played openings.
-- **Table**: the games, with date and time, opening, opponent, color and result, and a button to delete each one (RF10).
+- **Stacked bar chart**: games per week over the last 8 weeks (weeks start on Monday), split into wins, draws and losses.
+- **Donut chart**: share of wins, draws and losses, with the win rate in its middle and the count of each result next to it.
+- **Bar chart**: most played openings, with the number of games at the end of each bar; long names are shortened with "…" on the axis.
+- **Table**: the games, with date and time, opening, opponent, color and result (RF10).
 - **With the AI module**: performance against human opponents compared with performance against the AI (`adversario`).
 
 Games are not typed in by hand: they reach the dashboard only by being played on the site.
 
-On screens wider than 800px the dashboard fits the browser window and the page does not scroll: the indicators sit in a row on top, and the charts and the table fill two rows below them, each with a wide and a narrow panel. The footer is hidden on this page to give the charts more height. When there are more games than fit, only the table scrolls, inside its panel. On phones the panels stack and the page scrolls.
+The page uses the site's look: the paper background, white cards with a brass top edge for the indicators, Georgia numbers and titles, and result colors from `--win`, `--draw` and `--loss` (see "Themes" in [`02-site-pessoal.md`](02-site-pessoal.md)). On screens wider than 800px the dashboard fits the browser window and the page does not scroll: the indicators sit in a row on top, and the charts and the table fill two rows below them, each with a wide and a narrow panel. The footer is hidden on this page to give the charts more height. When there are more games than fit, only the table scrolls, inside its panel. On phones the panels stack and the page scrolls.
 
 ## 8. Complementary module: chess against an AI
 

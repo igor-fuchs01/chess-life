@@ -38,7 +38,7 @@ The model follows the MySQL Workbench convention:
 | --- | --- | --- | --- | --- |
 | `usuario` → `perfil` | 1:1 (one user has zero or one profile) | Non-identifying | `perfil.fk_usuario`, an ordinary column with `UNIQUE` | The profile has its own `id`; the unique FK is what limits each user to one profile |
 | `partida` → `lance` | 1:N (one game has one or many moves) | Identifying | `lance.fk_partida`, part of the PK `(fk_partida, numero)` | A move is only "move 12 of game 40": it has no meaning without its game |
-| `usuario` → `partida` | 1:N (one user plays zero or many games) | Non-identifying | `partida.fk_usuario` | A game has its own `id`, used by the API to delete it |
+| `usuario` → `partida` | 1:N (one user plays zero or many games) | Non-identifying | `partida.fk_usuario` | A game has its own `id` |
 | `abertura` → `partida` | 1:N (one opening appears in zero or many games) | Non-identifying | `partida.fk_abertura` | Each game has exactly one opening. A game that matches no known opening points to the "Abertura irregular" row |
 | `abertura` → `perfil` | 1:N (one opening is the favorite of zero or many profiles) | Non-identifying, optional | `perfil.fk_abertura_favorita` | The favorite opening is optional, so the column accepts `NULL` |
 
@@ -144,7 +144,7 @@ erDiagram
 
 | Column | Type | Null | Key / default | Description |
 | --- | --- | --- | --- | --- |
-| `fk_partida` | `INT` | No | PK, FK → `partida.id`, `ON DELETE CASCADE` | The game the move belongs to |
+| `fk_partida` | `INT` | No | PK, FK → `partida.id` | The game the move belongs to |
 | `numero` | `INT` | No | PK, `CHECK` | The move's position in the game, starting at 1. Each move of each side counts (a half-move): 1 is white's first move, 2 is black's reply |
 | `san` | `VARCHAR(10)` | No | | The move in standard algebraic notation (SAN), such as `Nf3`, `exd5` or `O-O` |
 
@@ -157,7 +157,7 @@ erDiagram
 | --- | --- |
 | RN01 — unique e-mail | `UNIQUE` on `usuario.email` |
 | RN02 — password of at least 8 characters | Checked by the API before saving `senha` |
-| RN03 — users only see and delete their own games | `partida.fk_usuario`; every query filters by it. Deleting a game deletes its moves (`ON DELETE CASCADE` on `lance`) |
+| RN03 — users only see their own games | `partida.fk_usuario`; every query filters by it |
 | RN04 — result is win, loss or draw | `CHECK` on `partida.resultado` |
 | RN05 — no future game date | `partida.data_partida` defaults to `CURRENT_TIMESTAMP` and the API never sends it |
 | Every game has a user and an opening | `NOT NULL` foreign keys |
@@ -169,8 +169,7 @@ erDiagram
 
 Delete behavior of the foreign keys:
 
-- `lance.fk_partida` uses `ON DELETE CASCADE`: users delete games (RN03), and a move cannot exist without its game.
-- Every other foreign key uses MySQL's default `RESTRICT`: a user with a profile or games, or an opening used by a game or a profile, cannot be deleted. The site has no account or opening deletion, so no other cascade is needed.
+- Every foreign key uses MySQL's default `RESTRICT`: a game with moves, a user with a profile or games, or an opening used by a game or a profile, cannot be deleted. The site deletes nothing (games stopped being deletable on 2026-10-25), so no cascade is needed; `lance.fk_partida` lost its `ON DELETE CASCADE` the same day.
 
 ## 5. Naming conventions
 
@@ -224,9 +223,11 @@ The API does not connect as `root`. It uses `chess_life_user`, which can only ru
 | --- | --- | --- |
 | `usuario` | `SELECT`, `INSERT` | Login, sign-up |
 | `abertura` | `SELECT` | Opening identification |
-| `partida` | `SELECT`, `INSERT`, `DELETE` | List, save and delete games |
-| `lance` | `SELECT`, `INSERT`, `DELETE` | Save the moves. `DELETE` lets a game's `ON DELETE CASCADE` remove its moves |
+| `partida` | `SELECT`, `INSERT` | List and save games |
+| `lance` | `SELECT`, `INSERT` | Save the moves |
 | `perfil` | None | No route uses it yet |
+
+A user created before 2026-10-25 also has `DELETE` on `partida` and `lance`, from when games could be deleted; running the script again does not take it away. Remove it with `REVOKE DELETE ON chess_life.partida FROM 'chess_life_user'@'localhost';` and the same for `chess_life.lance`.
 
 - No `UPDATE`, because no route changes a row. A new route that needs more gets its `GRANT` added to `03-app-user.sql` in the same change.
 - The account is `@'localhost'`, which works while the API and MySQL run on the same machine, as in local development. On the VM, which holds only the database (R09 in [`01-project.md`](01-project.md)), the API connects from another machine, so the account needs that machine's host (for example `'chess_life_user_db'@'%'` or the host's address) and MySQL must accept remote connections.
@@ -274,5 +275,4 @@ Built on 2026-10-15; the routes are in [`04-api.md`](04-api.md).
 - **`abertura`**: `aberturaModel.listOpenings` reads the rows, and `openingBook.identifyOpening` picks the longest `lances` the game starts with, or the row with empty `lances`. To recognize a new opening, insert a row: no code changes.
 - **`partida` and `lance`**: `partidaModel.registerGame` inserts the game, then all its moves in one multi-row `INSERT`, numbered from 1, inside one transaction. A failure rolls both back, so no game is left without moves. A user id with no account fails on `fk_partida_usuario` (`ER_NO_REFERENCED_ROW_2`) and becomes a `404` reply.
 - **Listing**: `listGames` joins `abertura` and returns its name as `abertura`. It does not read `lance`.
-- **Deleting**: `deleteGame` filters by game and user (RN03). `ON DELETE CASCADE` removes the moves.
 - **`perfil`**: no route uses it yet: no requirement in [`01-project.md`](01-project.md) asks for it so far.

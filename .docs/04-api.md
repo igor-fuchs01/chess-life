@@ -7,7 +7,7 @@ The code follows `routes/<resource>.js` → `controllers/<resource>Controller.js
 ## 1. Conventions
 
 - **Request bodies** are JSON, sent with `Content-Type: application/json`.
-- **Successful replies** carry JSON, or no body (`204`, and `200` on delete).
+- **Successful replies** carry JSON, or no body (`204`).
 - **Error replies** carry a short plain-text message in Portuguese, written to be shown to the user as is, such as `E-mail e/ou senha inválidos.`. They never carry SQL errors or stack traces; the server logs the cause instead.
 - **Field names** are in Portuguese and follow the database (`resultado`, `abertura`). The user fields keep the names of the legacy template (`nomeServer`, `emailServer`, `senhaServer`), which the sign-up and login pages already send.
 - **Ids in the URL** must be positive whole numbers, or the reply is `400`.
@@ -128,19 +128,6 @@ The server identifies the opening from the moves: among the rows of the `abertur
 | `404` | `Usuário não encontrado.` |
 | `500` | `Não foi possível registrar a partida.` |
 
-### `DELETE /partidas/deletar/:idUsuario/:idPartida` — delete a game (RF10, RN03)
-
-Used by `public/dashboard/dashboard.js`.
-
-The game is deleted only when it belongs to the user, and its moves are deleted with it.
-
-| Reply | Body |
-| --- | --- |
-| `200` | No body |
-| `400` | `Partida inválida.` |
-| `404` | `Partida não encontrada.` Also when the game belongs to another user |
-| `500` | `Não foi possível excluir a partida.` |
-
 ## 4. Security
 
 - Passwords are stored as plain text in `usuario.senha`, without hashing, by the author's choice. Anyone who can read the table sees every password.
@@ -148,7 +135,7 @@ The game is deleted only when it belongs to the user, and its moves are deleted 
 - Every query uses `?` placeholders, so request values are never read as SQL.
 - Error replies and logs never include passwords or SQL.
 - **Authentication**: done by the user's session in the browser (`sessionStorage`), described with examples in "Authentication" in section 3 of [`02-site-pessoal.md`](02-site-pessoal.md). The API checks the e-mail and password only at `POST /usuarios/autenticar`; it sends no token or cookie, and the page keeps the reply.
-- **Known limit**: the routes do not check who is calling. A game route trusts the user id in the URL, which the page takes from the session, so anyone who sends another id to the API can read or delete that user's games. This is accepted for the academic project.
+- **Known limit**: the routes do not check who is calling. A game route trusts the user id in the URL, which the page takes from the session, so anyone who sends another id to the API can read that user's games or save games in their name. This is accepted for the academic project.
 
 ## 5. Removed routes
 
