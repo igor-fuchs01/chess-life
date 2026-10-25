@@ -63,7 +63,6 @@ If one of these stops being true, the plan has to be reviewed.
 | P08 | Chart.js is loaded from a CDN or installed as a project dependency. |
 | P09 | As an academic project, it has few users and little traffic. |
 | P10 | The AI module is complementary and does not put the main scope at risk. |
-| P11 | If the Gemini API is used, a valid key within the free quota is available. |
 
 ### Constraints
 
@@ -141,14 +140,6 @@ In the complementary module, the server also talks to the Gemini API or to a che
 | Chess rules | Own JavaScript code (`play/rules.js`), board as an 8×8 matrix | Legal moves, check, special moves and game end |
 | Complementary | Gemini API or Stockfish | AI moves |
 
-### Security
-
-- Passwords are stored as plain text (`senha`), without hashing, by the author's choice. Never log them or return them in a reply.
-- Use parameterized queries for every SQL statement.
-- Protect restricted pages and their API routes on the server. Hiding links in the UI is not enough.
-- Scope every game query to the authenticated user (RN03).
-- Keep secrets such as the database credentials, the JWT secret and the Gemini key in server environment variables. Never put them in front-end code or commit them.
-
 ## 6. Data model
 
 The database is modeled in MySQL. The full model (entity-relationship diagram, data dictionary, constraints, legacy changes and DDL) is in [`03-database.md`](03-database.md). Summary:
@@ -224,14 +215,6 @@ Facts the story timeline is built from. The page text itself is written in Portu
 - Studied openings, especially the Sicilian Defense (Accelerated Dragon variation) and the Italian Game.
 - Ratings: about 1500 in 10-minute games and about 1400 in games without increment.
 - Inspirations: grandmasters Krikor Mekhitarian and Evandro Barbosa (Brazil); Hikaru Nakamura, Magnus Carlsen and Andrea Botez (international).
-
-## 11. Open decisions
-
-- Authentication mechanism: JWT or server session.
-- Authentication mechanism (JWT or server session): until it is chosen, the API trusts the user id in the URL. See section 4 of [`04-api.md`](04-api.md).
-- AI opponent: Gemini, Stockfish or both.
-- HTTPS on the VM (R08).
-- Non-functional requirements: the original specification mentions them but does not list any.
 
 ## References
 
