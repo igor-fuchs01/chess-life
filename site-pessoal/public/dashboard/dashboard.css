@@ -36,23 +36,33 @@ main {
   letter-spacing: 0;
 }
 
-/* Panels: indicators in a row on top, charts and the games table in a 2x2 grid below */
+/* Panels: indicators in a row on top, then two rows that share the free height,
+   each with a wide panel (2 parts) and a narrow one (1 part). */
 .panels {
-  display: grid;
+  display: flex;
   flex: 1;
-  grid-template-columns: 2fr 1fr;
-  grid-template-rows: auto 1fr 1fr;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+}
+.panel-row {
+  display: flex;
+  flex: 1;
   gap: 10px;
   min-height: 0;
 }
 .panel {
   display: flex;
+  flex: 1;
   flex-direction: column;
   min-width: 0;
   min-height: 0;
   padding: 10px 14px;
   background: var(--paper);
   color: var(--ink);
+}
+.panel.wide {
+  flex: 2;
 }
 .panel h2 {
   margin-bottom: 4px;
@@ -67,12 +77,11 @@ main {
 
 /* Indicators: value and label on one line, the comparison below. */
 .stats {
-  display: grid;
-  grid-column: 1 / -1;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
   gap: 10px;
 }
 .stat {
+  flex: 1;
   padding: 6px 14px;
   border: 1px solid var(--on-green-line);
   font-size: 14px;
@@ -161,12 +170,14 @@ main {
   body {
     height: auto;
   }
-  .panels,
+  .panel-row,
   .stats {
-    grid-template-columns: 1fr;
+    flex-direction: column;
   }
-  .panels {
-    grid-template-rows: none;
+  /* Each panel is as tall as its content again, instead of sharing the window height. */
+  .panel-row,
+  .panel {
+    min-height: auto;
   }
   .chart {
     height: 260px;

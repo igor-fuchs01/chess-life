@@ -37,20 +37,24 @@
               <span class="change" id="favorite-opening-detail"></span>
             </div>
           </div>
-          <div class="panel"><h2>Partidas por semana</h2><div class="chart"><canvas id="weekly-chart"></canvas></div></div>
-          <div class="panel"><h2>Resultados</h2><div class="chart"><canvas id="results-chart"></canvas></div></div>
-          <div class="panel">
-            <h2>Minhas partidas</h2>
-            <div class="message" id="games-message" role="alert"></div>
-            <p class="empty" id="games-empty">Nenhuma partida jogada ainda. As partidas que você jogar no site aparecem aqui.</p>
-            <div class="table-scroll">
-              <table class="games" id="games-table" hidden>
-                <thead><tr><th>Data</th><th>Abertura</th><th>Adversário</th><th>Cor</th><th>Resultado</th><th></th></tr></thead>
-                <tbody id="games-body"></tbody>
-              </table>
-            </div>
+          <div class="panel-row">
+            <div class="panel wide"><h2>Partidas por semana</h2><div class="chart"><canvas id="weekly-chart"></canvas></div></div>
+            <div class="panel"><h2>Resultados</h2><div class="chart"><canvas id="results-chart"></canvas></div></div>
           </div>
-          <div class="panel"><h2>Aberturas mais jogadas</h2><div class="chart"><canvas id="openings-chart"></canvas></div></div>
+          <div class="panel-row">
+            <div class="panel wide">
+              <h2>Minhas partidas</h2>
+              <div class="message" id="games-message" role="alert"></div>
+              <p class="empty" id="games-empty">Nenhuma partida jogada ainda. As partidas que você jogar no site aparecem aqui.</p>
+              <div class="table-scroll">
+                <table class="games" id="games-table" hidden>
+                  <thead><tr><th>Data</th><th>Abertura</th><th>Adversário</th><th>Cor</th><th>Resultado</th><th></th></tr></thead>
+                  <tbody id="games-body"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="panel"><h2>Aberturas mais jogadas</h2><div class="chart"><canvas id="openings-chart"></canvas></div></div>
+          </div>
         </div>
       </div>
     </section>
