@@ -36,10 +36,12 @@
 }
 
 /* Photo grid */
+/* Three photos per row: each one takes a third of the width left after the two gaps. */
 .grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
+  --photo-gap: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--photo-gap);
   max-width: 760px;
   margin: 0 auto;
 }
@@ -48,6 +50,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  width: calc((100% - 2 * var(--photo-gap)) / 3);
   aspect-ratio: 1;
   overflow: hidden;
   color: var(--light-ink);
