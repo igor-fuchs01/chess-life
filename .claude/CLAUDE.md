@@ -113,6 +113,7 @@ Follow Clean Code (Robert C. Martin) for naming and documentation.
 * Keep CSS well structured: tokens and base styles in `shared/style.css`, feature styles in the feature's folder. Inside a file, group rules by section in page order, with media queries at the end.
 * Avoid unnecessary repetition: use the `:root` variables for colors and fonts, and reuse shared classes (`.btn`, `.card`, `.section-title`, `.message`…) before creating new ones. Do not redeclare values that are inherited or already set by a shared rule.
 * Keep it as simple as possible: short, low-specificity selectors, only the declarations that change something, and no `!important`.
+* Lay out with flexbox (`display: flex`), not CSS grid, including the chess board and multi-column sections.
 
 ---
 

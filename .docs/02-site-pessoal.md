@@ -84,6 +84,7 @@ The site uses the "classic" direction chosen by the user: cream paper (`--paper`
 - User-provided text goes into the page with `textContent`, never `innerHTML`.
 - Chart.js 4.4.1 is loaded from cdnjs only on the dashboard.
 - The board's base style (`.board`, `.light`, `.dark`) is in `shared/style.css`, shared by the home page and the game page.
+- Layouts use flexbox, never CSS grid. The board is a wrapping flex container whose 64 squares are each `12.5%` wide and square (`aspect-ratio: 1`); the gallery photos are a third of the row minus the gaps; the dashboard panels sit in two `.panel-row` rows, with `.panel.wide` taking twice the width of the other panel.
 - Code and identifiers are in English; text shown to users is in Portuguese.
 
 ### Authentication

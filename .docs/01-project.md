@@ -170,7 +170,7 @@ The dashboard, titled "Desempenho no Xadrez", fetches the user's games from the 
 
 Games are not typed in by hand: they reach the dashboard only by being played on the site.
 
-On screens wider than 800px the dashboard fits the browser window and the page does not scroll: the indicators sit in a row on top, and the charts and the table share a 2x2 grid below them. The footer is hidden on this page to give the charts more height. When there are more games than fit, only the table scrolls, inside its panel. On phones the panels stack and the page scrolls.
+On screens wider than 800px the dashboard fits the browser window and the page does not scroll: the indicators sit in a row on top, and the charts and the table fill two rows below them, each with a wide and a narrow panel. The footer is hidden on this page to give the charts more height. When there are more games than fit, only the table scrolls, inside its panel. On phones the panels stack and the page scrolls.
 
 ## 8. Complementary module: chess against an AI
 
