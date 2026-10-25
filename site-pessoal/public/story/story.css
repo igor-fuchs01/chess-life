@@ -62,13 +62,13 @@
 
 /* Inspirations */
 .inspirations {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
   gap: 24px;
   max-width: 800px;
   margin: 0 auto;
 }
 .inspiration {
+  flex: 1;
   text-align: center;
 }
 .inspiration h3 {
@@ -98,6 +98,6 @@
     left: 0;
   }
   .inspirations {
-    grid-template-columns: 1fr;
+    flex-direction: column;
   }
 }
