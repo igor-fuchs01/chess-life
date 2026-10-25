@@ -80,6 +80,7 @@ The site uses the "classic" direction chosen by the user: cream paper (`--paper`
 - Form feedback uses `showMessage(element, text, "error" | "success")` from `shared/layout.js` (RF11).
 - Pages use relative paths for their files, so they also open straight from disk. Scripts build links from `SITE_ROOT` (`shared/session.js`). API calls only work when the site is served by `app.js`.
 - Forms are validated on the client too, for a quick reply: password of at least 8 characters (RN02), valid e-mail and matching confirmation. The server must repeat these checks.
+- Login and sign-up layout (`auth/auth.css`): the `.alt` section fills `<main>`, so its background reaches the footer, and the form sits in its middle. Spacing is compact and, on screens wider than 800px, the sign-up form shows its fields in pairs (`.field-row`), so the page fits the window with the header and the footer, even with an error message, down to 1280×720. On phones the fields stack and sign-up may scroll.
 - User-provided text goes into the page with `textContent`, never `innerHTML`.
 - Chart.js 4.4.1 is loaded from cdnjs only on the dashboard.
 - The board's base style (`.board`, `.light`, `.dark`) is in `shared/style.css`. The game page draws its board with `play/play.js`; the home page shows `assets/dragao-acelerado.svg` in an `<img class="board">`, so it gets the same frame and shadow.
