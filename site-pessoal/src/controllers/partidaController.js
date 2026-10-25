@@ -72,31 +72,6 @@ async function registerGame(req, res) {
 }
 
 /**
- * Deletes one of the user's games. Replies 200, 400 for an invalid id, or 404 when the game
- * does not exist or belongs to another user.
- */
-async function deleteGame(req, res) {
-    const userId = parseId(req.params.idUsuario);
-    const gameId = parseId(req.params.idPartida);
-    if (!userId || !gameId) {
-        res.status(400).send("Partida inválida.");
-        return;
-    }
-
-    try {
-        const result = await partidaModel.deleteGame(userId, gameId);
-        if (result.affectedRows === 0) {
-            res.status(404).send("Partida não encontrada.");
-            return;
-        }
-        res.status(200).send();
-    } catch (error) {
-        console.error("Error deleting a game:", error.message);
-        res.status(500).send("Não foi possível excluir a partida.");
-    }
-}
-
-/**
  * Checks the body of a new game (RN04 and the allowed opponents, colors and move format).
  * Move legality is not checked here: the game page validates every move while the game is played.
  * @param {object} body - The request body.
@@ -135,6 +110,5 @@ function parseId(value) {
 
 module.exports = {
     listGames,
-    registerGame,
-    deleteGame
+    registerGame
 };

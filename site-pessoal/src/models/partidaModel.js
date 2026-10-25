@@ -49,22 +49,7 @@ function registerGame(userId, game) {
     });
 }
 
-/**
- * Deletes a game only when it belongs to the user (RN03). Its moves are deleted with it (ON DELETE CASCADE).
- * @param {number} userId
- * @param {number} gameId
- * @returns {Promise<object>} The delete result, with affectedRows.
- */
-function deleteGame(userId, gameId) {
-    const sql = `
-        DELETE FROM partida
-        WHERE id = ? AND fk_usuario = ?;
-    `;
-    return database.query(sql, [gameId, userId]);
-}
-
 module.exports = {
     listGames,
-    registerGame,
-    deleteGame
+    registerGame
 };

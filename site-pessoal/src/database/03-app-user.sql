@@ -9,9 +9,9 @@
 CREATE USER IF NOT EXISTS 'chess_life_user'@'localhost' IDENTIFIED BY 'Urubu100';
 
 -- Least privilege: only the statements the API runs (.docs/04-api.md). No UPDATE, no table changes, no other database,
--- so a flaw in the API cannot drop tables or rewrite the data.
+-- so a flaw in the API cannot drop tables or rewrite the data. No DELETE either: games are never deleted.
 -- perfil gets no grant: no route uses it yet.
 GRANT SELECT, INSERT ON chess_life.usuario TO 'chess_life_user'@'localhost';
 GRANT SELECT ON chess_life.abertura TO 'chess_life_user'@'localhost';
-GRANT SELECT, INSERT, DELETE ON chess_life.partida TO 'chess_life_user'@'localhost';
-GRANT SELECT, INSERT, DELETE ON chess_life.lance TO 'chess_life_user'@'localhost';
+GRANT SELECT, INSERT ON chess_life.partida TO 'chess_life_user'@'localhost';
+GRANT SELECT, INSERT ON chess_life.lance TO 'chess_life_user'@'localhost';
