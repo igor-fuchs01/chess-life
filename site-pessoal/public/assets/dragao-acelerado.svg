@@ -1,0 +1,173 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-labelledby="title">
+  <title id="title">Dragão Acelerado: 1.e4 c5 2.Cf3 Cc6 3.d4 cxd4 4.Cxd4 g6</title>
+  <style>
+    /* One 16s cycle: each move takes 0.6s, with 0.9s between moves (1.5s per move), then the final
+       position stays on screen and the pieces fade out and back in before the opening starts again. */
+    text {
+      fill: #1f1a14;
+      font-family: "Segoe UI Symbol", "DejaVu Sans", "Noto Sans Symbols 2", serif;
+      font-size: 40px;
+      text-anchor: middle;
+      dominant-baseline: central;
+    }
+    #pieces, #pieces text {
+      animation-duration: 16s;
+      animation-iteration-count: infinite;
+      animation-timing-function: ease-in-out;
+    }
+    #pieces { animation-name: fade; }
+    #white-e-pawn { animation-name: e4; }
+    #black-c-pawn { animation-name: c5-cxd4; }
+    #white-knight { animation-name: nf3-nxd4; }
+    #black-knight { animation-name: nc6; }
+    #white-d-pawn { animation-name: d4; }
+    #black-g-pawn { animation-name: g6; }
+
+    @keyframes fade {
+      0%, 92% { opacity: 1; }
+      97%, 100% { opacity: 0; }
+    }
+    /* 1.e4 */
+    @keyframes e4 {
+      0%, 6.25% { transform: translate(0, 0); }
+      10%, 100% { transform: translate(0, -100px); }
+    }
+    /* 1...c5, then 3...cxd4; the pawn is taken by 4.Cxd4 */
+    @keyframes c5-cxd4 {
+      0%, 15.625% { transform: translate(0, 0); }
+      19.375%, 53.125% { transform: translate(0, 100px); opacity: 1; }
+      56.875%, 64% { transform: translate(50px, 150px); opacity: 1; }
+      66.25%, 100% { transform: translate(50px, 150px); opacity: 0; }
+    }
+    /* 2.Cf3, then 4.Cxd4 */
+    @keyframes nf3-nxd4 {
+      0%, 25% { transform: translate(0, 0); }
+      28.75%, 62.5% { transform: translate(-50px, -100px); }
+      66.25%, 100% { transform: translate(-150px, -150px); }
+    }
+    /* 2...Cc6 */
+    @keyframes nc6 {
+      0%, 34.375% { transform: translate(0, 0); }
+      38.125%, 100% { transform: translate(50px, 100px); }
+    }
+    /* 3.d4; the pawn is taken by 3...cxd4 */
+    @keyframes d4 {
+      0%, 43.75% { transform: translate(0, 0); opacity: 1; }
+      47.5%, 54.5% { transform: translate(0, -100px); opacity: 1; }
+      56.875%, 100% { transform: translate(0, -100px); opacity: 0; }
+    }
+    /* 4...g6 */
+    @keyframes g6 {
+      0%, 71.875% { transform: translate(0, 0); }
+      75.625%, 100% { transform: translate(0, 50px); }
+    }
+
+    /* Without motion, the board stops on the final position of the opening. */
+    @media (prefers-reduced-motion: reduce) {
+      #pieces, #pieces text {
+        animation-delay: -13s;
+        animation-play-state: paused;
+      }
+    }
+  </style>
+  <g id="squares">
+    <rect x="0" y="0" width="50" height="50" fill="#e9dcc3"/>
+    <rect x="50" y="0" width="50" height="50" fill="#a88a63"/>
+    <rect x="100" y="0" width="50" height="50" fill="#e9dcc3"/>
+    <rect x="150" y="0" width="50" height="50" fill="#a88a63"/>
+    <rect x="200" y="0" width="50" height="50" fill="#e9dcc3"/>
+    <rect x="250" y="0" width="50" height="50" fill="#a88a63"/>
+    <rect x="300" y="0" width="50" height="50" fill="#e9dcc3"/>
+    <rect x="350" y="0" width="50" height="50" fill="#a88a63"/>
+    <rect x="0" y="50" width="50" height="50" fill="#a88a63"/>
+    <rect x="50" y="50" width="50" height="50" fill="#e9dcc3"/>
+    <rect x="100" y="50" width="50" height="50" fill="#a88a63"/>
+    <rect x="150" y="50" width="50" height="50" fill="#e9dcc3"/>
+    <rect x="200" y="50" width="50" height="50" fill="#a88a63"/>
+    <rect x="250" y="50" width="50" height="50" fill="#e9dcc3"/>
+    <rect x="300" y="50" width="50" height="50" fill="#a88a63"/>
+    <rect x="350" y="50" width="50" height="50" fill="#e9dcc3"/>
+    <rect x="0" y="100" width="50" height="50" fill="#e9dcc3"/>
+    <rect x="50" y="100" width="50" height="50" fill="#a88a63"/>
+    <rect x="100" y="100" width="50" height="50" fill="#e9dcc3"/>
+    <rect x="150" y="100" width="50" height="50" fill="#a88a63"/>
+    <rect x="200" y="100" width="50" height="50" fill="#e9dcc3"/>
+    <rect x="250" y="100" width="50" height="50" fill="#a88a63"/>
+    <rect x="300" y="100" width="50" height="50" fill="#e9dcc3"/>
+    <rect x="350" y="100" width="50" height="50" fill="#a88a63"/>
+    <rect x="0" y="150" width="50" height="50" fill="#a88a63"/>
+    <rect x="50" y="150" width="50" height="50" fill="#e9dcc3"/>
+    <rect x="100" y="150" width="50" height="50" fill="#a88a63"/>
+    <rect x="150" y="150" width="50" height="50" fill="#e9dcc3"/>
+    <rect x="200" y="150" width="50" height="50" fill="#a88a63"/>
+    <rect x="250" y="150" width="50" height="50" fill="#e9dcc3"/>
+    <rect x="300" y="150" width="50" height="50" fill="#a88a63"/>
+    <rect x="350" y="150" width="50" height="50" fill="#e9dcc3"/>
+    <rect x="0" y="200" width="50" height="50" fill="#e9dcc3"/>
+    <rect x="50" y="200" width="50" height="50" fill="#a88a63"/>
+    <rect x="100" y="200" width="50" height="50" fill="#e9dcc3"/>
+    <rect x="150" y="200" width="50" height="50" fill="#a88a63"/>
+    <rect x="200" y="200" width="50" height="50" fill="#e9dcc3"/>
+    <rect x="250" y="200" width="50" height="50" fill="#a88a63"/>
+    <rect x="300" y="200" width="50" height="50" fill="#e9dcc3"/>
+    <rect x="350" y="200" width="50" height="50" fill="#a88a63"/>
+    <rect x="0" y="250" width="50" height="50" fill="#a88a63"/>
+    <rect x="50" y="250" width="50" height="50" fill="#e9dcc3"/>
+    <rect x="100" y="250" width="50" height="50" fill="#a88a63"/>
+    <rect x="150" y="250" width="50" height="50" fill="#e9dcc3"/>
+    <rect x="200" y="250" width="50" height="50" fill="#a88a63"/>
+    <rect x="250" y="250" width="50" height="50" fill="#e9dcc3"/>
+    <rect x="300" y="250" width="50" height="50" fill="#a88a63"/>
+    <rect x="350" y="250" width="50" height="50" fill="#e9dcc3"/>
+    <rect x="0" y="300" width="50" height="50" fill="#e9dcc3"/>
+    <rect x="50" y="300" width="50" height="50" fill="#a88a63"/>
+    <rect x="100" y="300" width="50" height="50" fill="#e9dcc3"/>
+    <rect x="150" y="300" width="50" height="50" fill="#a88a63"/>
+    <rect x="200" y="300" width="50" height="50" fill="#e9dcc3"/>
+    <rect x="250" y="300" width="50" height="50" fill="#a88a63"/>
+    <rect x="300" y="300" width="50" height="50" fill="#e9dcc3"/>
+    <rect x="350" y="300" width="50" height="50" fill="#a88a63"/>
+    <rect x="0" y="350" width="50" height="50" fill="#a88a63"/>
+    <rect x="50" y="350" width="50" height="50" fill="#e9dcc3"/>
+    <rect x="100" y="350" width="50" height="50" fill="#a88a63"/>
+    <rect x="150" y="350" width="50" height="50" fill="#e9dcc3"/>
+    <rect x="200" y="350" width="50" height="50" fill="#a88a63"/>
+    <rect x="250" y="350" width="50" height="50" fill="#e9dcc3"/>
+    <rect x="300" y="350" width="50" height="50" fill="#a88a63"/>
+    <rect x="350" y="350" width="50" height="50" fill="#e9dcc3"/>
+  </g>
+  <g id="pieces">
+    <text x="25" y="25">♜</text>
+    <text id="black-knight" x="75" y="25">♞</text>
+    <text x="125" y="25">♝</text>
+    <text x="175" y="25">♛</text>
+    <text x="225" y="25">♚</text>
+    <text x="275" y="25">♝</text>
+    <text x="325" y="25">♞</text>
+    <text x="375" y="25">♜</text>
+    <text x="25" y="75">♟</text>
+    <text x="75" y="75">♟</text>
+    <text id="black-c-pawn" x="125" y="75">♟</text>
+    <text x="175" y="75">♟</text>
+    <text x="225" y="75">♟</text>
+    <text x="275" y="75">♟</text>
+    <text id="black-g-pawn" x="325" y="75">♟</text>
+    <text x="375" y="75">♟</text>
+    <text x="25" y="325">♙</text>
+    <text x="75" y="325">♙</text>
+    <text x="125" y="325">♙</text>
+    <text id="white-d-pawn" x="175" y="325">♙</text>
+    <text id="white-e-pawn" x="225" y="325">♙</text>
+    <text x="275" y="325">♙</text>
+    <text x="325" y="325">♙</text>
+    <text x="375" y="325">♙</text>
+    <text x="25" y="375">♖</text>
+    <text x="75" y="375">♘</text>
+    <text x="125" y="375">♗</text>
+    <text x="175" y="375">♕</text>
+    <text x="225" y="375">♔</text>
+    <text x="275" y="375">♗</text>
+    <text id="white-knight" x="325" y="375">♘</text>
+    <text x="375" y="375">♖</text>
+  </g>
+</svg>

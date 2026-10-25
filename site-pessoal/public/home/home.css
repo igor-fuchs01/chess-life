@@ -9,8 +9,13 @@
 .hero > :first-child {
   flex: 1.2;
 }
+/* The board is an SVG with no size of its own, so it takes its width only from its flex share. */
 .hero .board {
   flex: 1;
+  min-width: 0;
+}
+.board{
+  user-select: none;
 }
 .hero h1 {
   margin-bottom: 24px;
@@ -132,6 +137,16 @@
 }
 .competency p {
   color: var(--muted);
+}
+
+/* Thanks */
+.thanks {
+  max-width: 640px;
+  margin: 0 auto;
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-style: italic;
+  text-align: center;
 }
 
 /* Inspirations */
