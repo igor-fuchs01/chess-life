@@ -6,12 +6,11 @@ CREATE DATABASE IF NOT EXISTS chess_life;
 
 USE chess_life;
 
--- A person with an account (RF01–RF05). Strong entity.
+-- A person with an account.
 CREATE TABLE IF NOT EXISTS usuario (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(80) NOT NULL,
     email VARCHAR(120) NOT NULL,
-    -- Stored as plain text, by the author's choice (no hashing).
     senha VARCHAR(100) NOT NULL,
     data_cadastro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT uq_usuario_email UNIQUE (email)
@@ -21,13 +20,11 @@ CREATE TABLE IF NOT EXISTS usuario (
 CREATE TABLE IF NOT EXISTS abertura (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(60) NOT NULL,
-    -- Empty only for "Abertura irregular", the opening of games that match no other row.
     lances VARCHAR(100) NOT NULL,
     CONSTRAINT uq_abertura_lances UNIQUE (lances)
 ) ;
 
 -- Optional chess details of a user: 1:1 with usuario, non-identifying relationship.
--- The unique fk_usuario is what limits each user to one profile.
 CREATE TABLE IF NOT EXISTS perfil (
     id INT PRIMARY KEY AUTO_INCREMENT,
     rating INT NULL,
@@ -48,7 +45,6 @@ CREATE TABLE IF NOT EXISTS partida (
     resultado VARCHAR(7) NOT NULL,
     adversario VARCHAR(6) NOT NULL,
     cor VARCHAR(7) NOT NULL,
-    -- Set by the database when the game is saved, so it is never in the future (RN05).
     data_partida DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_partida_usuario FOREIGN KEY (fk_usuario) REFERENCES usuario (id),
     CONSTRAINT fk_partida_abertura FOREIGN KEY (fk_abertura) REFERENCES abertura (id),
@@ -58,13 +54,11 @@ CREATE TABLE IF NOT EXISTS partida (
 ) ;
 
 -- One move of a game: weak entity, 1:N with partida, identifying relationship.
--- Deleting a game deletes its moves (RN03).
 CREATE TABLE IF NOT EXISTS lance (
     fk_partida INT NOT NULL,
-    -- Half-move number: 1 is White's first move, 2 is Black's reply.
     numero INT NOT NULL,
     san VARCHAR(10) NOT NULL,
     PRIMARY KEY (fk_partida, numero),
-    CONSTRAINT fk_lance_partida FOREIGN KEY (fk_partida) REFERENCES partida (id) ON DELETE CASCADE,
+    CONSTRAINT fk_lance_partida FOREIGN KEY (fk_partida) REFERENCES partida (id),
     CONSTRAINT chk_lance_numero CHECK (numero >= 1)
 ) ;
