@@ -4,6 +4,11 @@ const COLOR_LABELS = { brancas: "Brancas", pretas: "Pretas" };
 const WEEKS_IN_CHART = 8;
 const DAYS_IN_WEEK = 7;
 const OPENINGS_IN_CHART = 5;
+// Longer opening names are shortened on the chart's axis; the tooltip keeps the full name.
+const MAX_OPENING_LABEL_LENGTH = 22;
+// Results in chart order: the neutral draw sits between the win and the loss.
+const RESULTS_IN_CHARTS = ["vitoria", "empate", "derrota"];
+const RESULT_CHART_LABELS = { vitoria: "Vitórias", empate: "Empates", derrota: "Derrotas" };
 const currentUser = getSessionUser();
 const gamesMessage = document.getElementById("games-message");
 
@@ -19,6 +24,8 @@ function startDashboard() {
   Chart.defaults.font.family = readCssVariable("--font-body");
   // Each chart fills its panel's height, which the page layout sets, instead of keeping a fixed proportion.
   Chart.defaults.maintainAspectRatio = false;
+  Chart.defaults.plugins.legend.display = false;
+  Chart.register(barValuesPlugin);
   readChartColors();
   document.addEventListener("themechange", redrawChartsForTheme);
 
@@ -49,35 +56,13 @@ async function loadGames() {
 }
 
 /**
- * Asks for confirmation and deletes a game.
- * @param {number} gameId
- */
-async function deleteGame(gameId) {
-  if (!confirm("Excluir esta partida?")) {
-    return;
-  }
-
-  try {
-    const response = await fetch(`/partidas/deletar/${currentUser.id}/${gameId}`, { method: "DELETE" });
-
-    if (!response.ok) {
-      showMessage(gamesMessage, "Não foi possível excluir a partida.", "error");
-      return;
-    }
-
-    loadGames();
-  } catch {
-    showMessage(gamesMessage, "Não foi possível conectar ao servidor.", "error");
-  }
-}
-
-/**
- * Fills the three indicator cards at the top of the page.
+ * Fills the three indicator cards at the top of the page and the numbers next to the results chart.
  */
 function renderStats() {
   renderGamesToday();
   renderWinRate();
   renderFavoriteOpening();
+  renderResultCounts();
 }
 
 /**
@@ -134,7 +119,9 @@ function renderWinRate() {
   let change = "Sem partidas até ontem";
   if (gamesUntilYesterday > 0) {
     const winRateUntilYesterday = calculateWinRate(winsUntilYesterday, gamesUntilYesterday);
-    change = describeChange(winRate - winRateUntilYesterday, " p.p.", "desde ontem");
+    // Rounded like the rates themselves: subtracting two decimals leaves noise such as 2.5500000000000043.
+    const difference = Number((winRate - winRateUntilYesterday).toFixed(2));
+    change = describeChange(difference, " p.p.", "desde ontem");
   }
 
   document.getElementById("win-rate").textContent = `${winRate}%`;
@@ -158,6 +145,18 @@ function renderFavoriteOpening() {
 
   document.getElementById("favorite-opening").textContent = name;
   document.getElementById("favorite-opening-detail").textContent = detail;
+}
+
+/**
+ * Writes the number of each result in the legend of the results chart, and the win rate in its middle.
+ */
+function renderResultCounts() {
+  const results = countResults();
+
+  for (const result of RESULTS_IN_CHARTS) {
+    document.getElementById(`results-${result}`).textContent = results[result];
+  }
+  document.getElementById("results-win-rate").textContent = `${calculateWinRate(results.vitoria, games.length)}%`;
 }
 
 /**
@@ -186,17 +185,20 @@ function redrawChartsForTheme() {
 }
 
 /**
- * Reads the chart colors from the current theme. Wins use --green-text, which stands out on the panels in both themes.
+ * Reads the chart colors from the current theme: the result colors (--win, --draw, --loss),
+ * the panel color for the gaps between marks, and the text and line colors.
  */
 function readChartColors() {
   chartColors = {
-    green: readCssVariable("--green-text"),
+    vitoria: readCssVariable("--win"),
+    empate: readCssVariable("--draw"),
+    derrota: readCssVariable("--loss"),
     brass: readCssVariable("--brass"),
-    danger: readCssVariable("--danger"),
-    paper: readCssVariable("--paper"),
-    muted: readCssVariable("--muted")
+    card: readCssVariable("--card"),
+    ink: readCssVariable("--ink")
   };
-  Chart.defaults.color = chartColors.muted;
+  Chart.defaults.color = readCssVariable("--muted");
+  Chart.defaults.borderColor = readCssVariable("--line");
 }
 
 /**
@@ -212,36 +214,44 @@ function renderCharts() {
 }
 
 /**
- * Stacked bar chart with the wins, losses and draws of each of the last weeks.
+ * Stacked bar chart with the wins, draws and losses of each of the last weeks.
+ * A 2px gap in the panel color separates the stacked results; only the top of each bar is rounded.
  * @returns {Chart}
  */
 function createWeeklyChart() {
   const weeks = countGamesPerWeek();
   const labels = [];
-  const wins = [];
-  const losses = [];
-  const draws = [];
+  const datasets = [];
 
   for (const week of weeks) {
     labels.push(week.label);
-    wins.push(week.vitoria);
-    losses.push(week.derrota);
-    draws.push(week.empate);
+  }
+
+  for (const result of RESULTS_IN_CHARTS) {
+    const counts = [];
+    for (const week of weeks) {
+      counts.push(week[result]);
+    }
+
+    const isTopOfBar = result === RESULTS_IN_CHARTS[RESULTS_IN_CHARTS.length - 1];
+    datasets.push({
+      label: RESULT_CHART_LABELS[result],
+      data: counts,
+      backgroundColor: chartColors[result],
+      borderColor: chartColors.card,
+      borderWidth: { top: 2 },
+      borderSkipped: false,
+      borderRadius: isTopOfBar ? { topLeft: 4, topRight: 4 } : 0,
+      maxBarThickness: 28
+    });
   }
 
   return new Chart(document.getElementById("weekly-chart"), {
     type: "bar",
-    data: {
-      labels: labels,
-      datasets: [
-        { label: "Vitórias", data: wins, backgroundColor: chartColors.green },
-        { label: "Derrotas", data: losses, backgroundColor: chartColors.danger },
-        { label: "Empates", data: draws, backgroundColor: chartColors.brass }
-      ]
-    },
+    data: { labels: labels, datasets: datasets },
     options: {
       scales: {
-        x: { stacked: true },
+        x: { stacked: true, grid: { display: false } },
         y: { stacked: true, beginAtZero: true, ticks: { precision: 0 } }
       }
     }
@@ -249,27 +259,33 @@ function createWeeklyChart() {
 }
 
 /**
- * Pie chart with the number of wins, losses and draws.
+ * Donut chart with the number of wins, draws and losses; the win rate is written in its middle by the page.
  * @returns {Chart}
  */
 function createResultsChart() {
   const results = countResults();
+  const labels = [];
+  const counts = [];
+  const colors = [];
+
+  for (const result of RESULTS_IN_CHARTS) {
+    labels.push(RESULT_CHART_LABELS[result]);
+    counts.push(results[result]);
+    colors.push(chartColors[result]);
+  }
 
   return new Chart(document.getElementById("results-chart"), {
-    type: "pie",
+    type: "doughnut",
     data: {
-      labels: ["Vitórias", "Derrotas", "Empates"],
-      datasets: [{
-        data: [results.vitoria, results.derrota, results.empate],
-        backgroundColor: [chartColors.green, chartColors.danger, chartColors.brass],
-        borderColor: chartColors.paper
-      }]
-    }
+      labels: labels,
+      datasets: [{ data: counts, backgroundColor: colors, borderColor: chartColors.card, borderWidth: 3 }]
+    },
+    options: { cutout: "68%" }
   });
 }
 
 /**
- * Horizontal bar chart with the most played openings.
+ * Horizontal bar chart with the most played openings, with the number of games at the end of each bar.
  * @returns {Chart}
  */
 function createOpeningsChart() {
@@ -286,15 +302,60 @@ function createOpeningsChart() {
     type: "bar",
     data: {
       labels: labels,
-      datasets: [{ data: totals, backgroundColor: chartColors.brass }]
+      datasets: [{ data: totals, backgroundColor: chartColors.brass, borderRadius: 4, borderSkipped: "start", maxBarThickness: 20 }]
     },
     options: {
       indexAxis: "y",
-      plugins: { legend: { display: false } },
-      scales: { x: { beginAtZero: true, ticks: { precision: 0 } } }
+      // Room on the right for the value written after the longest bar.
+      layout: { padding: { right: 28 } },
+      plugins: { barValues: { display: true } },
+      scales: {
+        x: { beginAtZero: true, ticks: { precision: 0 } },
+        y: { grid: { display: false }, ticks: { callback: shortenOpeningLabel } }
+      }
     }
   });
 }
+
+/**
+ * Chart.js tick callback that shortens a long opening name with "…".
+ * @param {number} value - Index of the label on the axis.
+ * @returns {string}
+ */
+function shortenOpeningLabel(value) {
+  const name = this.getLabelForValue(value);
+
+  if (name.length <= MAX_OPENING_LABEL_LENGTH) {
+    return name;
+  }
+  return `${name.slice(0, MAX_OPENING_LABEL_LENGTH - 1)}…`;
+}
+
+/**
+ * Chart.js plugin that writes each bar's value after its end, for the horizontal charts that turn it on
+ * with `plugins: { barValues: { display: true } }`. The brass bars are light, so their numbers are written in text too.
+ */
+const barValuesPlugin = {
+  id: "barValues",
+  defaults: { display: false },
+  afterDatasetsDraw(chart, args, settings) {
+    if (!settings.display) {
+      return;
+    }
+
+    const context = chart.ctx;
+    const values = chart.data.datasets[0].data;
+    context.save();
+    context.fillStyle = chartColors.ink;
+    context.font = `600 12px ${Chart.defaults.font.family}`;
+    context.textBaseline = "middle";
+
+    chart.getDatasetMeta(0).data.forEach((bar, index) => {
+      context.fillText(values[index], bar.x + 6, bar.y);
+    });
+    context.restore();
+  }
+};
 
 /**
  * Fills the games table, or shows the empty message when there are no games.
@@ -313,7 +374,7 @@ function renderTable() {
 }
 
 /**
- * Builds one table row: date, opening, opponent, color, result tag and delete button.
+ * Builds one table row: date, opening, opponent, color and result tag.
  * @param {object} game
  * @returns {HTMLTableRowElement}
  */
@@ -331,14 +392,6 @@ function createGameRow(game) {
   const resultCell = createCell("");
   resultCell.appendChild(resultTag);
   row.appendChild(resultCell);
-
-  const deleteButton = document.createElement("button");
-  deleteButton.type = "button";
-  deleteButton.textContent = "Excluir";
-  deleteButton.addEventListener("click", () => deleteGame(game.id));
-  const actionCell = createCell("");
-  actionCell.appendChild(deleteButton);
-  row.appendChild(actionCell);
 
   return row;
 }

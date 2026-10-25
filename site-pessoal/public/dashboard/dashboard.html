@@ -17,43 +17,72 @@
   <main>
     <section class="dash">
       <div class="wrap">
-        <div class="section-title">
-          <div class="ornament">♛</div>
+        <div class="dash-title">
+          <span class="ornament">♛</span>
           <h1>Desempenho no Xadrez</h1>
         </div>
 
         <div class="panels">
           <div class="stats">
             <div class="stat">
-              <b id="games-today">0</b>partidas hoje
+              <p class="stat-label">Partidas hoje</p>
+              <b id="games-today">0</b>
               <span class="change" id="games-today-change"></span>
             </div>
             <div class="stat">
-              <b id="win-rate">0%</b>de vitórias no total
+              <p class="stat-label">Vitórias no total</p>
+              <b id="win-rate">0%</b>
               <span class="change" id="win-rate-change"></span>
             </div>
             <div class="stat">
-              <b id="favorite-opening">—</b>abertura favorita
+              <p class="stat-label">Abertura favorita</p>
+              <b id="favorite-opening">—</b>
               <span class="change" id="favorite-opening-detail"></span>
             </div>
           </div>
           <div class="panel-row">
-            <div class="panel wide"><h2>Partidas por semana</h2><div class="chart"><canvas id="weekly-chart"></canvas></div></div>
-            <div class="panel"><h2>Resultados</h2><div class="chart"><canvas id="results-chart"></canvas></div></div>
+            <div class="panel wide">
+              <div class="panel-head">
+                <h2>Partidas por semana</h2>
+                <ul class="legend">
+                  <li><i class="swatch vitoria"></i>Vitórias</li>
+                  <li><i class="swatch empate"></i>Empates</li>
+                  <li><i class="swatch derrota"></i>Derrotas</li>
+                </ul>
+              </div>
+              <div class="chart"><canvas id="weekly-chart"></canvas></div>
+            </div>
+            <div class="panel">
+              <div class="panel-head"><h2>Resultados</h2></div>
+              <div class="results">
+                <div class="chart">
+                  <canvas id="results-chart"></canvas>
+                  <div class="donut-center"><b id="results-win-rate">0%</b><span>de vitórias</span></div>
+                </div>
+                <ul class="legend">
+                  <li><i class="swatch vitoria"></i>Vitórias <b id="results-vitoria">0</b></li>
+                  <li><i class="swatch empate"></i>Empates <b id="results-empate">0</b></li>
+                  <li><i class="swatch derrota"></i>Derrotas <b id="results-derrota">0</b></li>
+                </ul>
+              </div>
+            </div>
           </div>
           <div class="panel-row">
             <div class="panel wide">
-              <h2>Minhas partidas</h2>
+              <div class="panel-head"><h2>Minhas partidas</h2></div>
               <div class="message" id="games-message" role="alert"></div>
               <p class="empty" id="games-empty">Nenhuma partida jogada ainda. As partidas que você jogar no site aparecem aqui.</p>
               <div class="table-scroll">
                 <table class="games" id="games-table" hidden>
-                  <thead><tr><th>Data</th><th>Abertura</th><th>Adversário</th><th>Cor</th><th>Resultado</th><th></th></tr></thead>
+                  <thead><tr><th>Data</th><th>Abertura</th><th>Adversário</th><th>Cor</th><th>Resultado</th></tr></thead>
                   <tbody id="games-body"></tbody>
                 </table>
               </div>
             </div>
-            <div class="panel"><h2>Aberturas mais jogadas</h2><div class="chart"><canvas id="openings-chart"></canvas></div></div>
+            <div class="panel">
+              <div class="panel-head"><h2>Aberturas mais jogadas</h2></div>
+              <div class="chart"><canvas id="openings-chart"></canvas></div>
+            </div>
           </div>
         </div>
       </div>

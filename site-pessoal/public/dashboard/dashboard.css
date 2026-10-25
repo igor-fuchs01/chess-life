@@ -6,34 +6,37 @@ main {
   display: flex;
   min-height: 0;
 }
+/* Both are flex items: min-width: 0 lets them shrink to the window instead of growing with the charts. */
 .dash {
   display: flex;
   flex: 1;
-  padding: 12px 0;
-  background: var(--green);
-  color: var(--light-ink);
+  min-width: 0;
+  padding: 14px 0 18px;
 }
 .dash .wrap {
   display: flex;
   flex: 1;
   flex-direction: column;
+  min-width: 0;
   max-width: 1400px;
 }
-/* Title: the ornament sits on the title's left, in one line. */
-.dash .section-title {
+/* Title: the ornament, the title and a short description on one line. */
+.dash-title {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 10px;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin-bottom: 12px;
 }
-.dash .section-title h1 {
-  font-size: 26px;
-}
-.dash .ornament {
+.dash-title .ornament {
   margin-bottom: 0;
-  font-size: 22px;
   letter-spacing: 0;
+}
+.dash-title h1 {
+  font-size: 30px;
+}
+.dash-title p {
+  color: var(--muted);
 }
 
 /* Panels: indicators in a row on top, then two rows that share the free height,
@@ -42,13 +45,13 @@ main {
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   min-height: 0;
 }
 .panel-row {
   display: flex;
   flex: 1;
-  gap: 10px;
+  gap: 12px;
   min-height: 0;
 }
 .panel {
@@ -57,46 +60,117 @@ main {
   flex-direction: column;
   min-width: 0;
   min-height: 0;
-  padding: 10px 14px;
-  background: var(--paper);
-  color: var(--ink);
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  background: var(--card);
 }
 .panel.wide {
   flex: 2;
 }
+.panel-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+  margin-bottom: 6px;
+}
 .panel h2 {
-  margin-bottom: 4px;
-  font-size: 15px;
+  font-size: 18px;
 }
 /* Chart.js sizes the canvas to this box, which takes the panel's free height. */
 .chart {
   position: relative;
   flex: 1;
+  min-width: 0;
   min-height: 0;
 }
 
-/* Indicators: value and label on one line, the comparison below. */
+/* Indicators: label, value and the comparison below, on cards with a brass top edge. */
 .stats {
   display: flex;
-  gap: 10px;
+  gap: 12px;
 }
 .stat {
   flex: 1;
-  padding: 6px 14px;
-  border: 1px solid var(--on-green-line);
+  min-width: 0;
+  padding: 10px 16px;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--brass);
+  background: var(--card);
+}
+.stat-label {
+  color: var(--muted);
   font-size: 14px;
-  line-height: 1.4;
 }
 .stat b {
-  margin-right: 6px;
-  color: var(--brass);
+  display: block;
+  color: var(--green-text);
   font-family: var(--font-heading);
-  font-size: 22px;
+  font-size: 30px;
+  font-weight: normal;
+  line-height: 1.2;
   overflow-wrap: anywhere;
 }
 .change {
-  display: block;
-  color: var(--on-green-muted);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* Legends: a colored square next to each name, so a color never carries the meaning alone. */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  list-style: none;
+  color: var(--muted);
+  font-size: 13px;
+}
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.legend b {
+  color: var(--ink);
+}
+.swatch {
+  width: 10px;
+  height: 10px;
+}
+
+/* Results: a donut with the win rate in its middle, and the counts beside it. */
+.results {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 18px;
+  min-height: 0;
+}
+.results .chart {
+  height: 100%;
+}
+.results .legend {
+  flex-shrink: 0;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+}
+.donut-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.donut-center b {
+  font-family: var(--font-heading);
+  font-size: 26px;
+}
+.donut-center span {
+  color: var(--muted);
   font-size: 12px;
 }
 
@@ -117,47 +191,44 @@ main {
 }
 .games th,
 .games td {
-  padding: 5px 8px;
+  padding: 6px 8px;
   border-bottom: 1px solid var(--line);
   text-align: left;
 }
 .games th {
   position: sticky;
   top: 0;
-  background: var(--paper);
+  background: var(--card);
   color: var(--muted);
   font-size: 11px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
-.games button {
-  background: none;
-  border: 0;
-  color: var(--muted);
-  font: inherit;
-  cursor: pointer;
-}
-.games button:hover {
-  color: var(--danger);
-}
 
-/* Result tags */
+/* Result tags: the result in text, with a dot of its color. */
 .tag {
-  padding: 1px 8px;
-  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-weight: 600;
 }
-.vitoria {
-  background: var(--success-bg);
-  color: var(--green-text);
+.tag::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
 }
-.derrota {
-  background: var(--danger-bg);
-  color: var(--danger);
+.tag.vitoria::before,
+.swatch.vitoria {
+  background: var(--win);
 }
-.empate {
-  background: var(--paper-2);
-  color: var(--muted);
+.tag.empate::before,
+.swatch.empate {
+  background: var(--draw);
+}
+.tag.derrota::before,
+.swatch.derrota {
+  background: var(--loss);
 }
 
 /* The footer is hidden here so the panels get the whole window below the header. */
