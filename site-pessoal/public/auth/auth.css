@@ -1,9 +1,51 @@
+/* Page height: the section fills main, so its background reaches the footer, and the form sits in its middle. */
+main {
+  display: flex;
+}
+main > section {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+/* Form: compact spacing, so the sign-up form fits the window together with the header and the footer. */
 .auth {
+  width: 100%;
   max-width: 460px;
   margin: 0 auto;
 }
-.switch {
+.auth.wide {
+  max-width: 640px;
+}
+.auth .section-title {
+  margin-bottom: 16px;
+}
+.auth .section-title h1 {
+  font-size: 32px;
+}
+.auth .card {
+  padding: 24px 28px;
+}
+.auth label {
+  margin: 10px 0 4px;
+}
+.auth .card .btn {
   margin-top: 18px;
+}
+/* Two fields side by side on wide screens. */
+.field-row {
+  display: flex;
+  gap: 16px;
+}
+.field-row > div {
+  flex: 1;
+  min-width: 0;
+}
+.switch {
+  margin-top: 12px;
   color: var(--muted);
   font-size: 15px;
   text-align: center;
@@ -14,4 +56,12 @@
 }
 .switch a:hover {
   color: var(--brass);
+}
+
+/* On phones the fields stack again. */
+@media (max-width: 800px) {
+  .field-row {
+    flex-direction: column;
+    gap: 0;
+  }
 }
