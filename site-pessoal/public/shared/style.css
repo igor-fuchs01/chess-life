@@ -241,10 +241,10 @@ select:focus {
 }
 
 /* Chess board (home page and game page) */
+/* The 64 squares wrap into 8 rows of 8, each one an eighth of the board's width. */
 .board {
-  display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  grid-template-rows: repeat(8, 1fr);
+  display: flex;
+  flex-wrap: wrap;
   aspect-ratio: 1;
   border: 10px solid var(--green);
   box-shadow: 0 30px 60px -30px var(--shadow);
@@ -254,6 +254,8 @@ select:focus {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 12.5%;
+  aspect-ratio: 1;
   font-size: clamp(20px, 3.4vw, 34px);
 }
 .light {
