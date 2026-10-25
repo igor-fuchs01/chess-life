@@ -50,7 +50,7 @@ Body:
 
 ### `POST /usuarios/autenticar` — log in (RF03)
 
-Used by `public/auth/login.js`, which saves the reply in the session.
+Used by `public/auth/login.js`, which saves the reply in the user's session in the browser with `startSession` (see "Authentication" in section 3 of [`02-site-pessoal.md`](02-site-pessoal.md)). The game routes then take the user id from that session.
 
 Body:
 
@@ -147,7 +147,8 @@ The game is deleted only when it belongs to the user, and its moves are deleted 
 - The API connects to MySQL as `chess_life_user_db`, which may only run this document's statements (see "Application user" in section 7 of [`03-database.md`](03-database.md)). A route that needs another statement also needs its `GRANT`.
 - Every query uses `?` placeholders, so request values are never read as SQL.
 - Error replies and logs never include passwords or SQL.
-- **Open gap**: the routes do not check who is calling yet. A game route trusts the user id in the URL, so anyone who knows an id can read or delete that user's games. Closing this gap needs the authentication mechanism, which is still an open decision (JWT or server session, see section 11 of [`01-project.md`](01-project.md)). Once it is chosen, the id will come from the token or session instead of the URL.
+- **Authentication**: done by the user's session in the browser (`sessionStorage`), described with examples in "Authentication" in section 3 of [`02-site-pessoal.md`](02-site-pessoal.md). The API checks the e-mail and password only at `POST /usuarios/autenticar`; it sends no token or cookie, and the page keeps the reply.
+- **Known limit**: the routes do not check who is calling. A game route trusts the user id in the URL, which the page takes from the session, so anyone who sends another id to the API can read or delete that user's games. This is accepted for the academic project.
 
 ## 5. Removed routes
 

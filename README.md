@@ -104,7 +104,7 @@ O plano anda como um peão: uma casa por etapa, até a promoção na última. O 
 | Documentação, requisitos e protótipos | pronta |
 | Páginas públicas: início, história e galeria | prontas, a galeria ainda com espaços para as fotos |
 | API de partidas e dashboard | prontos, aguardando a página de jogo para receber partidas |
-| Cadastro e login | telas prontas, API em adaptação (controle de acesso) |
+| Cadastro e login | prontos, com a sessão do usuário guardada no navegador |
 | Página de jogo, VM, deploy e IA | a fazer |
 
 ## Como rodar

@@ -15,7 +15,7 @@ The database stores only what the application reads and writes through the API:
 Out of the database:
 
 - **Gallery photos**: the image files and captions stay in `public/gallery/` and in the gallery's HTML. The page is visual only (P06), so the photos need no table.
-- **Sessions**: the authentication mechanism is still an open decision. JWT needs no table; a server session stored in MySQL would add one, to be modeled here if it is chosen.
+- **Sessions**: authentication is the user's session in the browser's `sessionStorage` (see "Authentication" in section 3 of [`02-site-pessoal.md`](02-site-pessoal.md)), so sessions need no table.
 
 ## 2. Entities and relationships
 

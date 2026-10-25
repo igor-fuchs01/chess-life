@@ -134,7 +134,7 @@ In the complementary module, the server also talks to the Gemini API or to a che
 | Visualization | Chart.js | Game statistics charts |
 | Back-end | Node.js, Express | REST API, business rules, static files |
 | Database | MySQL 8.0+ | Users, profiles, games, moves and openings; modeled in [`03-database.md`](03-database.md) |
-| Security | JWT or session | Access control |
+| Authentication | `sessionStorage` | Login state and access to the restricted pages |
 | Infrastructure | Linux VM | Hosts the database and the application |
 | Version control | Git, GitHub | Source control |
 | Chess rules | Own JavaScript code (`play/rules.js`), board as an 8×8 matrix | Legal moves, check, special moves and game end |

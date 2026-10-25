@@ -77,7 +77,7 @@ The site uses the "classic" direction chosen by the user: cream paper (`--paper`
 ### Conventions
 
 - Every page has empty `<header id="site-header">` and `<footer id="site-footer">` elements. It loads `shared/theme.js` in `<head>`, then `shared/session.js` and `shared/layout.js`, which fills them. The navigation shows "Entrar" to visitors, and "Jogar", "Dashboard" and "Sair" to logged-in users.
-- Session: `startSession`, `getSessionUser`, `endSession` and `requireSession` in `shared/session.js`, stored in `sessionStorage` (`USER_ID`, `USER_NAME`, `USER_EMAIL`). Restricted pages call `requireSession()` in `<head>`, which sends visitors to the login page.
+- Authentication is the user's session in the browser, through `shared/session.js` (see "Authentication" below).
 - Form feedback uses `showMessage(element, text, "error" | "success")` from `shared/layout.js` (RF11).
 - Pages use relative paths for their files, so they also open straight from disk. Scripts build links from `SITE_ROOT` (`shared/session.js`). API calls only work when the site is served by `app.js`.
 - Forms are validated on the client too, for a quick reply: password of at least 8 characters (RN02), valid e-mail and matching confirmation. The server must repeat these checks.
@@ -85,6 +85,17 @@ The site uses the "classic" direction chosen by the user: cream paper (`--paper`
 - Chart.js 4.4.1 is loaded from cdnjs only on the dashboard.
 - The board's base style (`.board`, `.light`, `.dark`) is in `shared/style.css`, shared by the home page and the game page.
 - Code and identifiers are in English; text shown to users is in Portuguese.
+
+### Authentication
+
+Authentication is done by the user's session in the browser, decided on 2026-10-25. After a successful login the page saves the user in the tab's `sessionStorage`, and every page reads it from there. There is no token, cookie or server session: the server only checks the e-mail and password once, at login.
+
+| Function (`shared/session.js`) | What it does | Called by |
+| --- | --- | --- |
+| `startSession(user)` | Saves `USER_ID`, `USER_NAME` and `USER_EMAIL` in `sessionStorage` | `auth/login.js`, after `POST /usuarios/autenticar` replies `200` |
+| `getSessionUser()` | Returns `{ id, name, email }`, or `null` for a visitor | `shared/layout.js`, `dashboard/dashboard.js`, `play/play.js` |
+| `requireSession()` | Sends a visitor to the login page | The `<head>` of every restricted page |
+| `endSession()` | Clears `sessionStorage` and opens the login page | The "Sair" button of the navigation |
 
 ### Game page
 
@@ -144,5 +155,4 @@ Conventions for new back-end code:
 
 ## 5. Pending
 
-- **Access control**: the API routes do not check who is calling, so a game route trusts the user id in the URL (RN03 depends on the page sending the right id). This waits for the authentication decision, JWT or server session (section 11 of [`01-project.md`](01-project.md)). Section 4 of [`04-api.md`](04-api.md) describes the gap.
 - **Profile**: the `perfil` table exists, but no route or page uses it yet.
