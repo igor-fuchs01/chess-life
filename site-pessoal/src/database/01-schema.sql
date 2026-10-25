@@ -11,8 +11,8 @@ CREATE TABLE IF NOT EXISTS usuario (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(80) NOT NULL,
     email VARCHAR(120) NOT NULL,
-    -- bcrypt hashes are always 60 characters; the plain password is never stored.
-    senha_hash CHAR(60) NOT NULL,
+    -- Stored as plain text, by the author's choice (no hashing).
+    senha VARCHAR(100) NOT NULL,
     data_cadastro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT uq_usuario_email UNIQUE (email)
 );

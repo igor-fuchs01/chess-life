@@ -1,12 +1,10 @@
-const bcrypt = require("bcryptjs");
 const usuarioModel = require("../models/usuarioModel");
 
 const MIN_PASSWORD_LENGTH = 8;
+const MAX_PASSWORD_LENGTH = 100;
 const MAX_NAME_LENGTH = 80;
 const MAX_EMAIL_LENGTH = 120;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-// bcrypt cost factor: each step doubles the time to hash, which slows down password guessing.
-const BCRYPT_COST = 10;
 const DUPLICATE_ENTRY_CODE = "ER_DUP_ENTRY";
 
 /**
@@ -25,8 +23,7 @@ async function registerUser(req, res) {
     }
 
     try {
-        const passwordHash = await bcrypt.hash(password, BCRYPT_COST);
-        const result = await usuarioModel.createUser(name, email, passwordHash);
+        const result = await usuarioModel.createUser(name, email, password);
         res.status(201).json({ id: result.insertId });
     } catch (error) {
         if (error.code === DUPLICATE_ENTRY_CODE) {
@@ -53,7 +50,7 @@ async function authenticateUser(req, res) {
 
     try {
         const user = await usuarioModel.findUserByEmail(email);
-        const isPasswordRight = user !== undefined && await bcrypt.compare(password, user.senha_hash);
+        const isPasswordRight = user !== undefined && user.senha === password;
 
         if (!isPasswordRight) {
             res.status(403).send("E-mail e/ou senha inválidos.");
@@ -82,6 +79,9 @@ function validateNewUser(name, email, password) {
     }
     if (password.length < MIN_PASSWORD_LENGTH) {
         return `A senha precisa ter no mínimo ${MIN_PASSWORD_LENGTH} caracteres.`;
+    }
+    if (password.length > MAX_PASSWORD_LENGTH) {
+        return `A senha pode ter no máximo ${MAX_PASSWORD_LENGTH} caracteres.`;
     }
     return null;
 }
