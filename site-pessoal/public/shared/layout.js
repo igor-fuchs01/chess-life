@@ -58,8 +58,7 @@ function updateThemeButton(button) {
  */
 function getNavigationLinks(user) {
   const links = [
-    { path: "index.html", label: "Início" },
-    { path: "story/story.html", label: "Minha história" },
+    { path: "index.html", label: "Minha história" },
     { path: "gallery/gallery.html", label: "Galeria" }
   ];
 

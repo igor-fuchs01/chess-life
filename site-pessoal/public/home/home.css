@@ -31,26 +31,126 @@
   gap: 14px;
 }
 
-/* Features */
-.features {
+/* Story timeline: events alternate on each side of a center line. */
+.timeline {
+  position: relative;
+  max-width: 800px;
+  margin: 0 auto;
+  list-style: none;
+}
+.timeline::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: var(--brass);
+}
+.event {
+  position: relative;
+  width: 50%;
+  padding: 0 40px 48px;
+}
+.event:nth-child(odd) {
+  text-align: right;
+}
+.event:nth-child(even) {
+  margin-left: 50%;
+}
+.event::after {
+  content: "♟";
+  position: absolute;
+  top: 0;
   display: flex;
-  gap: 24px;
-}
-.feature {
-  flex: 1;
-}
-.feature:hover {
-  border-color: var(--brass);
-}
-.feature-icon {
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--brass);
+  border-radius: 50%;
+  background: var(--paper);
   color: var(--green-text);
-  font-size: 40px;
 }
-.feature h3 {
-  margin: 8px 0;
+.event:nth-child(odd)::after {
+  right: -17px;
+}
+.event:nth-child(even)::after {
+  left: -17px;
+}
+.when {
+  color: var(--brass);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.event h3 {
+  margin: 4px 0 8px;
   font-size: 24px;
 }
-.feature p {
+.event p {
+  color: var(--muted);
+}
+
+/* Socio-emotional competencies: each card shows a chess piece whose move explains the competency.
+   The cards wrap, two per row on wide screens. */
+.competencies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.competency {
+  display: flex;
+  flex: 1 1 400px;
+  align-items: flex-start;
+  gap: 20px;
+}
+.competency-piece {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border: 1px solid var(--line);
+  background: var(--square-light);
+  color: var(--dark-ink);
+  font-size: 48px;
+}
+.competency h3 {
+  margin-bottom: 4px;
+  font-size: 22px;
+}
+.competency-role {
+  margin-bottom: 8px;
+  color: var(--brass);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.competency p {
+  color: var(--muted);
+}
+
+/* Inspirations */
+.inspirations {
+  display: flex;
+  gap: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.inspiration {
+  flex: 1;
+  text-align: center;
+}
+.inspiration h3 {
+  margin-bottom: 12px;
+  color: var(--green-text);
+  font-size: 24px;
+}
+.inspiration p {
   color: var(--muted);
 }
 
@@ -65,7 +165,27 @@
   .hero h1 {
     font-size: 42px;
   }
-  .features {
+  .timeline::before {
+    left: 17px;
+  }
+  .event,
+  .event:nth-child(odd),
+  .event:nth-child(even) {
+    width: 100%;
+    margin-left: 0;
+    padding: 0 0 40px 56px;
+    text-align: left;
+  }
+  .event:nth-child(odd)::after,
+  .event:nth-child(even)::after {
+    right: auto;
+    left: 0;
+  }
+  /* The piece goes above the text, so long names such as "Profissionalismo" fit the card. */
+  .competency {
+    flex-direction: column;
+  }
+  .inspirations {
     flex-direction: column;
   }
 }
