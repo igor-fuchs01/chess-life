@@ -229,7 +229,7 @@ The API does not connect as `root`. It uses `chess_life_user`, which can only ru
 | `perfil` | None | No route uses it yet |
 
 - No `UPDATE`, because no route changes a row. A new route that needs more gets its `GRANT` added to `03-app-user.sql` in the same change.
-- The account is `@'localhost'`: the API and MySQL run on the same machine (the VM, P02 and P03). Another host needs its own account.
+- The account is `@'localhost'`, which works while the API and MySQL run on the same machine, as in local development. On the VM, which holds only the database (R09 in [`01-project.md`](01-project.md)), the API connects from another machine, so the account needs that machine's host (for example `'chess_life_user_db'@'%'` or the host's address) and MySQL must accept remote connections.
 - **The password is written in the script**, by the author's choice, so it is public with the repository. It is only for local development: on the VM, give the user another password with `ALTER USER`. The same password goes in the environment file, with `DB_USER=chess_life_user` and `DB_PASSWORD`.
 - Running the script again keeps the existing user and its password (`CREATE USER IF NOT EXISTS`) and grants the same privileges again. To change the password: `ALTER USER 'chess_life_user'@'localhost' IDENTIFIED BY '...';`.
 - **Validated** on the temporary MySQL 8.0.46:
