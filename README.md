@@ -20,13 +20,13 @@ A seção *Minha história*, na página inicial, conta a trajetória como uma pa
 
 | Lance | Momento | O que aconteceu |
 | --- | --- | --- |
-| **1.** | 4ª série | Uma seleção para alunos interessados em xadrez abriu a porta para o jogo. |
+| **1.** | Ensino Fundamental | Uma seleção para alunos interessados em xadrez abriu a porta para o jogo. |
 | **2.** | No mesmo ano | Venci as seis partidas que disputei e ajudei a minha escola a ganhar a medalha de ouro. |
 | **3.** | Anos seguintes | O tabuleiro despertou o meu interesse por geometria e ângulos, o que contribuiu para uma medalha de bronze na OBMEP. |
 | **4.** | Estudo | Aprofundei as aberturas: a Defesa Siciliana, em especial o Dragão Acelerado, e a Abertura Italiana. |
-| **5.** | Hoje | Cerca de 1500 de rating em partidas de 10 minutos e 1400 em partidas sem acréscimo. |
+| **5.** | Hoje | Cerca de 1500 de rating em partidas rápidas e 1400 em partidas blitz. |
 
-Inspirações pelo caminho: os GMs Krikor Mekhitarian e Evandro Barbosa, no Brasil, e Hikaru Nakamura, Magnus Carlsen e Andrea Botez, no mundo.
+Inspirações pelo caminho: os GMs Krikor Mekhitarian e Evandro Barbosa, no Brasil. Hikaru Nakamura e Magnus Carlsen, no mundo.
 
 <img src="assets/divider.svg" alt="" width="100%">
 
@@ -34,7 +34,7 @@ Inspirações pelo caminho: os GMs Krikor Mekhitarian e Evandro Barbosa, no Bras
 
 | Página | O que mostra | Acesso |
 | --- | --- | --- |
-| **Minha história** (início) | apresentação, a linha do tempo da tabela acima, as competências socioemocionais e as inspirações | público |
+| **Minha história** (início) | apresentação, a linha do tempo da tabela acima, as competências socioemocionais, um agradecimento à família e as inspirações | público |
 | **Galeria** | fotos de torneios, medalhas e horas de estudo, em grade | público |
 | **Cadastro e Login** | conta com nome, e-mail e senha | público |
 | **Meu desempenho no xadrez** | indicadores, gráficos e a lista de partidas jogadas no site | restrito |
@@ -101,7 +101,7 @@ O plano anda como um peão: uma casa por etapa, até a promoção na última. O 
 | Etapa | Situação |
 | --- | --- |
 | Documentação, requisitos e protótipos | pronta |
-| Páginas públicas: início, história e galeria | prontas, a galeria ainda com espaços para as fotos |
+| Páginas públicas: início, história e galeria | prontas, com as fotos na galeria |
 | API de partidas e dashboard | prontos, aguardando a página de jogo para receber partidas |
 | Cadastro e login | prontos, com a sessão do usuário guardada no navegador |
 | Página de jogo, VM, deploy e IA | a fazer |

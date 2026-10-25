@@ -34,8 +34,9 @@ site-pessoal/
     │   ├── theme.js        Light and dark theme, loaded in every page's <head>
     │   ├── session.js      Session in sessionStorage
     │   └── layout.js       Header, footer and form messages
-    ├── home/               Home page styles (hero, story timeline, inspirations, competencies) and the opening board
+    ├── home/               Home page styles (hero, story timeline, competencies, thanks, inspirations)
     ├── gallery/            Photo gallery page
+    ├── assets/             Images shared by the pages: the gallery photos and the animated Accelerated Dragon board (`dragao-acelerado.svg`)
     ├── auth/               Login and sign-up pages
     ├── play/               Restricted game page: rules.js (chess rules) and play.js (board and saving)
     └── dashboard/          Restricted dashboard: indicators, charts and games played on the site
@@ -81,7 +82,8 @@ The site uses the "classic" direction chosen by the user: cream paper (`--paper`
 - Forms are validated on the client too, for a quick reply: password of at least 8 characters (RN02), valid e-mail and matching confirmation. The server must repeat these checks.
 - User-provided text goes into the page with `textContent`, never `innerHTML`.
 - Chart.js 4.4.1 is loaded from cdnjs only on the dashboard.
-- The board's base style (`.board`, `.light`, `.dark`) is in `shared/style.css`, shared by the home page and the game page.
+- The board's base style (`.board`, `.light`, `.dark`) is in `shared/style.css`. The game page draws its board with `play/play.js`; the home page shows `assets/dragao-acelerado.svg` in an `<img class="board">`, so it gets the same frame and shadow.
+- The home page board is an animated SVG of the Accelerated Dragon (1.e4 c5 2.Nf3 Nc6 3.d4 cxd4 4.Nxd4 g6), with no JavaScript. Its CSS animations share one 16s cycle: each move takes 0.6s with 0.9s between moves, the final position stays on screen, and the pieces fade out and back in before the opening repeats. With `prefers-reduced-motion`, it stops on the final position. Its colors are written in the file, since an SVG loaded by `<img>` cannot read the page's CSS variables; the board squares are the same in both themes anyway.
 - Layouts use flexbox, never CSS grid. The board is a wrapping flex container whose 64 squares are each `12.5%` wide and square (`aspect-ratio: 1`); the gallery photos are a third of the row minus the gaps; the dashboard panels sit in two `.panel-row` rows, with `.panel.wide` taking twice the width of the other panel.
 - Code and identifiers are in English; text shown to users is in Portuguese.
 
@@ -114,7 +116,13 @@ Authentication is done by the user's session in the browser, decided on 2026-10-
 
 ### Gallery photos
 
-The gallery currently shows colored placeholder tiles. To use a photo, add the image under `public/gallery/` and put an `<img>` inside its `<figure class="photo">`. The CSS already fills the tile with it.
+The gallery shows six photos, stored in `public/assets/` and referenced as `../assets/<file>`. Each one is a `<figure class="photo">` with an `<img>` (with an `alt` text) and a `<figcaption>` that shows on hover; the CSS crops the image to a square (`object-fit: cover`). One variation:
+
+- `.photo-bottom` keeps the bottom of the photo in the square crop (`object-position: bottom`), for the OBMEP medal photo, whose medal sits at the bottom.
+
+To add a photo, put the file in `public/assets/`, upright and small (`medalha-obmep.jpg` was resized to 900×1200, about 110 KB, from a 4 MB phone photo), add a `<figure>` to `gallery.html` and update the photo count in the profile. Some files are large (`geometria-dark.png` is about 1.5 MB and `chess-board.png` about 1 MB). The geometry photo is always the dark version, in both themes; smaller versions would make the page load faster.
+
+Layout (`gallery/gallery.css`): on screens wider than 800px the page fits the window without scrolling, like the dashboard and the game page, and the footer is hidden. The photos sit in two rows of three inside `.photo-area`, and their size comes from its free width and height with container query units (`cqw`, `cqh`); `.grid` is exactly three photos wide, so a row never holds more. On phones the photos follow the width and the page scrolls when needed. The layout is made for six photos: a seventh would start a third row, which no longer fits the window.
 
 ## 4. Back-end
 

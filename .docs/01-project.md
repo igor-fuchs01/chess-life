@@ -38,7 +38,7 @@ The PI challenge asks for a website with a sign-up form, on a theme that represe
 
 | Page | UI name | Content | Access |
 | --- | --- | --- | --- |
-| Home | Minha história | Project introduction, the author's story timeline, the socio-emotional competencies and the inspirations. The menu calls it "Minha história"; there is no separate "Início" item | Public |
+| Home | Minha história | Project introduction, the author's story timeline, the socio-emotional competencies, a thanks note to the author's father, mother and grandmother, and the inspirations. The menu calls it "Minha história"; there is no separate "Início" item | Public |
 | Gallery | Galeria | Photo grid, visual only | Public |
 | Sign-up | Cadastro | Form with name, e-mail and password | Public |
 | Login | Login | Form with e-mail and password | Public |
@@ -168,7 +168,7 @@ The database is modeled in MySQL. The full model (entity-relationship diagram, d
 | `partida` | `id` (PK), `fk_usuario` (FK → `usuario.id`), `fk_abertura` (FK → `abertura.id`), `resultado`, `adversario`, `cor`, `data_partida` | A game played on the site. One user plays many games; one opening appears in many games (non-identifying relationships) |
 | `lance` | `fk_partida` (PK, FK → `partida.id`), `numero` (PK), `san` | One move of a game: weak entity, 1:N with `partida`, identifying relationship, deleted with its game |
 
-Gallery photos are not stored in the database: they stay in `public/gallery/` and in the page's HTML.
+Gallery photos are not stored in the database: the image files stay in `public/assets/` and the captions in the gallery's HTML.
 
 ## 7. Dashboard charts
 
@@ -244,8 +244,8 @@ Facts the story timeline is built from. The page text itself is written in Portu
 - That same year, won all six of his games in a competition, which helped his school win the gold medal.
 - Chess sparked his interest in geometry and angles. That logical and spatial reasoning contributed to a bronze medal in the OBMEP (Brazilian Public Schools Mathematics Olympiad).
 - Studied openings, especially the Sicilian Defense (Accelerated Dragon variation) and the Italian Game.
-- Ratings: about 1500 in 10-minute games and about 1400 in games without increment.
-- Inspirations: grandmasters Krikor Mekhitarian and Evandro Barbosa (Brazil); Hikaru Nakamura, Magnus Carlsen and Andrea Botez (international).
+- Ratings: about 1500 in rapid games and about 1400 in blitz games.
+- Inspirations: grandmasters Krikor Mekhitarian and Evandro Barbosa (Brazil); Hikaru Nakamura and Magnus Carlsen (international).
 
 The "Competências socioemocionais" section of the home page links each competency of SPTech's socio-emotional evaluation model (*Desenvolvimento Socioemocional — Modelo de avaliação*) to the story. Each card is a chess piece whose move explains the competency, with the link to the story below it. The links were written from the facts above; the ones marked "general" rest on what chess demands rather than on a specific fact, and await the author's review.
 
@@ -255,9 +255,9 @@ The "Competências socioemocionais" section of the home page links each competen
 | Conexão | Knight: jumps and links distant squares | Chess led to geometry and the OBMEP bronze medal | Story fact |
 | Exposição | Queen: the piece everyone watches | Representing the school in a competition | General |
 | Relacionamento | Pawns: in a chain, each protects the next | The six wins added up to the school's gold medal | Story fact |
-| Pontualidade | Rook: firm in its place | The clock in 10-minute games | General |
+| Pontualidade | Rook: firm in its place | The clock in rapid and blitz games | General |
 | Iniciativa | King's pawn: the first move, e4 | The interest that led to the school's chess selection | Story fact |
-| Resiliência | King: holds out until the end of the game | Keeping on playing and studying after losses to reach about 1500 | General |
+| Resiliência | King: holds out until the end of the game | Keeping on playing and studying after losses to reach about 1500 in rapid games | General |
 | Profissionalismo | Castling: a move with precise rules | The expected conduct in a competition: greeting the opponent, respecting the clock, silence | General |
 
 ## 11. Individual project (PI) objectives
@@ -286,7 +286,7 @@ The presentation must "sell the idea" of the site to the audience. Besides the s
 | Which of the author's values does the project represent? | The eight competencies on the home page, each linked to the story (section 10) |
 | What was the hardest part of building the project or of the theme? | To be written by the author |
 | What was the biggest achievement in this challenge? | To be written by the author |
-| Is there someone who deserves thanks for the result? | To be written by the author |
+| Is there someone who deserves thanks for the result? | The author's father, mother and grandmother, for their encouragement at decisive moments: the "Agradecimentos" section of the home page |
 
 ### Use of AI and the prompt diary
 
