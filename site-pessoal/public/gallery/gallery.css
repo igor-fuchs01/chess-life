@@ -1,11 +1,32 @@
+/* Page height: the gallery fits the window, so the page never scrolls. */
+body {
+  height: 100vh;
+}
+main {
+  display: flex;
+  min-height: 0;
+}
+.gallery {
+  display: flex;
+  flex: 1;
+  padding: 24px 0;
+}
+.gallery .wrap {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
 /* Profile */
 .profile {
   display: flex;
   align-items: center;
   gap: 40px;
+  width: 100%;
   max-width: 760px;
-  margin: 0 auto 40px;
-  padding-bottom: 32px;
+  margin: 0 auto 24px;
+  padding-bottom: 24px;
   border-bottom: 1px solid var(--line);
 }
 .avatar {
@@ -35,26 +56,31 @@
   color: var(--ink);
 }
 
-/* Photo grid */
-/* Three photos per row: each one takes a third of the width left after the two gaps. */
+/* Photo grid: two rows of three square photos, as large as the free width and height allow. */
+.photo-area {
+  /* Container query units (cqw, cqh) measure this box, so the photos can follow the window height. */
+  container-type: size;
+  flex: 1;
+  width: 100%;
+  max-width: 760px;
+  min-height: 0;
+  margin: 0 auto;
+}
 .grid {
   --photo-gap: 6px;
+  --photo-size: min((100cqw - 2 * var(--photo-gap)) / 3, (100cqh - var(--photo-gap)) / 2);
   display: flex;
   flex-wrap: wrap;
   gap: var(--photo-gap);
-  max-width: 760px;
+  /* Exactly three photos wide, so the rows always hold three. */
+  width: calc(3 * var(--photo-size) + 2 * var(--photo-gap));
   margin: 0 auto;
 }
 .photo {
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: calc((100% - 2 * var(--photo-gap)) / 3);
+  width: var(--photo-size);
   aspect-ratio: 1;
   overflow: hidden;
-  color: var(--light-ink);
-  font-size: 64px;
 }
 .photo img,
 .photo figcaption {
@@ -72,6 +98,7 @@
   justify-content: center;
   padding: 16px;
   background: var(--overlay);
+  color: var(--light-ink);
   font-size: 15px;
   text-align: center;
   opacity: 0;
@@ -80,17 +107,28 @@
 .photo:hover figcaption {
   opacity: 1;
 }
-.tone-1 {
-  background: var(--green);
-}
-.tone-2 {
-  background: var(--brass);
-}
-.tone-3 {
-  background: var(--dark-ink);
+/* The square crop keeps the bottom of the photo, where the subject is (the medal). */
+.photo-bottom img {
+  object-position: bottom;
 }
 
+/* The footer is hidden here so the photos get the whole window below the header. */
+.site-footer {
+  display: none;
+}
+
+/* On phones the profile stacks and the photos follow the width, so the page scrolls again. */
 @media (max-width: 800px) {
+  body {
+    height: auto;
+  }
+  .photo-area {
+    container-type: normal;
+  }
+  .grid {
+    --photo-size: calc((100% - 2 * var(--photo-gap)) / 3);
+    width: auto;
+  }
   .profile {
     flex-direction: column;
     gap: 20px;
@@ -98,8 +136,5 @@
   }
   .counts {
     justify-content: center;
-  }
-  .photo {
-    font-size: 40px;
   }
 }
