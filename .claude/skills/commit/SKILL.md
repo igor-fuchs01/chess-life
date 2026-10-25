@@ -42,7 +42,7 @@ Commit only when the user asks for it. When they do, follow the rules below.
 
 ## Steps
 
-1. Run the `log-prompts` skill first, so the log entries for the task are part of the commits.
+1. Run the `log-prompts` skill first when the prompt also asked for other work, so its log entries are part of the commits. A prompt that only asks to commit is not logged.
 2. Run `git status` and `git diff` to see everything that changed, including untracked files.
 3. Group the changes into the smallest meaningful units and order them so that each commit works on its own.
 4. For each unit, stage only its files by path (`git add <path>`, or `git add -p` when one file holds unrelated changes) and commit. Do not use `git add -A` or `git add .`.

@@ -16,6 +16,8 @@ Keeps a readable history of what was asked and what was decided in the project. 
 
 Create the day's file if it does not exist yet, with the title `# Prompts — YYYY-MM-DD`. Never rewrite or delete old entries: only append to the end.
 
+Do not log prompts that only ask to commit (such as "commit as alterações"): they get no entry in the day's file. When a prompt asks to commit and also asks for other work, log only the other work.
+
 ## Prompt entry format
 
 Append to the end of `.docs/prompts/YYYY-MM-DD.md`:

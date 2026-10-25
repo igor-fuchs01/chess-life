@@ -28,6 +28,7 @@ The project is written in HTML, CSS and JavaScript (Node.js on the server), with
 Every prompt and every decision is logged in `.docs/`. This also applies to questions, planning and tasks that change no code.
 
 - At the end of every task or answer, use the `log-prompts` skill to record the prompt, what was done and the decisions made.
+- Do not log prompts that only ask to commit (such as "commit as alterações"). When a prompt asks to commit and also asks for other work, log only the other work.
 
 Files:
 
