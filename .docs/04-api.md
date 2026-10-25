@@ -144,7 +144,7 @@ The game is deleted only when it belongs to the user, and its moves are deleted 
 ## 4. Security
 
 - Passwords are stored as plain text in `usuario.senha`, without hashing, by the author's choice. Anyone who can read the table sees every password.
-- The API connects to MySQL as `chess_life_user_db`, which may only run this document's statements (see "Application user" in section 7 of [`03-database.md`](03-database.md)). A route that needs another statement also needs its `GRANT`.
+- The API connects to MySQL as `chess_life_user`, which may only run this document's statements (see "Application user" in section 7 of [`03-database.md`](03-database.md)). A route that needs another statement also needs its `GRANT`.
 - Every query uses `?` placeholders, so request values are never read as SQL.
 - Error replies and logs never include passwords or SQL.
 - **Authentication**: done by the user's session in the browser (`sessionStorage`), described with examples in "Authentication" in section 3 of [`02-site-pessoal.md`](02-site-pessoal.md). The API checks the e-mail and password only at `POST /usuarios/autenticar`; it sends no token or cookie, and the page keeps the reply.

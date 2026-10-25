@@ -206,7 +206,7 @@ The physical model is implemented by three scripts in `site-pessoal/src/database
 | --- | --- |
 | `01-schema.sql` | Creates the `chess_life` database and the five tables, parents first, so every foreign key points to a table that already exists |
 | `02-seed.sql` | Loads the 50 rows of `abertura`: "Abertura irregular" plus 49 known openings. This table is the API's opening list |
-| `03-app-user.sql` | Creates `chess_life_user_db`@`localhost`, the MySQL user the API connects with, and grants it only what the API needs |
+| `03-app-user.sql` | Creates `chess_life_user`@`localhost`, the MySQL user the API connects with, and grants it only what the API needs |
 
 ```
 mysql -u <user> -p < site-pessoal/src/database/01-schema.sql
@@ -218,7 +218,7 @@ The same files can be opened and run in MySQL Workbench.
 
 ### Application user
 
-The API does not connect as `root`. It uses `chess_life_user_db`, which can only run the statements in [`04-api.md`](04-api.md). A flaw in the API, such as an injected statement, cannot drop tables, change other databases or read MySQL's own users.
+The API does not connect as `root`. It uses `chess_life_user`, which can only run the statements in [`04-api.md`](04-api.md). A flaw in the API, such as an injected statement, cannot drop tables, change other databases or read MySQL's own users.
 
 | Table | Privileges | Used by |
 | --- | --- | --- |
@@ -230,8 +230,8 @@ The API does not connect as `root`. It uses `chess_life_user_db`, which can only
 
 - No `UPDATE`, because no route changes a row. A new route that needs more gets its `GRANT` added to `03-app-user.sql` in the same change.
 - The account is `@'localhost'`: the API and MySQL run on the same machine (the VM, P02 and P03). Another host needs its own account.
-- **The password is written in the script**, by the author's choice, so it is public with the repository. It is only for local development: on the VM, give the user another password with `ALTER USER`. The same password goes in the environment file, with `DB_USER=chess_life_user_db` and `DB_PASSWORD`.
-- Running the script again keeps the existing user and its password (`CREATE USER IF NOT EXISTS`) and grants the same privileges again. To change the password: `ALTER USER 'chess_life_user_db'@'localhost' IDENTIFIED BY '...';`.
+- **The password is written in the script**, by the author's choice, so it is public with the repository. It is only for local development: on the VM, give the user another password with `ALTER USER`. The same password goes in the environment file, with `DB_USER=chess_life_user` and `DB_PASSWORD`.
+- Running the script again keeps the existing user and its password (`CREATE USER IF NOT EXISTS`) and grants the same privileges again. To change the password: `ALTER USER 'chess_life_user'@'localhost' IDENTIFIED BY '...';`.
 - **Validated** on the temporary MySQL 8.0.46:
   - The script ran twice without errors (when it still read the password from a session variable; only the `CREATE USER` line changed since).
   - Connected as this user, the API passed every route in [`04-api.md`](04-api.md), including the cascade delete of a game's moves.

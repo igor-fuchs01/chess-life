@@ -15,7 +15,7 @@ npm start        # or: npm run dev (restarts on file changes, uses nodemon)
 - `app.js` picks the environment file on its first lines: `.env` for `producao` (remote database) and `.env.dev` for `desenvolvimento` (local database).
 - Both files hold `AMBIENTE_PROCESSO`, `DB_HOST`, `DB_DATABASE`, `DB_USER`, `DB_PASSWORD`, `DB_PORT`, `APP_PORT` and `APP_HOST`. They contain credentials and are ignored by git, so never commit them.
 - The site runs at `http://APP_HOST:APP_PORT`. Variables already set in the shell win over the file, for example `APP_PORT=3399 npm start`.
-- Before the first run, create the database and the application user with `src/database/01-schema.sql`, `02-seed.sql` and `03-app-user.sql` (section 7 of [`03-database.md`](03-database.md)). Then set `DB_DATABASE=chess_life`, `DB_USER=chess_life_user_db` and that user's password in `DB_PASSWORD` in the environment file.
+- Before the first run, create the database and the application user with `src/database/01-schema.sql`, `02-seed.sql` and `03-app-user.sql` (section 7 of [`03-database.md`](03-database.md)). Then set `DB_DATABASE=chess_life`, `DB_USER=chess_life_user` and that user's password in `DB_PASSWORD` in the environment file.
 
 There are no automated tests or lint setup yet.
 
