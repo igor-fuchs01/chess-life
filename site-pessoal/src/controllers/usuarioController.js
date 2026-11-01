@@ -2,6 +2,10 @@ const usuarioModel = require("../models/usuarioModel");
 
 const MIN_PASSWORD_LENGTH = 8;
 const MAX_PASSWORD_LENGTH = 100;
+const UPPERCASE_PATTERN = /[A-Z]/;
+const LOWERCASE_PATTERN = /[a-z]/;
+const DIGIT_PATTERN = /[0-9]/;
+const SPECIAL_CHARACTER_PATTERN = /[^A-Za-z0-9]/;
 const MAX_NAME_LENGTH = 80;
 const MAX_EMAIL_LENGTH = 120;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -48,6 +52,12 @@ async function authenticateUser(req, res) {
         return;
     }
 
+    const passwordError = validatePasswordStrength(password);
+    if (passwordError) {
+        res.status(400).send(passwordError);
+        return;
+    }
+
     try {
         const user = await usuarioModel.findUserByEmail(email);
         const isPasswordRight = user !== undefined && user.senha === password;
@@ -77,11 +87,32 @@ function validateNewUser(name, email, password) {
     if (email.length > MAX_EMAIL_LENGTH || !EMAIL_PATTERN.test(email)) {
         return "Informe um e-mail válido.";
     }
+    if (password.length > MAX_PASSWORD_LENGTH) {
+        return `A senha pode ter no máximo ${MAX_PASSWORD_LENGTH} caracteres.`;
+    }
+    return validatePasswordStrength(password);
+}
+
+/**
+ * Checks that a password is strong (RN02): at least 8 characters, with an uppercase letter,
+ * a lowercase letter, a digit and a special character.
+ * @returns {string|null} The error message, or null when the password is strong.
+ */
+function validatePasswordStrength(password) {
     if (password.length < MIN_PASSWORD_LENGTH) {
         return `A senha precisa ter no mínimo ${MIN_PASSWORD_LENGTH} caracteres.`;
     }
-    if (password.length > MAX_PASSWORD_LENGTH) {
-        return `A senha pode ter no máximo ${MAX_PASSWORD_LENGTH} caracteres.`;
+    if (!UPPERCASE_PATTERN.test(password)) {
+        return "A senha precisa ter pelo menos uma letra maiúscula.";
+    }
+    if (!LOWERCASE_PATTERN.test(password)) {
+        return "A senha precisa ter pelo menos uma letra minúscula.";
+    }
+    if (!DIGIT_PATTERN.test(password)) {
+        return "A senha precisa ter pelo menos um número.";
+    }
+    if (!SPECIAL_CHARACTER_PATTERN.test(password)) {
+        return "A senha precisa ter pelo menos um caractere especial.";
     }
     return null;
 }
