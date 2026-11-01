@@ -156,7 +156,7 @@ erDiagram
 | Rule | How the model enforces it |
 | --- | --- |
 | RN01 — unique e-mail | `UNIQUE` on `usuario.email` |
-| RN02 — password of at least 8 characters | Checked by the API before saving `senha` |
+| RN02 — strong password (at least 8 characters with an uppercase letter, a lowercase letter, a digit and a special character) | Checked by the API before saving `senha` |
 | RN03 — users only see their own games | `partida.fk_usuario`; every query filters by it |
 | RN04 — result is win, loss or draw | `CHECK` on `partida.resultado` |
 | RN05 — no future game date | `partida.data_partida` defaults to `CURRENT_TIMESTAMP` and the API never sends it |

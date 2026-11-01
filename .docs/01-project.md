@@ -123,7 +123,7 @@ Priorities: **Essential** (must ship), **Important** (should ship), **Desirable*
 | ID | Rule |
 | --- | --- |
 | RN01 | A user's e-mail is unique. |
-| RN02 | Passwords have at least 8 characters. |
+| RN02 | Passwords are strong: at least 8 characters with an uppercase letter, a lowercase letter, a digit and a special character. |
 | RN03 | Users can only see their own games. |
 | RN04 | A game result is one of: win, loss or draw. |
 | RN05 | A recorded game cannot have a future date: the database sets it to the moment the game is saved. |

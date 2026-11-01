@@ -32,19 +32,19 @@ Used by `public/auth/signup.js`.
 Body:
 
 ```json
-{ "nomeServer": "Igor", "emailServer": "igor@exemplo.com", "senhaServer": "senhaforte1" }
+{ "nomeServer": "Igor", "emailServer": "igor@exemplo.com", "senhaServer": "Senhaforte1!" }
 ```
 
 | Field | Rule |
 | --- | --- |
 | `nomeServer` | Required, up to 80 characters |
 | `emailServer` | Required, a valid e-mail, up to 120 characters. Unique, ignoring upper and lower case (RN01) |
-| `senhaServer` | Required, 8 to 100 characters (RN02). Stored as plain text |
+| `senhaServer` | Required, 8 to 100 characters, with an uppercase letter (`A-Z`), a lowercase letter (`a-z`), a digit and a special character (anything other than `A-Z`, `a-z` and `0-9`) (RN02). Stored as plain text |
 
 | Reply | Body |
 | --- | --- |
 | `201` | `{ "id": 1 }` |
-| `400` | `Preencha o nome, o e-mail e a senha.`, `O nome pode ter no máximo 80 caracteres.`, `Informe um e-mail válido.`, `A senha precisa ter no mínimo 8 caracteres.` or `A senha pode ter no máximo 100 caracteres.` |
+| `400` | `Preencha o nome, o e-mail e a senha.`, `O nome pode ter no máximo 80 caracteres.`, `Informe um e-mail válido.`, `A senha pode ter no máximo 100 caracteres.`, or one of the password strength errors: `A senha precisa ter no mínimo 8 caracteres.`, `A senha precisa ter pelo menos uma letra maiúscula.`, `A senha precisa ter pelo menos uma letra minúscula.`, `A senha precisa ter pelo menos um número.`, `A senha precisa ter pelo menos um caractere especial.` |
 | `409` | `Este e-mail já está cadastrado.` |
 | `500` | `Não foi possível criar a conta.` |
 
@@ -55,13 +55,13 @@ Used by `public/auth/login.js`, which saves the reply in the user's session in t
 Body:
 
 ```json
-{ "emailServer": "igor@exemplo.com", "senhaServer": "senhaforte1" }
+{ "emailServer": "igor@exemplo.com", "senhaServer": "Senhaforte1!" }
 ```
 
 | Reply | Body |
 | --- | --- |
 | `200` | `{ "id": 1, "nome": "Igor", "email": "igor@exemplo.com" }`. The password is never returned |
-| `400` | `Informe o e-mail e a senha.` |
+| `400` | `Informe o e-mail e a senha.`, or one of the password strength errors of `POST /usuarios/cadastrar`, checked before the database is read |
 | `403` | `E-mail e/ou senha inválidos.` The same reply for an unknown e-mail and a wrong password, so it does not reveal which accounts exist |
 | `500` | `Não foi possível entrar.` |
 
