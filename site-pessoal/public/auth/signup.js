@@ -1,4 +1,3 @@
-const MIN_PASSWORD_LENGTH = 8;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const REDIRECT_DELAY_MS = 1500;
 
@@ -46,7 +45,7 @@ async function createAccount(event) {
 }
 
 /**
- * Checks the sign-up fields (business rule RN02: password of at least 8 characters).
+ * Checks the sign-up fields, including the password strength (business rule RN02).
  * @returns {string|null} The error message, or null when every field is valid.
  */
 function validateSignup(name, email, password, confirmation) {
@@ -56,8 +55,9 @@ function validateSignup(name, email, password, confirmation) {
   if (!EMAIL_PATTERN.test(email)) {
     return "Informe um e-mail válido.";
   }
-  if (password.length < MIN_PASSWORD_LENGTH) {
-    return `A senha precisa ter no mínimo ${MIN_PASSWORD_LENGTH} caracteres.`;
+  const passwordError = validatePasswordStrength(password);
+  if (passwordError) {
+    return passwordError;
   }
   if (password !== confirmation) {
     return "As senhas não conferem.";
