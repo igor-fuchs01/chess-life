@@ -55,7 +55,7 @@ function renderSidebar() {
   sidebar.className = "sidebar";
   sidebar.innerHTML = `
     <a href="${SITE_ROOT}index.html" class="sidebar-brand">
-      <img src="${SITE_ROOT}shared/logo.svg" alt=""><span class="sidebar-label">Chess <span>Life</span></span>
+      <img src="${SITE_ROOT}assets/logo.svg" alt=""><span class="sidebar-label">Chess <span>Life</span></span>
     </a>
     <nav class="sidebar-nav" aria-label="Menu principal">${navigation}</nav>
     <div class="sidebar-bottom">${bottomButtons}</div>`;
