@@ -1,12 +1,6 @@
 const FOOTER_TEXT = "Chess Life · Projeto Individual de Pesquisa e Inovação · SPTech 2026 · Igor Fuchs Pereira";
 const HOME_PATH = "index.html";
 const LOGIN_PATH = "auth/login.html";
-// A door drawn with the text color: the door character (🚪) is a color emoji on most systems.
-const DOOR_ICON = `
-  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-    <path d="M6 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17M3 21h18"/>
-    <circle cx="14.5" cy="12" r="1" fill="currentColor"/>
-  </svg>`;
 
 /**
  * Fills the page's <aside id="site-sidebar"> with the logo, the navigation menu and the bottom buttons.
@@ -47,7 +41,7 @@ function renderSidebar() {
     const activeClass = isCurrentPage(LOGIN_PATH) ? " active" : "";
     bottomButtons += `
       <a href="${SITE_ROOT}${LOGIN_PATH}" class="sidebar-item${activeClass}" title="Entrar">
-        <span class="sidebar-icon" aria-hidden="true">${DOOR_ICON}</span><span class="sidebar-label">Entrar</span>
+        <span class="sidebar-icon door" aria-hidden="true"></span><span class="sidebar-label">Entrar</span>
       </a>`;
   }
 

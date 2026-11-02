@@ -222,10 +222,12 @@ body:has(#agradecimentos:target) .sidebar-item[href="#agradecimentos"] {
   line-height: 1;
   text-align: center;
 }
-/* An inline SVG sits on the text baseline; as a block it is exactly as tall as the glyph icons. */
-.sidebar-icon svg {
-  display: block;
-  margin: 0 auto;
+/* The door file is a mask over the text color, so it follows the hover and the theme like the glyph icons;
+   an SVG loaded from a file cannot read the page's colors. */
+.sidebar-icon.door {
+  height: 20px;
+  background: currentColor;
+  mask: url("../assets/porta.svg") center / 20px no-repeat;
 }
 
 /* Section titles */
