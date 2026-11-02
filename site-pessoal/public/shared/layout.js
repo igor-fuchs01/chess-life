@@ -86,18 +86,14 @@ function updateThemeButton(button) {
 }
 
 /**
- * Lists the menu links, with paths relative to the site root. The home page sections come right after the home page.
+ * Lists the menu links, with paths relative to the site root.
  * @param {object|null} user - The logged-in user, or null for a visitor.
  * @returns {{path: string, label: string, icon: string}[]}
  */
 function getNavigationLinks(user) {
   const links = [
     { path: HOME_PATH, label: "Minha história", icon: "♚" },
-    // The pawn is the only piece that some systems draw as a color emoji; "\uFE0E" asks for the plain text glyph.
-    { path: `${HOME_PATH}#historia`, label: "Linha do tempo", icon: "♟\uFE0E" },
-    { path: `${HOME_PATH}#competencias`, label: "Competências", icon: "♛" },
-    { path: `${HOME_PATH}#inspiracoes`, label: "Inspirações", icon: "✦" },
-    { path: `${HOME_PATH}#agradecimentos`, label: "Agradecimentos", icon: "♡" },
+    { path: `${HOME_PATH}#agradecimentos`, label: "Agradecimentos", icon: "♛" },
     { path: "gallery/gallery.html", label: "Galeria", icon: "♝" }
   ];
 

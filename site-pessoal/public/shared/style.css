@@ -67,7 +67,7 @@
 }
 
 /* Base */
-/* The sidebar's section links glide to their section, unless the system asks for reduced motion. */
+/* The sidebar's section link glides to its section, unless the system asks for reduced motion. */
 @media (prefers-reduced-motion: no-preference) {
   html {
     scroll-behavior: smooth;
