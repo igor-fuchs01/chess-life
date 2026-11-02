@@ -117,6 +117,7 @@ Priorities: **Essential** (must ship), **Important** (should ship), **Desirable*
 | RF14 | Moves are validated against the rules of chess. | Desirable |
 | RF15 | The system detects check, checkmate, draw and game end. | Desirable |
 | RF16 | The result of a game against the AI is saved and shows in the charts. | Desirable |
+| RF17 | Users create their player profile (rating, starting year, favorite opening and bio) at sign-up, and can update it on the game's start screen. | Desirable |
 
 ### Business rules
 
@@ -186,7 +187,7 @@ The dashboard, titled "Desempenho no Xadrez", fetches the user's games from the 
 
 Games are not typed in by hand: they reach the dashboard only by being played on the site.
 
-The page uses the site's look: the paper background, white cards with a brass top edge for the indicators, Georgia numbers and titles, and result colors from `--win`, `--draw` and `--loss` (see "Themes" in [`02-site-pessoal.md`](02-site-pessoal.md)). On screens wider than 800px the dashboard fits the browser window and the page does not scroll: the indicators sit in a row on top, and the charts and the table fill two rows below them, each with a wide and a narrow panel. The footer is hidden on this page to give the charts more height. When there are more games than fit, only the table scrolls, inside its panel. On phones the panels stack and the page scrolls.
+The page uses the site's look: the paper background, white cards with a brass top edge for the indicators, Georgia numbers and titles, and result colors from `--win`, `--draw` and `--loss` (see "Themes" in [`02-site-pessoal.md`](02-site-pessoal.md)). On screens wider than 800px the indicators sit in a row on top, and the charts and the table sit in two rows below them, each with a wide and a narrow panel. The charts are 260px tall, the table scrolls inside its panel past that height, and the page scrolls when needed. On phones the panels stack.
 
 ## 8. Complementary module: chess against an AI
 

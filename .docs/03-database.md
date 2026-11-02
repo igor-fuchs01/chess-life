@@ -107,11 +107,17 @@ erDiagram
 | `id` | `INT` | No | PK, `AUTO_INCREMENT` | Profile identifier |
 | `rating` | `INT` | Yes | | The user's chess rating, such as 1500 |
 | `ano_inicio` | `YEAR` | Yes | | The year the user started playing chess |
-| `bio` | `VARCHAR(280)` | Yes | | Short text about the user |
+| `bio` | `VARCHAR(280)` | Yes | | Short text about the user. The API accepts up to 50 characters since 2026-11-02; the column kept its size, so no `ALTER TABLE` was needed |
 | `fk_usuario` | `INT` | No | FK → `usuario.id`, `UNIQUE` | The profile's owner. Being unique, it allows at most one profile per user |
 | `fk_abertura_favorita` | `INT` | Yes | FK → `abertura.id` | The opening the user names as their favorite |
 
-- The profile is optional: a user may have no row in `perfil`.
+- Since 2026-11-02 the sign-up creates the profile together with the account, in one transaction, so every new user has a row in `perfil`. The API requires every profile field at sign-up and on update; the columns stay nullable, for the empty profiles below. The table still allows a user with no profile, and accounts created before that date have none. Give them an empty profile, which they must then fill on the game's start screen, with:
+
+  ```sql
+  INSERT INTO perfil (fk_usuario)
+  SELECT u.id FROM usuario u
+  WHERE NOT EXISTS (SELECT 1 FROM perfil p WHERE p.fk_usuario = u.id);
+  ```
 - `fk_abertura_favorita` is what the user chooses. It is not the dashboard's "abertura favorita" indicator, which is computed from the games played.
 
 ### `abertura`
@@ -222,14 +228,14 @@ The API does not connect as `root`. It uses `chess_life_user`, which can only ru
 | Table | Privileges | Used by |
 | --- | --- | --- |
 | `usuario` | `SELECT`, `INSERT` | Login, sign-up |
-| `abertura` | `SELECT` | Opening identification |
+| `abertura` | `SELECT` | Opening identification, the favorite opening options |
 | `partida` | `SELECT`, `INSERT` | List and save games |
 | `lance` | `SELECT`, `INSERT` | Save the moves |
-| `perfil` | None | No route uses it yet |
+| `perfil` | `SELECT`, `INSERT`, `UPDATE` | Create the profile at sign-up; read and update it on the game's start screen |
 
 A user created before 2026-10-25 also has `DELETE` on `partida` and `lance`, from when games could be deleted; running the script again does not take it away. Remove it with `REVOKE DELETE ON chess_life.partida FROM 'chess_life_user'@'localhost';` and the same for `chess_life.lance`.
 
-- No `UPDATE`, because no route changes a row. A new route that needs more gets its `GRANT` added to `03-app-user.sql` in the same change.
+- `UPDATE` only on `perfil`, the one table whose rows a route changes (`PUT /perfis/atualizar/:idUsuario`). A new route that needs more gets its `GRANT` added to `03-app-user.sql` in the same change. A user created before 2026-11-02 has no grant on `perfil`: run the script again to add it.
 - The account is `@'localhost'`, which works while the API and MySQL run on the same machine, as in local development. On the VM, which holds only the database (R09 in [`01-project.md`](01-project.md)), the API connects from another machine, so the account needs that machine's host (for example `'chess_life_user_db'@'%'` or the host's address) and MySQL must accept remote connections.
 - **The password is written in the script**, by the author's choice, so it is public with the repository. It is only for local development: on the VM, give the user another password with `ALTER USER`. The same password goes in the environment file, with `DB_USER=chess_life_user` and `DB_PASSWORD`.
 - Running the script again keeps the existing user and its password (`CREATE USER IF NOT EXISTS`) and grants the same privileges again. To change the password: `ALTER USER 'chess_life_user'@'localhost' IDENTIFIED BY '...';`.
@@ -275,4 +281,5 @@ Built on 2026-10-15; the routes are in [`04-api.md`](04-api.md).
 - **`abertura`**: `aberturaModel.listOpenings` reads the rows, and `openingBook.identifyOpening` picks the longest `lances` the game starts with, or the row with empty `lances`. To recognize a new opening, insert a row: no code changes.
 - **`partida` and `lance`**: `partidaModel.registerGame` inserts the game, then all its moves in one multi-row `INSERT`, numbered from 1, inside one transaction. A failure rolls both back, so no game is left without moves. A user id with no account fails on `fk_partida_usuario` (`ER_NO_REFERENCED_ROW_2`) and becomes a `404` reply.
 - **Listing**: `listGames` joins `abertura` and returns its name as `abertura`. It does not read `lance`.
-- **`perfil`**: no route uses it yet: no requirement in [`01-project.md`](01-project.md) asks for it so far.
+- **`perfil`**: `usuarioModel.createUser` inserts the user and then their profile inside one transaction (`database.transaction`), so a failure saves neither. A favorite opening that does not exist fails on `fk_perfil_abertura` (`ER_NO_REFERENCED_ROW_2`) and becomes a `400`. `perfilModel.findProfile` reads the user's profile joined with the favorite opening's name (`LEFT JOIN`, since the opening is optional). `updateProfile` replaces every field; no row changed means no profile, a `404`, and an unknown opening becomes a `400`.
+- **`abertura` list**: `aberturaModel.listOpeningNames` returns `id` and `nome` in alphabetical order, for the favorite opening options.
