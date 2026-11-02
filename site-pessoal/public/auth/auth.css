@@ -11,14 +11,14 @@ main > section {
   padding-bottom: 12px;
 }
 
-/* Form: compact spacing, so the sign-up form fits the window together with the header and the footer. */
+/* Form: compact spacing, so the sign-up form fits the window together with the footer. */
 .auth {
   width: 100%;
-  max-width: 460px;
+  max-width: calc(460px + var(--sidebar-space));
   margin: 0 auto;
 }
 .auth.wide {
-  max-width: 640px;
+  max-width: calc(640px + var(--sidebar-space));
 }
 .auth .section-title {
   margin-bottom: 16px;

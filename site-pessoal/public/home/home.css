@@ -3,7 +3,8 @@
   display: flex;
   align-items: center;
   gap: 64px;
-  padding: 96px 24px;
+  padding-top: 96px;
+  padding-bottom: 96px;
 }
 /* The text takes a bit more width than the board, as 1.2 to 1. */
 .hero > :first-child {

@@ -112,7 +112,7 @@ main {
   object-position: bottom;
 }
 
-/* The footer is hidden here so the photos get the whole window below the header. */
+/* The footer is hidden here so the photos get the whole window height. */
 .site-footer {
   display: none;
 }

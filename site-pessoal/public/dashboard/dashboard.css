@@ -18,7 +18,7 @@ main {
   flex: 1;
   flex-direction: column;
   min-width: 0;
-  max-width: 1400px;
+  max-width: calc(1400px + var(--sidebar-space));
 }
 /* Title: the ornament, the title and a short description on one line. */
 .dash-title {
@@ -231,7 +231,7 @@ main {
   background: var(--loss);
 }
 
-/* The footer is hidden here so the panels get the whole window below the header. */
+/* The footer is hidden here so the panels get the whole window height. */
 .site-footer {
   display: none;
 }

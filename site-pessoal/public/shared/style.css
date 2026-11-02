@@ -33,6 +33,13 @@
   --square-target: rgba(31, 26, 20, 0.28);
   --font-heading: Georgia, "Times New Roman", Times, serif;
   --font-body: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* Sidebar: closed it shows only the icons (rail), open it shows the labels too. */
+  --sidebar-rail: 68px;
+  --sidebar-open: 240px;
+  --sidebar-gap: 16px;
+  --sidebar-space: calc(var(--sidebar-rail) + var(--sidebar-gap) * 2);
+  /* Light edge that imitates the reflection on the glass border. */
+  --glass-border: rgba(255, 255, 255, 0.7);
 }
 
 /* Dark theme, set by shared/theme.js. The board squares keep their wood colors. */
@@ -56,9 +63,16 @@
   --loss: #e05d3d;
   --overlay: rgba(0, 0, 0, 0.65);
   --shadow: rgba(0, 0, 0, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.12);
 }
 
 /* Base */
+/* The sidebar's section links glide to their section, unless the system asks for reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
 * {
   box-sizing: border-box;
   margin: 0;
@@ -91,71 +105,125 @@ section {
   padding-top: 40px;
   padding-bottom: 40px;
 }
+/* The sections span the whole window, under the sidebar; their content keeps clear of the closed sidebar
+   and is centered in the space to its right. Open, the sidebar goes over the content instead of pushing it. */
 .wrap {
-  max-width: 1100px;
+  max-width: calc(1100px + var(--sidebar-space));
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 24px 0 calc(var(--sidebar-space) + 24px);
 }
 
-/* Header */
-.site-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: var(--paper);
-  border-bottom: 1px solid var(--line);
-}
-.site-header .wrap {
+/* Sidebar: floating glass bar that widens over the page on hover or keyboard focus, with no JavaScript.
+   The glass is a semi-transparent background plus backdrop-filter, which blurs the page behind the bar;
+   an opaque background would hide the blur. */
+.sidebar {
+  position: fixed;
+  top: var(--sidebar-gap);
+  bottom: var(--sidebar-gap);
+  left: var(--sidebar-gap);
+  z-index: 50;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  height: 72px;
+  flex-direction: column;
+  width: var(--sidebar-rail);
+  padding: 16px 10px;
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--card) 55%, transparent);
+  backdrop-filter: blur(16px) saturate(160%);
+  box-shadow: 0 18px 45px -18px var(--shadow);
+  font-size: 15px;
+  transition: width 0.25s ease;
 }
-.logo {
+.sidebar:hover,
+.sidebar:focus-within {
+  width: var(--sidebar-open);
+}
+/* The labels are always in the page: they are only invisible while the sidebar is closed. */
+.sidebar-label {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.sidebar:hover .sidebar-label,
+.sidebar:focus-within .sidebar-label {
+  opacity: 1;
+}
+.sidebar-brand {
   display: flex;
   align-items: center;
   gap: 12px;
+  padding: 0 6px;
   font-family: var(--font-heading);
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 700;
+  white-space: nowrap;
 }
-.logo img {
-  width: 40px;
-  height: 40px;
+.sidebar-brand img {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
 }
-.logo span {
+.sidebar-brand span span {
   color: var(--brass);
 }
-.site-nav {
+.sidebar-nav,
+.sidebar-bottom {
   display: flex;
-  gap: 28px;
-  font-size: 15px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  flex-direction: column;
+  gap: 4px;
 }
-.site-nav a:hover,
-.site-nav .active {
-  color: var(--brass);
+.sidebar-nav {
+  margin-top: 28px;
 }
-.site-nav button {
-  background: none;
+/* margin-top: auto pushes this group to the bottom of the bar. */
+.sidebar-bottom {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--glass-border);
+}
+/* Links and buttons look the same. */
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 11px;
   border: 0;
+  border-radius: 12px;
+  background: none;
   color: inherit;
   font: inherit;
-  letter-spacing: inherit;
-  text-transform: inherit;
+  white-space: nowrap;
   cursor: pointer;
 }
-.site-nav button:hover {
+/* A green tint, since a lighter glass tone barely shows over the light theme's cream. */
+.sidebar-item:hover {
+  background: color-mix(in srgb, var(--green-text) 14%, transparent);
+  color: var(--green-text);
+}
+/* :focus-visible only applies to keyboard focus, so clicking shows no outline. */
+.sidebar-item:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: -2px;
+}
+.sidebar-item.active {
+  background: var(--green);
+  color: var(--light-ink);
+}
+.sidebar-item.danger:hover {
   color: var(--danger);
 }
-.site-nav .theme-toggle {
-  font-size: 18px;
+/* Fixed width, so every icon and label sits in the same column. */
+.sidebar-icon {
+  flex-shrink: 0;
+  width: 24px;
+  font-size: 20px;
   line-height: 1;
+  text-align: center;
 }
-.site-nav .theme-toggle:hover {
-  color: var(--brass);
+/* An inline SVG sits on the text baseline; as a block it is exactly as tall as the glyph icons. */
+.sidebar-icon svg {
+  display: block;
+  margin: 0 auto;
 }
 
 /* Section titles */
@@ -294,7 +362,7 @@ select:focus {
 
 /* Footer */
 .site-footer {
-  padding: 40px 0;
+  padding: 40px 0 40px var(--sidebar-space);
   border-top: 1px solid var(--line);
   color: var(--muted);
   font-size: 14px;
@@ -304,17 +372,6 @@ select:focus {
 @media (max-width: 800px) {
   section {
     padding: 64px 0;
-  }
-  .site-header .wrap {
-    flex-wrap: wrap;
-    height: auto;
-    padding-top: 14px;
-    padding-bottom: 14px;
-  }
-  .site-nav {
-    flex-wrap: wrap;
-    gap: 16px;
-    font-size: 13px;
   }
   .section-title h1,
   .section-title h2 {
