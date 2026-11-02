@@ -22,7 +22,7 @@ async function findUserByEmail(email) {
  * @param {string} name
  * @param {string} email
  * @param {string} password - Stored as plain text.
- * @param {{rating: number, anoInicio: number, bio: string, fkAberturaFavorita: number}} profile
+ * @param {{rating: number, anoInicio: number, bio: string, fkAberturaFavorita: number|null}} profile
  * @returns {Promise<number>} The new user's id.
  */
 function createUser(name, email, password, profile) {

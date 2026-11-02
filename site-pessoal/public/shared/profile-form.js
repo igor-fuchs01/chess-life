@@ -44,14 +44,15 @@ function readProfileFields(form) {
 }
 
 /**
- * Checks the profile on the page, for a quick reply; the API repeats the checks. Every field is required.
+ * Checks the profile on the page, for a quick reply; the API repeats the checks.
+ * Rating, starting year and bio are required; the favorite opening may be "Nenhuma".
  * The bio needs no length check here: the field's maxlength already limits it.
  * @param {{rating: number|null, ano_inicio: number|null, bio: string|null, fk_abertura_favorita: number|null}} profile
  * @returns {string|null} The error message, or null when the profile is valid.
  */
 function validateProfileFields(profile) {
-  if (profile.rating === null || profile.ano_inicio === null || profile.fk_abertura_favorita === null || profile.bio === null) {
-    return "Preencha o rating, o ano em que começou a jogar, a abertura favorita e a bio.";
+  if (profile.rating === null || profile.ano_inicio === null || profile.bio === null) {
+    return "Preencha o rating, o ano em que começou a jogar e a bio.";
   }
   if (!isWholeNumberBetween(profile.rating, 0, PROFILE_MAX_RATING)) {
     return `O rating precisa ser um número inteiro de 0 a ${PROFILE_MAX_RATING}.`;

@@ -21,7 +21,7 @@ async function findProfile(userId) {
 /**
  * Replaces every field of a user's profile. Fails with ER_NO_REFERENCED_ROW_2 when the opening does not exist.
  * @param {number} userId
- * @param {{rating: number, anoInicio: number, bio: string, fkAberturaFavorita: number}} profile
+ * @param {{rating: number, anoInicio: number, bio: string, fkAberturaFavorita: number|null}} profile
  * @returns {Promise<boolean>} False when the user has no profile to update.
  */
 async function updateProfile(userId, profile) {

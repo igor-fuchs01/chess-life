@@ -63,14 +63,15 @@ async function updateProfile(req, res) {
 }
 
 /**
- * Checks the profile fields. Every field is required: the player profile is not optional.
+ * Checks the profile fields. Rating, starting year and bio are required; the favorite opening may be empty,
+ * for a user who has none.
  * Also used by the sign-up, which creates the profile together with the account.
  * @param {object} body - The request body.
  * @returns {string|null} The error message, or null when every field is valid.
  */
 function validateProfile(body) {
-    if (isEmpty(body.rating) || isEmpty(body.ano_inicio) || isEmpty(body.bio) || isEmpty(body.fk_abertura_favorita)) {
-        return "Preencha o rating, o ano de início, a abertura favorita e a bio.";
+    if (isEmpty(body.rating) || isEmpty(body.ano_inicio) || isEmpty(body.bio)) {
+        return "Preencha o rating, o ano de início e a bio.";
     }
     if (!isWholeNumberBetween(body.rating, 0, MAX_RATING)) {
         return "Rating inválido.";
@@ -82,7 +83,7 @@ function validateProfile(body) {
     if (typeof body.bio !== "string" || body.bio.trim().length > MAX_BIO_LENGTH) {
         return `A bio pode ter no máximo ${MAX_BIO_LENGTH} caracteres.`;
     }
-    if (!parseId(body.fk_abertura_favorita)) {
+    if (!isEmpty(body.fk_abertura_favorita) && !parseId(body.fk_abertura_favorita)) {
         return "Abertura inválida.";
     }
     return null;
@@ -91,14 +92,14 @@ function validateProfile(body) {
 /**
  * Turns a validated body into the model's profile. Also used by the sign-up.
  * @param {object} body - The request body, already validated.
- * @returns {{rating: number, anoInicio: number, bio: string, fkAberturaFavorita: number}}
+ * @returns {{rating: number, anoInicio: number, bio: string, fkAberturaFavorita: number|null}}
  */
 function readProfile(body) {
     return {
         rating: body.rating,
         anoInicio: body.ano_inicio,
         bio: body.bio.trim(),
-        fkAberturaFavorita: parseId(body.fk_abertura_favorita)
+        fkAberturaFavorita: isEmpty(body.fk_abertura_favorita) ? null : parseId(body.fk_abertura_favorita)
     };
 }
 

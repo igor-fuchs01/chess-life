@@ -66,7 +66,7 @@
   <dialog class="profile-dialog" id="profile-dialog" aria-labelledby="profile-title">
     <form id="profile-form" novalidate>
       <h2 id="profile-title">Editar perfil</h2>
-      <p class="profile-hint">Todos os campos são obrigatórios.</p>
+      <p class="profile-hint">A abertura favorita é opcional; os outros campos são obrigatórios.</p>
       <div class="field-row">
         <div>
           <label for="rating">Rating</label>
@@ -78,7 +78,9 @@
         </div>
       </div>
       <label for="opening">Abertura favorita</label>
-      <select id="opening" name="opening" size="6" required></select>
+      <select id="opening" name="opening" size="6">
+        <option value="">Nenhuma</option>
+      </select>
       <label for="bio">Bio</label>
       <textarea id="bio" name="bio" maxlength="50" placeholder="Seu xadrez em poucas palavras" required></textarea>
       <p class="bio-counter"><span id="bio-count">0</span>/50</p>

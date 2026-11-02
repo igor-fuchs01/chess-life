@@ -67,15 +67,6 @@ function validateSignup(name, email, password, confirmation) {
   return null;
 }
 
-/**
- * Fills the favorite opening options. The opening is required, so without the list the user is told to reload.
- */
-async function loadOpenings() {
-  const loaded = await loadOpeningOptions(signupForm.opening);
-  if (!loaded) {
-    showMessage(signupMessage, "Não foi possível carregar as aberturas. Recarregue a página para criar a conta.", "error");
-  }
-}
-
 signupForm.addEventListener("submit", createAccount);
-loadOpenings();
+// The favorite opening is optional: without the list the user can still sign up with "Nenhuma".
+loadOpeningOptions(signupForm.opening);
