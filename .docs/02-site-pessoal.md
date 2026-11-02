@@ -30,10 +30,10 @@ site-pessoal/
     ├── index.html          Home page
     ├── shared/             Used by every page
     │   ├── style.css       Design tokens and base styles (classic design)
-    │   ├── logo.svg        Logo emblem (king in a green seal), used in the header and as the favicon
+    │   ├── logo.svg        Logo emblem (king in a green seal), used in the sidebar and as the favicon
     │   ├── theme.js        Light and dark theme, loaded in every page's <head>
     │   ├── session.js      Session in sessionStorage
-    │   └── layout.js       Header, footer and form messages
+    │   └── layout.js       Sidebar, footer and form messages
     ├── home/               Home page styles (hero, story timeline, competencies, thanks, inspirations)
     ├── gallery/            Photo gallery page
     ├── assets/             Images shared by the pages: the gallery photos and the animated Accelerated Dragon board (`dragao-acelerado.svg`)
@@ -50,7 +50,7 @@ The site uses the "classic" direction chosen by the user: cream paper (`--paper`
 
 ### Light and dark themes
 
-- The header has a button (☾ / ☀) that switches between the light and the dark theme. The choice is saved in `localStorage` (`chess-life-theme`). Before any choice, the site follows the system theme (`prefers-color-scheme`).
+- The sidebar has a button (☾ / ☀, "Modo escuro" / "Modo claro") that switches between the light and the dark theme. The choice is saved in `localStorage` (`chess-life-theme`). Before any choice, the site follows the system theme (`prefers-color-scheme`).
 - `shared/theme.js` is loaded in the `<head>` of every page, right after the stylesheets. It sets `data-theme="light"` or `"dark"` on `<html>` before the page is drawn, so a dark page never flashes light. `toggleTheme()` switches the theme and fires a `themechange` event on `document`.
 - The dark palette is a single `:root[data-theme="dark"]` block in `shared/style.css` that redefines the color variables, plus `color-scheme: dark` for form controls and scrollbars. Feature stylesheets have no theme rules of their own.
 - Variables by role:
@@ -76,12 +76,13 @@ The site uses the "classic" direction chosen by the user: cream paper (`--paper`
 
 ### Conventions
 
-- Every page has empty `<header id="site-header">` and `<footer id="site-footer">` elements. It loads `shared/theme.js` in `<head>`, then `shared/session.js` and `shared/layout.js`, which fills them. The navigation shows "Entrar" to visitors, and "Jogar", "Dashboard" and "Sair" to logged-in users.
+- Every page has empty `<aside id="site-sidebar">` and `<footer id="site-footer">` elements. It loads `shared/theme.js` in `<head>`, then `shared/session.js` and `shared/layout.js`, which fills them. The menu shows "Jogar" and "Dashboard" only to logged-in users. The bottom of the sidebar shows the theme button and, below it, "Entrar" to visitors or, in the same place, "Sair" to logged-in users.
+- Sidebar (adapted from the "Glass Sidebar" in `.temp/glass-sidebar`, styles under "Sidebar" in `shared/style.css`): a floating glass bar fixed on the left, replacing the old header. Closed it is `--sidebar-rail` (68px) wide and shows only the icons; on hover or keyboard focus (`:focus-within`) it widens to `--sidebar-open` (240px) over the page and shows the labels, with no JavaScript. There is no strip reserved for the bar: sections, their backgrounds and the footer span the whole window, under the sidebar. Only their content moves: `.wrap` adds `--sidebar-space` to its left padding and to its `max-width`, so the content keeps clear of the closed bar and is centered in the space to its right, and the footer text gets the same left padding. Rules that override `.wrap`'s width (`.auth`, `.dash .wrap`, `.play .wrap`) add `--sidebar-space` too, and the home `.hero` sets only its top and bottom padding, so it keeps the `.wrap` side padding. The glass is `--card` at 55% opacity (`color-mix`) with `backdrop-filter: blur(16px) saturate(160%)`. Hovered items get a 14% tint of `--green-text` and green text, which shows in both themes (a lighter glass tone barely showed over the light cream). The current page is a `--green` item, "Sair" turns `--danger` on hover, and the theme button and "Entrar" or "Sair" sit at the bottom. The page icons are chess pieces: ♚ Minha história, ♝ Galeria, ♞ Jogar, ♜ Dashboard. "Entrar" is a door, drawn as an inline SVG in the text color (`DOOR_ICON` in `shared/layout.js`), since the door character is a color emoji on most systems; "Sair" is ⏻. Right after "Minha história", every visitor sees links to the home page sections, which carry ids in `index.html`: ♟ Linha do tempo (`#historia`), ♛ Competências (`#competencias`), ✦ Inspirações (`#inspiracoes`) and ♡ Agradecimentos (`#agradecimentos`). The pawn has `\uFE0E` after it, so systems that draw it as a color emoji show the plain glyph. From other pages these links open `index.html#<section>`; on the home page they keep only `#<section>`, because the server serves it at `/` and a link to `index.html` would reload the page instead of scrolling. `html` has `scroll-behavior: smooth` unless the system asks for reduced motion, and section links are never marked as the current page. Every item has a `title`, so its name shows while the bar is closed. Widths based on the window must subtract `--sidebar-space`, like the game board on phones.
 - Authentication is the user's session in the browser, through `shared/session.js` (see "Authentication" below).
 - Form feedback uses `showMessage(element, text, "error" | "success")` from `shared/layout.js` (RF11).
 - Pages use relative paths for their files, so they also open straight from disk. Scripts build links from `SITE_ROOT` (`shared/session.js`). API calls only work when the site is served by `app.js`.
 - Forms are validated on the client too, for a quick reply: strong password (RN02: at least 8 characters with an uppercase letter, a lowercase letter, a digit and a special character), valid e-mail and matching confirmation. The server must repeat these checks. The password strength is checked by `validatePasswordStrength` in `auth/password.js`, on sign-up and on login, before any request is sent; the error shows in the form message below the submit button.
-- Login and sign-up layout (`auth/auth.css`): the `.alt` section fills `<main>`, so its background reaches the footer, and the form sits in its middle. Spacing is compact and, on screens wider than 800px, the sign-up form shows its fields in pairs (`.field-row`), so the page fits the window with the header and the footer, even with an error message, down to 1280×720. On phones the fields stack and sign-up may scroll.
+- Login and sign-up layout (`auth/auth.css`): the `.alt` section fills `<main>`, so its background reaches the footer, and the form sits in its middle. Spacing is compact and, on screens wider than 800px, the sign-up form shows its fields in pairs (`.field-row`), so the page fits the window with the footer, even with an error message, down to 1280×720. On phones the fields stack and sign-up may scroll.
 - User-provided text goes into the page with `textContent`, never `innerHTML`.
 - Chart.js 4.4.1 is loaded from cdnjs only on the dashboard.
 - The board's base style (`.board`, `.light`, `.dark`) is in `shared/style.css`. The game page draws its board with `play/play.js`; the home page shows `assets/dragao-acelerado.svg` in an `<img class="board">`, so it gets the same frame and shadow.
