@@ -1,0 +1,189 @@
+.play {
+  padding: 12px 0;
+}
+
+/* Title: the ornament sits on the title's left, with the description below. */
+.play .section-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 2px 10px;
+  margin-bottom: 12px;
+}
+.play .section-title h1 {
+  font-size: 26px;
+}
+.play .section-title p {
+  flex-basis: 100%;
+  margin-top: 0;
+  font-size: 14px;
+}
+.play .ornament {
+  margin-bottom: 0;
+  font-size: 22px;
+  letter-spacing: 0;
+}
+
+/* Layout: the board takes the width left by the side panel, up to 600px. */
+.play-area {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 24px;
+}
+.game-board {
+  /* The pieces are sized in cqw, a percentage of the board's width. */
+  container-type: inline-size;
+  width: 100%;
+  max-width: 600px;
+}
+
+/* Board squares */
+.game-board > * {
+  position: relative;
+  padding: 0;
+  border: 0;
+  color: var(--dark-ink);
+  font-size: 8cqw;
+  line-height: 1;
+  cursor: pointer;
+}
+.game-board > *:focus-visible {
+  outline: 3px solid var(--brass);
+  outline-offset: -3px;
+}
+.game-board .last-move {
+  box-shadow: inset 0 0 0 100vmax var(--square-highlight);
+}
+.game-board .selected {
+  box-shadow: inset 0 0 0 4px var(--brass), inset 0 0 0 100vmax var(--square-highlight);
+}
+.game-board .check {
+  box-shadow: inset 0 0 0 100vmax var(--square-check);
+}
+.game-board .target::after {
+  content: "";
+  position: absolute;
+  width: 28%;
+  height: 28%;
+  border-radius: 50%;
+  background: var(--square-target);
+}
+.game-board .capture::after {
+  content: "";
+  position: absolute;
+  inset: 4%;
+  border: 5px solid var(--square-target);
+  border-radius: 50%;
+}
+.coordinate {
+  position: absolute;
+  color: var(--green);
+  font-size: 11px;
+  font-weight: 600;
+}
+.rank {
+  top: 3px;
+  left: 4px;
+}
+.file {
+  right: 4px;
+  bottom: 2px;
+}
+
+/* Side panel: the moves list scrolls once it is taller than its limit. */
+.game-panel {
+  display: flex;
+  flex-direction: column;
+  width: 340px;
+  min-width: 260px;
+  padding: 20px;
+}
+.game-panel .eyebrow {
+  margin-bottom: 6px;
+}
+.game-status {
+  font-family: var(--font-heading);
+  font-size: 24px;
+}
+.game-panel h2 {
+  margin: 16px 0 8px;
+  font-size: 20px;
+}
+.moves-empty {
+  color: var(--muted);
+  font-size: 15px;
+}
+.move-list {
+  max-height: 320px;
+  overflow-y: auto;
+  list-style: none;
+  font-size: 15px;
+}
+/* Each line: move number, White's move and Black's move. */
+.move-list li {
+  display: flex;
+  padding: 3px 0;
+  border-bottom: 1px solid var(--line);
+}
+.move-list li span {
+  flex: 1;
+}
+.move-list li span:first-child {
+  flex: 0 0 2.5em;
+  color: var(--muted);
+}
+.game-actions {
+  display: flex;
+  gap: 10px;
+}
+.game-actions .btn {
+  flex: 1;
+}
+
+/* Promotion dialog */
+.promotion-dialog {
+  margin: auto;
+  padding: 28px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+}
+.promotion-dialog::backdrop {
+  background: var(--overlay);
+}
+.promotion-dialog h2 {
+  margin-bottom: 16px;
+  font-size: 22px;
+}
+.promotion-options {
+  display: flex;
+  gap: 10px;
+}
+.promotion-options button {
+  width: 64px;
+  height: 64px;
+  border: 1px solid var(--line);
+  background: var(--square-light);
+  color: var(--dark-ink);
+  font-size: 42px;
+  cursor: pointer;
+}
+.promotion-options button:hover {
+  border-color: var(--brass);
+}
+
+/* On phones the panel goes below the board. */
+@media (max-width: 800px) {
+  .play-area {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .game-panel {
+    width: auto;
+  }
+  .game-board {
+    border-width: 6px;
+  }
+}

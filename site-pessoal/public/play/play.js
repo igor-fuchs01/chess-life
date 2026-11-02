@@ -8,6 +8,9 @@ const COLOR_NAMES = { white: "brancas", black: "pretas" };
 const API_COLORS = { white: "brancas", black: "pretas" };
 // The local game is between two people on the same computer; the AI opponent comes later.
 const API_OPPONENT = "humano";
+// The start screen, and the ?cor= values its color links send to this page.
+const START_PAGE = "play.html";
+const ADDRESS_COLORS = { brancas: WHITE, pretas: BLACK };
 const SAN_PIECE_TYPES = { K: "king", Q: "queen", R: "rook", B: "bishop", N: "knight" };
 const END_REASONS = {
   checkmate: "Xeque-mate",
@@ -24,7 +27,6 @@ const boardElement = document.getElementById("board");
 const statusElement = document.getElementById("game-status");
 const moveListElement = document.getElementById("move-list");
 const gameMessage = document.getElementById("game-message");
-const newGameForm = document.getElementById("new-game-form");
 const promotionDialog = document.getElementById("promotion-dialog");
 const saveRetryButton = document.getElementById("save-retry-button");
 
@@ -38,46 +40,48 @@ let selectedMoves;
 let pendingPromotion;
 
 /**
- * Connects the buttons and starts the first game.
+ * Connects the buttons and starts the game with the color chosen on the start screen (play.html),
+ * which comes in the address as ?cor=brancas or ?cor=pretas. Without a valid color, it goes back there.
  */
 function startPage() {
-  newGameForm.addEventListener("submit", handleNewGame);
+  const color = ADDRESS_COLORS[new URLSearchParams(window.location.search).get("cor")];
+  if (!color) {
+    window.location = START_PAGE;
+    return;
+  }
+
+  document.getElementById("new-game-button").addEventListener("click", handleNewGame);
   document.getElementById("resign-button").addEventListener("click", resign);
   document.getElementById("draw-button").addEventListener("click", agreeDraw);
   saveRetryButton.addEventListener("click", saveGame);
   promotionDialog.addEventListener("close", cancelPromotion);
   createPromotionButtons();
 
-  startGame();
+  startGame(color);
 }
 
 /**
- * Starts a new game, asking first when a game in progress would be lost.
- * @param {SubmitEvent} event
+ * Goes back to the start screen to pick a color, asking first when a game in progress would be lost.
  */
-function handleNewGame(event) {
-  event.preventDefault();
-
+function handleNewGame() {
   const isGameInProgress = !gameEnd && sanMoves.length > 0;
   if (isGameInProgress && !confirm("Abandonar a partida atual? Ela não será salva.")) {
     return;
   }
-  startGame();
+  window.location = START_PAGE;
 }
 
 /**
- * Sets up the starting position, with the board turned to the color the user chose.
+ * Sets up the starting position, with the board turned to the chosen color.
+ * @param {"white"|"black"} color - The color the user plays.
  */
-function startGame() {
+function startGame(color) {
   game = createInitialGame();
-  playerColor = newGameForm.color.value;
+  playerColor = color;
   sanMoves = [];
   lastMove = null;
   gameEnd = null;
   clearSelection();
-
-  gameMessage.className = "message";
-  saveRetryButton.hidden = true;
   render();
 }
 

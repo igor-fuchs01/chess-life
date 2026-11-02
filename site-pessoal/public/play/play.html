@@ -15,55 +15,85 @@
   <aside id="site-sidebar"></aside>
 
   <main>
-    <section class="play">
+    <section class="start">
       <div class="wrap">
-        <div class="section-title">
-          <div class="ornament">♞</div>
-          <h1>Partida de xadrez</h1>
-          <p>Duas pessoas no mesmo computador. Ao terminar, a partida é salva no seu dashboard.</p>
+        <div class="player-card">
+          <div class="player-avatar" aria-hidden="true">♚</div>
+          <div class="player-info">
+            <p class="eyebrow">Ficha do jogador</p>
+            <h1 id="player-name"></h1>
+            <p class="player-bio" id="player-bio"></p>
+            <div class="player-stats" id="player-stats" hidden>
+              <p>Rating<strong id="player-rating"></strong></p>
+              <p>Joga desde<strong id="player-start-year"></strong></p>
+              <p>Abertura favorita<strong id="player-opening"></strong></p>
+            </div>
+          </div>
+          <button class="btn" type="button" id="profile-button" hidden>Editar perfil</button>
         </div>
 
-        <div class="play-area">
-          <div class="board game-board" id="board" aria-label="Tabuleiro"></div>
+        <div class="start-heading">
+          <h2>Escolha suas peças</h2>
+          <p>A partida começa assim que você escolher.</p>
+        </div>
+        <div class="color-options">
+          <a class="color-option" href="game.html?cor=brancas">
+            <span class="color-piece" aria-hidden="true">♔</span>
+            <span><strong>Brancas</strong>Você faz o primeiro lance</span>
+            <span class="color-arrow" aria-hidden="true">→</span>
+          </a>
+          <a class="color-option" href="game.html?cor=pretas">
+            <span class="color-piece" aria-hidden="true">♚</span>
+            <span><strong>Pretas</strong>O adversário começa</span>
+            <span class="color-arrow" aria-hidden="true">→</span>
+          </a>
+        </div>
 
-          <aside class="card game-panel">
-            <p class="eyebrow">Situação</p>
-            <p class="game-status" id="game-status" aria-live="polite"></p>
-
-            <form id="new-game-form" novalidate>
-              <label for="color">Você joga com</label>
-              <select id="color" name="color">
-                <option value="white">Brancas</option>
-                <option value="black">Pretas</option>
-              </select>
-              <button class="btn" type="submit">Nova partida</button>
-            </form>
-
-            <h2>Lances</h2>
-            <p class="moves-empty" id="moves-empty">Nenhum lance ainda.</p>
-            <ol class="move-list" id="move-list"></ol>
-
-            <div class="game-actions">
-              <button class="btn ghost" type="button" id="resign-button">Abandonar</button>
-              <button class="btn ghost" type="button" id="draw-button">Empate por acordo</button>
-            </div>
-            <div class="message" id="game-message" role="alert"></div>
-            <button class="btn" type="button" id="save-retry-button" hidden>Tentar salvar de novo</button>
-          </aside>
+        <div class="start-heading">
+          <h2>Regras da partida</h2>
+        </div>
+        <div class="rule-tiles">
+          <div class="rule-tile"><strong>Dois jogadores</strong>Mesmo computador, mesmo tabuleiro.</div>
+          <div class="rule-tile"><strong>Mover</strong>Clique na peça e depois no destino.</div>
+          <div class="rule-tile"><strong>Especiais</strong>Roque, en passant e promoção.</div>
+          <div class="rule-tile"><strong>Fim</strong>Mate, afogamento, empate, abandono ou acordo.</div>
+          <div class="rule-tile"><strong>Dashboard</strong>A partida é salva com a abertura.</div>
         </div>
       </div>
     </section>
   </main>
 
-  <dialog class="promotion-dialog" id="promotion-dialog" aria-labelledby="promotion-title">
-    <h2 id="promotion-title">Promover o peão a</h2>
-    <div class="promotion-options" id="promotion-options"></div>
+  <dialog class="profile-dialog" id="profile-dialog" aria-labelledby="profile-title">
+    <form id="profile-form" novalidate>
+      <h2 id="profile-title">Editar perfil</h2>
+      <p class="profile-hint">Todos os campos são obrigatórios.</p>
+      <div class="field-row">
+        <div>
+          <label for="rating">Rating</label>
+          <input id="rating" name="rating" type="number" min="0" max="3500" step="1" placeholder="Ex.: 1500" required>
+        </div>
+        <div>
+          <label for="start-year">Joga desde</label>
+          <input id="start-year" name="startYear" type="number" min="1901" step="1" placeholder="Ex.: 2015" required>
+        </div>
+      </div>
+      <label for="opening">Abertura favorita</label>
+      <select id="opening" name="opening" size="6" required></select>
+      <label for="bio">Bio</label>
+      <textarea id="bio" name="bio" maxlength="50" placeholder="Seu xadrez em poucas palavras" required></textarea>
+      <p class="bio-counter"><span id="bio-count">0</span>/50</p>
+      <div class="message" id="profile-message" role="alert"></div>
+      <div class="dialog-actions">
+        <button class="btn ghost" type="button" id="profile-cancel-button">Cancelar</button>
+        <button class="btn" type="submit" id="profile-save-button">Atualizar perfil</button>
+      </div>
+    </form>
   </dialog>
 
   <footer id="site-footer"></footer>
 
   <script src="../shared/layout.js"></script>
-  <script src="rules.js"></script>
-  <script src="play.js"></script>
+  <script src="../shared/profile-form.js"></script>
+  <script src="profile.js"></script>
 </body>
 </html>

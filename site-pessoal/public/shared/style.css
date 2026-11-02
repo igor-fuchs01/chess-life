@@ -274,6 +274,10 @@ body:has(#agradecimentos:target) .sidebar-item[href="#agradecimentos"] {
   text-align: center;
   cursor: pointer;
 }
+/* .btn sets display, which would show a button marked hidden, such as "Tentar salvar de novo". */
+.btn[hidden] {
+  display: none;
+}
 .btn:hover {
   background: var(--green-dark);
 }
@@ -307,7 +311,8 @@ label {
   font-weight: 600;
 }
 input,
-select {
+select,
+textarea {
   width: 100%;
   padding: 11px 12px;
   border: 1px solid var(--line);
@@ -316,7 +321,8 @@ select {
   font: inherit;
 }
 input:focus,
-select:focus {
+select:focus,
+textarea:focus {
   outline: 2px solid var(--brass);
   outline-offset: -1px;
 }
