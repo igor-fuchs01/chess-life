@@ -11,7 +11,6 @@ const MAX_NAME_LENGTH = 80;
 const MAX_EMAIL_LENGTH = 120;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const DUPLICATE_ENTRY_CODE = "ER_DUP_ENTRY";
-// MySQL error when a foreign key points to a row that does not exist: at sign-up, only the favorite opening can.
 const MISSING_REFERENCE_CODE = "ER_NO_REFERENCED_ROW_2";
 
 /**
