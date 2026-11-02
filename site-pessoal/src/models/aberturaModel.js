@@ -12,6 +12,20 @@ function listOpenings() {
     return database.query(sql);
 }
 
+/**
+ * Lists the openings' ids and names in alphabetical order, for the favorite opening options.
+ * @returns {Promise<{id: number, nome: string}[]>}
+ */
+function listOpeningNames() {
+    const sql = `
+        SELECT id, nome
+        FROM abertura
+        ORDER BY nome;
+    `;
+    return database.query(sql);
+}
+
 module.exports = {
-    listOpenings
+    listOpenings,
+    listOpeningNames
 };
