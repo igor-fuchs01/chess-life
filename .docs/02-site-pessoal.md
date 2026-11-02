@@ -154,15 +154,14 @@ src/
 │   └── aberturas.js
 ├── controllers/             Read the request, validate it and reply (status and message)
 │   ├── usuarioController.js Sign-up, login
-│   ├── partidaController.js List and save games
-│   ├── perfilController.js  Read, create and update the profile
+│   ├── partidaController.js List and save games, and pick a game's opening (identifyOpening)
+│   ├── perfilController.js  Read and update the profile, and check its fields (also for sign-up)
 │   └── aberturaController.js List the openings
 ├── models/                  Build and run the SQL
 │   ├── usuarioModel.js
 │   ├── partidaModel.js      Saves a game and its moves in one transaction
-│   ├── perfilModel.js       Reads, creates and updates a user's profile
-│   ├── aberturaModel.js     Reads the opening list from the abertura table, with or without the moves
-│   └── openingBook.js       Picks a game's opening from that list (no database access)
+│   ├── perfilModel.js       Reads and updates a user's profile
+│   └── aberturaModel.js     Reads the opening list from the abertura table, with or without the moves
 └── database/
     ├── config.js            Connection pool: query(sql, values) and transaction(runStatements)
     ├── 01-schema.sql        Database and tables
