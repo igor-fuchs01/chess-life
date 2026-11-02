@@ -135,8 +135,10 @@ section {
   font-size: 15px;
   transition: width 0.25s ease;
 }
+/* Opens on hover or on keyboard focus. :focus-within would also count a button clicked with the mouse,
+   such as the theme button, and keep the bar open after the mouse leaves. */
 .sidebar:hover,
-.sidebar:focus-within {
+.sidebar:has(:focus-visible) {
   width: var(--sidebar-open);
 }
 /* The labels are always in the page: they are only invisible while the sidebar is closed. */
@@ -145,7 +147,7 @@ section {
   transition: opacity 0.2s ease;
 }
 .sidebar:hover .sidebar-label,
-.sidebar:focus-within .sidebar-label {
+.sidebar:has(:focus-visible) .sidebar-label {
   opacity: 1;
 }
 .sidebar-brand {
