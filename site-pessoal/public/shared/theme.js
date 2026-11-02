@@ -38,14 +38,9 @@ function getCurrentTheme() {
 function toggleTheme() {
   const theme = getCurrentTheme() === DARK_THEME ? LIGHT_THEME : DARK_THEME;
   document.documentElement.dataset.theme = theme;
+  
+  localStorage.setItem(THEME_STORAGE_KEY, theme);
 
-  try {
-    localStorage.setItem(THEME_STORAGE_KEY, theme);
-  } catch {
-    // Storage is blocked: the choice lasts until the page is left.
-  }
-
-  document.dispatchEvent(new Event("themechange"));
 }
 
 document.documentElement.dataset.theme = getPreferredTheme();

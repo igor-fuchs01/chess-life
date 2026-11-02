@@ -27,7 +27,6 @@ function startDashboard() {
   Chart.defaults.plugins.legend.display = false;
   Chart.register(barValuesPlugin);
   readChartColors();
-  document.addEventListener("themechange", redrawChartsForTheme);
 
   loadGames();
 }
