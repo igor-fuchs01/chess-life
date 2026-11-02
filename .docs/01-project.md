@@ -178,7 +178,7 @@ The dashboard, titled "Desempenho no Xadrez", fetches the user's games from the 
 - **Indicators**:
   - Games played today, compared with yesterday.
   - Win rate of all games, compared with the win rate of the games played until yesterday (in percentage points).
-  - Favorite opening (the most played), with its number of games and win rate.
+  - Most played opening ("Abertura mais jogada"), with its number of games and win rate. It is not the profile's favorite opening, which the user chooses.
 - **Stacked bar chart**: games per week over the last 8 weeks (weeks start on Monday), split into wins, draws and losses.
 - **Donut chart**: share of wins, draws and losses, with the win rate in its middle and the count of each result next to it.
 - **Bar chart**: most played openings, with the number of games at the end of each bar; long names are shortened with "…" on the axis.

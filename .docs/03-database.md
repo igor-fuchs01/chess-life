@@ -111,14 +111,14 @@ erDiagram
 | `fk_usuario` | `INT` | No | FK → `usuario.id`, `UNIQUE` | The profile's owner. Being unique, it allows at most one profile per user |
 | `fk_abertura_favorita` | `INT` | Yes | FK → `abertura.id` | The opening the user names as their favorite |
 
-- Since 2026-11-02 the sign-up creates the profile together with the account, in one transaction, so every new user has a row in `perfil`. The API requires every profile field at sign-up and on update; the columns stay nullable, for the empty profiles below. The table still allows a user with no profile, and accounts created before that date have none. Give them an empty profile, which they must then fill on the game's start screen, with:
+- Since 2026-11-02 the sign-up creates the profile together with the account, in one transaction, so every new user has a row in `perfil`. The API requires rating, starting year and bio at sign-up and on update, and accepts no favorite opening; the columns stay nullable, for the empty profiles below. The table still allows a user with no profile, and accounts created before that date have none. Give them an empty profile, which they must then fill on the game's start screen, with:
 
   ```sql
   INSERT INTO perfil (fk_usuario)
   SELECT u.id FROM usuario u
   WHERE NOT EXISTS (SELECT 1 FROM perfil p WHERE p.fk_usuario = u.id);
   ```
-- `fk_abertura_favorita` is what the user chooses. It is not the dashboard's "abertura favorita" indicator, which is computed from the games played.
+- `fk_abertura_favorita` is what the user chooses. It is not the dashboard's "Abertura mais jogada" indicator, which is computed from the games played; the indicator was renamed from "Abertura favorita" on 2026-11-02 so the two do not get mixed up.
 
 ### `abertura`
 
