@@ -41,7 +41,7 @@ function renderSidebar() {
     const activeClass = isCurrentPage(LOGIN_PATH) ? " active" : "";
     bottomButtons += `
       <a href="${SITE_ROOT}${LOGIN_PATH}" class="sidebar-item${activeClass}" title="Entrar">
-        <span class="sidebar-icon door" aria-hidden="true"></span><span class="sidebar-label">Entrar</span>
+        <img class="sidebar-icon door" src="${SITE_ROOT}assets/porta.svg" alt=""><span class="sidebar-label">Entrar</span>
       </a>`;
   }
 

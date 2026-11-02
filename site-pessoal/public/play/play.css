@@ -57,19 +57,17 @@
   color: var(--on-green-muted);
   font-size: 15px;
 }
+/* No display on .player-stats, so the hidden attribute still hides it for a user with no profile. */
 .player-stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 28px;
   margin-top: 12px;
   color: var(--on-green-muted);
   font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
-/* display: flex above would show the stats even with the hidden attribute (a user with no profile). */
-.player-stats[hidden] {
-  display: none;
+.player-stats p {
+  display: inline-block;
+  margin-right: 28px;
 }
 .player-stats strong {
   display: block;
@@ -107,10 +105,6 @@
   border-color: var(--brass);
   box-shadow: 0 12px 30px -18px var(--shadow);
 }
-.color-option:focus-visible {
-  outline: 2px solid var(--brass);
-  outline-offset: -2px;
-}
 .color-option strong {
   display: block;
   color: var(--ink);
@@ -124,7 +118,7 @@
   align-items: center;
   justify-content: center;
   width: 80px;
-  aspect-ratio: 1;
+  height: 80px;
   background: var(--square-light);
   color: var(--dark-ink);
   font-size: 58px;
@@ -159,14 +153,6 @@
 .profile-dialog {
   width: calc(100% - 32px);
   max-width: 520px;
-  margin: auto;
-  padding: 28px;
-  border: 1px solid var(--line);
-  background: var(--card);
-  color: var(--ink);
-}
-.profile-dialog::backdrop {
-  background: var(--overlay);
 }
 .profile-dialog h2 {
   font-size: 24px;
@@ -174,13 +160,6 @@
 .profile-hint {
   color: var(--muted);
   font-size: 14px;
-}
-.field-row {
-  display: flex;
-  gap: 12px;
-}
-.field-row > div {
-  flex: 1;
 }
 .profile-dialog label {
   margin: 12px 0 4px;
@@ -205,7 +184,6 @@
   gap: 10px;
   margin-top: 16px;
 }
-
 
 /* On phones the card, the color buttons and the rule tiles stack. */
 @media (max-width: 800px) {

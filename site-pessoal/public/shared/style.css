@@ -28,8 +28,8 @@
   --shadow: rgba(31, 26, 20, 0.5);
   --square-light: #e9dcc3;
   --square-dark: #a88a63;
-  --square-highlight: rgba(176, 141, 87, 0.45);
-  --square-check: rgba(164, 71, 47, 0.6);
+  --square-highlight: #d4b56a;
+  --square-check: #d9826b;
   --square-target: rgba(31, 26, 20, 0.28);
   --font-heading: Georgia, "Times New Roman", Times, serif;
   --font-body: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -38,8 +38,6 @@
   --sidebar-open: 240px;
   --sidebar-gap: 16px;
   --sidebar-space: calc(var(--sidebar-rail) + var(--sidebar-gap) * 2);
-  /* Light edge that imitates the reflection on the glass border. */
-  --glass-border: rgba(255, 255, 255, 0.7);
 }
 
 /* Dark theme, set by shared/theme.js. The board squares keep their wood colors. */
@@ -63,11 +61,10 @@
   --loss: #e05d3d;
   --overlay: rgba(0, 0, 0, 0.65);
   --shadow: rgba(0, 0, 0, 0.6);
-  --glass-border: rgba(255, 255, 255, 0.12);
 }
 
 /* Base */
-/* The sidebar's section link glides to its section, unless the system asks for reduced motion. */
+/* The sidebar's "Agradecimentos" link glides to its section instead of jumping. */
 html {
   scroll-behavior: smooth;
 }
@@ -111,9 +108,7 @@ section {
   padding: 0 24px 0 calc(var(--sidebar-space) + 24px);
 }
 
-/* Sidebar: floating glass bar that widens over the page on hover or keyboard focus, with no JavaScript.
-   The glass is a semi-transparent background plus backdrop-filter, which blurs the page behind the bar;
-   an opaque background would hide the blur. */
+/* Sidebar: floating bar that widens over the page on hover or focus, with no JavaScript. */
 .sidebar {
   position: fixed;
   top: var(--sidebar-gap);
@@ -125,18 +120,15 @@ section {
   width: var(--sidebar-rail);
   padding: 16px 10px;
   overflow: hidden;
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--line);
   border-radius: 20px;
-  background: color-mix(in srgb, var(--card) 55%, transparent);
-  backdrop-filter: blur(16px) saturate(160%);
+  background: var(--card);
   box-shadow: 0 18px 45px -18px var(--shadow);
   font-size: 15px;
   transition: width 0.25s ease;
 }
-/* Opens on hover or on keyboard focus. :focus-within would also count a button clicked with the mouse,
-   such as the theme button, and keep the bar open after the mouse leaves. */
 .sidebar:hover,
-.sidebar:has(:focus-visible) {
+.sidebar:focus-within {
   width: var(--sidebar-open);
 }
 /* The labels are always in the page: they are only invisible while the sidebar is closed. */
@@ -145,7 +137,7 @@ section {
   transition: opacity 0.2s ease;
 }
 .sidebar:hover .sidebar-label,
-.sidebar:has(:focus-visible) .sidebar-label {
+.sidebar:focus-within .sidebar-label {
   opacity: 1;
 }
 .sidebar-brand {
@@ -179,7 +171,7 @@ section {
 .sidebar-bottom {
   margin-top: auto;
   padding-top: 12px;
-  border-top: 1px solid var(--glass-border);
+  border-top: 1px solid var(--line);
 }
 /* Links and buttons look the same. */
 .sidebar-item {
@@ -195,17 +187,9 @@ section {
   white-space: nowrap;
   cursor: pointer;
 }
-/* A green tint, since a lighter glass tone barely shows over the light theme's cream.
-   The "Agradecimentos" link keeps it while its section is the page's target, after the link is clicked. */
-.sidebar-item:hover,
-body:has(#agradecimentos:target) .sidebar-item[href="#agradecimentos"] {
-  background: color-mix(in srgb, var(--green-text) 14%, transparent);
+.sidebar-item:hover {
+  background: var(--paper-2);
   color: var(--green-text);
-}
-/* :focus-visible only applies to keyboard focus, so clicking shows no outline. */
-.sidebar-item:focus-visible {
-  outline: 2px solid var(--brass);
-  outline-offset: -2px;
 }
 .sidebar-item.active {
   background: var(--green);
@@ -222,12 +206,8 @@ body:has(#agradecimentos:target) .sidebar-item[href="#agradecimentos"] {
   line-height: 1;
   text-align: center;
 }
-/* The door file is a mask over the text color, so it follows the hover and the theme like the glyph icons;
-   an SVG loaded from a file cannot read the page's colors. */
-.sidebar-icon.door {
+.door {
   height: 20px;
-  background: currentColor;
-  mask: url("../assets/porta.svg") center / 20px no-repeat;
 }
 
 /* Section titles */
@@ -258,12 +238,10 @@ body:has(#agradecimentos:target) .sidebar-item[href="#agradecimentos"] {
   margin-bottom: 8px;
   color: var(--brass);
   font-size: 22px;
-  letter-spacing: 10px;
 }
 
-/* Buttons */
+/* Buttons: no display here, so the hidden attribute still hides a button such as "Tentar salvar de novo". */
 .btn {
-  display: inline-block;
   padding: 12px 26px;
   border: 1px solid var(--green);
   background: var(--green);
@@ -273,10 +251,6 @@ body:has(#agradecimentos:target) .sidebar-item[href="#agradecimentos"] {
   font-weight: 600;
   text-align: center;
   cursor: pointer;
-}
-/* .btn sets display, which would show a button marked hidden, such as "Tentar salvar de novo". */
-.btn[hidden] {
-  display: none;
 }
 .btn:hover {
   background: var(--green-dark);
@@ -324,7 +298,27 @@ input:focus,
 select:focus,
 textarea:focus {
   outline: 2px solid var(--brass);
-  outline-offset: -1px;
+}
+/* Two fields side by side on wide screens. */
+.field-row {
+  display: flex;
+  gap: 16px;
+}
+.field-row > div {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Dialogs (pawn promotion and player profile) */
+dialog {
+  margin: auto;
+  padding: 28px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+}
+dialog::backdrop {
+  background: var(--overlay);
 }
 
 /* Chess board (home page and game page) */
@@ -343,7 +337,6 @@ textarea:focus {
   justify-content: center;
   width: 12.5%;
   aspect-ratio: 1;
-  font-size: clamp(20px, 3.4vw, 34px);
 }
 .light {
   background: var(--square-light);
@@ -386,5 +379,9 @@ textarea:focus {
   .section-title h1,
   .section-title h2 {
     font-size: 34px;
+  }
+  .field-row {
+    flex-direction: column;
+    gap: 0;
   }
 }

@@ -45,7 +45,6 @@ main > section {
 }
 .auth.wide .ornament {
   margin-bottom: 0;
-  letter-spacing: 0;
 }
 .auth .card {
   padding: 18px 24px;
@@ -60,15 +59,6 @@ main > section {
 }
 .auth .card .btn {
   margin-top: 14px;
-}
-/* Two fields side by side on wide screens. */
-.field-row {
-  display: flex;
-  gap: 16px;
-}
-.field-row > div {
-  flex: 1;
-  min-width: 0;
 }
 /* Sign-up: the account and then the player profile, one below the other, two rows of fields each. */
 .signup-sections {
@@ -92,12 +82,4 @@ main > section {
 }
 .switch a:hover {
   color: var(--brass);
-}
-
-/* On phones the fields stack again. */
-@media (max-width: 800px) {
-  .field-row {
-    flex-direction: column;
-    gap: 0;
-  }
 }

@@ -14,7 +14,6 @@
 }
 .dash-title .ornament {
   margin-bottom: 0;
-  letter-spacing: 0;
 }
 .dash-title h1 {
   font-size: 30px;
@@ -88,7 +87,6 @@
   font-size: 30px;
   font-weight: normal;
   line-height: 1.2;
-  overflow-wrap: anywhere;
 }
 .change {
   color: var(--muted);

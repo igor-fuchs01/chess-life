@@ -21,8 +21,6 @@
 }
 .play .ornament {
   margin-bottom: 0;
-  font-size: 22px;
-  letter-spacing: 0;
 }
 
 /* Layout: the board takes the width left by the side panel, up to 600px. */
@@ -33,8 +31,6 @@
   gap: 24px;
 }
 .game-board {
-  /* The pieces are sized in cqw, a percentage of the board's width. */
-  container-type: inline-size;
   width: 100%;
   max-width: 600px;
 }
@@ -45,22 +41,19 @@
   padding: 0;
   border: 0;
   color: var(--dark-ink);
-  font-size: 8cqw;
+  font-size: 44px;
   line-height: 1;
   cursor: pointer;
 }
-.game-board > *:focus-visible {
-  outline: 3px solid var(--brass);
-  outline-offset: -3px;
-}
 .game-board .last-move {
-  box-shadow: inset 0 0 0 100vmax var(--square-highlight);
+  background: var(--square-highlight);
 }
 .game-board .selected {
-  box-shadow: inset 0 0 0 4px var(--brass), inset 0 0 0 100vmax var(--square-highlight);
+  background: var(--square-highlight);
+  box-shadow: inset 0 0 0 4px var(--brass);
 }
 .game-board .check {
-  box-shadow: inset 0 0 0 100vmax var(--square-check);
+  background: var(--square-check);
 }
 .game-board .target::after {
   content: "";
@@ -73,7 +66,8 @@
 .game-board .capture::after {
   content: "";
   position: absolute;
-  inset: 4%;
+  width: 76%;
+  height: 76%;
   border: 5px solid var(--square-target);
   border-radius: 50%;
 }
@@ -143,16 +137,6 @@
 }
 
 /* Promotion dialog */
-.promotion-dialog {
-  margin: auto;
-  padding: 28px;
-  border: 1px solid var(--line);
-  background: var(--card);
-  color: var(--ink);
-}
-.promotion-dialog::backdrop {
-  background: var(--overlay);
-}
 .promotion-dialog h2 {
   margin-bottom: 16px;
   font-size: 22px;
@@ -185,5 +169,8 @@
   }
   .game-board {
     border-width: 6px;
+  }
+  .game-board > * {
+    font-size: 6vw;
   }
 }
