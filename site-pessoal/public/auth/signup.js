@@ -5,7 +5,7 @@ const signupForm = document.getElementById("signup-form");
 const signupMessage = document.getElementById("signup-message");
 
 /**
- * Validates the form and creates the account. On success, goes to the login page.
+ * Validates the form and creates the account together with the player profile. On success, goes to the login page.
  * @param {SubmitEvent} event
  */
 async function createAccount(event) {
@@ -16,7 +16,9 @@ async function createAccount(event) {
   const password = signupForm.password.value;
   const confirmation = signupForm.confirmation.value;
 
-  const error = validateSignup(name, email, password, confirmation);
+  const profile = readProfileFields(signupForm);
+
+  const error = validateSignup(name, email, password, confirmation) || validateProfileFields(profile);
   if (error) {
     showMessage(signupMessage, error, "error");
     return;
@@ -26,7 +28,7 @@ async function createAccount(event) {
     const response = await fetch("/usuarios/cadastrar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nomeServer: name, emailServer: email, senhaServer: password })
+      body: JSON.stringify({ nomeServer: name, emailServer: email, senhaServer: password, ...profile })
     });
 
     if (!response.ok) {
@@ -45,12 +47,12 @@ async function createAccount(event) {
 }
 
 /**
- * Checks the sign-up fields, including the password strength (business rule RN02).
+ * Checks the account fields, including the password strength (business rule RN02). The profile is checked apart.
  * @returns {string|null} The error message, or null when every field is valid.
  */
 function validateSignup(name, email, password, confirmation) {
   if (!name || !email || !password || !confirmation) {
-    return "Preencha todos os campos.";
+    return "Preencha o nome, o e-mail, a senha e a confirmação.";
   }
   if (!EMAIL_PATTERN.test(email)) {
     return "Informe um e-mail válido.";
@@ -65,4 +67,15 @@ function validateSignup(name, email, password, confirmation) {
   return null;
 }
 
+/**
+ * Fills the favorite opening options. The opening is required, so without the list the user is told to reload.
+ */
+async function loadOpenings() {
+  const loaded = await loadOpeningOptions(signupForm.opening);
+  if (!loaded) {
+    showMessage(signupMessage, "Não foi possível carregar as aberturas. Recarregue a página para criar a conta.", "error");
+  }
+}
+
 signupForm.addEventListener("submit", createAccount);
+loadOpenings();

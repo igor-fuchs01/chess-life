@@ -1,4 +1,5 @@
 const usuarioModel = require("../models/usuarioModel");
+const perfilController = require("./perfilController");
 
 const MIN_PASSWORD_LENGTH = 8;
 const MAX_PASSWORD_LENGTH = 100;
@@ -10,28 +11,35 @@ const MAX_NAME_LENGTH = 80;
 const MAX_EMAIL_LENGTH = 120;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const DUPLICATE_ENTRY_CODE = "ER_DUP_ENTRY";
+// MySQL error when a foreign key points to a row that does not exist: at sign-up, only the favorite opening can.
+const MISSING_REFERENCE_CODE = "ER_NO_REFERENCED_ROW_2";
 
 /**
- * Creates an account (RF01, RF02). Replies 201 with { id }, 400 with the validation error,
+ * Creates an account and its player profile (RF01, RF02, RF17). Replies 201 with { id }, 400 with the validation error,
  * or 409 when the e-mail is already registered. Error messages are plain text in Portuguese.
+ * The profile fields are optional and follow the same rules as PUT /perfis/atualizar.
  */
 async function registerUser(req, res) {
     const name = String(req.body.nomeServer || "").trim();
     const email = String(req.body.emailServer || "").trim();
     const password = String(req.body.senhaServer || "");
 
-    const error = validateNewUser(name, email, password);
+    const error = validateNewUser(name, email, password) || perfilController.validateProfile(req.body);
     if (error) {
         res.status(400).send(error);
         return;
     }
 
     try {
-        const result = await usuarioModel.createUser(name, email, password);
-        res.status(201).json({ id: result.insertId });
+        const userId = await usuarioModel.createUser(name, email, password, perfilController.readProfile(req.body));
+        res.status(201).json({ id: userId });
     } catch (error) {
         if (error.code === DUPLICATE_ENTRY_CODE) {
             res.status(409).send("Este e-mail já está cadastrado.");
+            return;
+        }
+        if (error.code === MISSING_REFERENCE_CODE) {
+            res.status(400).send("Abertura inválida.");
             return;
         }
         console.error("Error registering a user:", error.message);

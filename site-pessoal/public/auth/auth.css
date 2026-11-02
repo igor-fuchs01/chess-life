@@ -11,7 +11,7 @@ main > section {
   padding-bottom: 12px;
 }
 
-/* Form: compact spacing, so the sign-up form fits the window together with the footer. */
+/* Form: compact spacing, so the sign-up form fits the window together with the footer, down to 1280×720. */
 .auth {
   width: 100%;
   max-width: calc(460px + var(--sidebar-space));
@@ -26,14 +26,40 @@ main > section {
 .auth .section-title h1 {
   font-size: 32px;
 }
+/* Sign-up title: the ornament on the title's left and the description below, to save height. */
+.auth.wide .section-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 2px 10px;
+  margin-bottom: 12px;
+}
+.auth.wide .section-title h1 {
+  font-size: 30px;
+}
+.auth.wide .section-title p {
+  flex-basis: 100%;
+  margin-top: 0;
+  font-size: 14px;
+}
+.auth.wide .ornament {
+  margin-bottom: 0;
+  letter-spacing: 0;
+}
 .auth .card {
-  padding: 24px 28px;
+  padding: 18px 24px;
 }
 .auth label {
-  margin: 10px 0 4px;
+  margin: 6px 0 2px;
+}
+.auth input,
+.auth select {
+  padding: 7px 10px;
+  font-size: 15px;
 }
 .auth .card .btn {
-  margin-top: 18px;
+  margin-top: 14px;
 }
 /* Two fields side by side on wide screens. */
 .field-row {
@@ -44,8 +70,18 @@ main > section {
   flex: 1;
   min-width: 0;
 }
+/* Sign-up: the account and then the player profile, one below the other, two rows of fields each. */
+.signup-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.signup-section h2 {
+  margin-bottom: 0;
+  font-size: 18px;
+}
 .switch {
-  margin-top: 12px;
+  margin-top: 8px;
   color: var(--muted);
   font-size: 15px;
   text-align: center;

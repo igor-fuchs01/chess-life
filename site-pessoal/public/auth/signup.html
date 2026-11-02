@@ -17,24 +17,55 @@
       <div class="wrap auth wide">
         <div class="section-title"><div class="ornament">♔</div><h1>Crie a sua conta</h1><p>Registre as suas partidas e acompanhe a sua evolução.</p></div>
         <form class="card" id="signup-form" novalidate>
-          <div class="field-row">
-            <div>
-              <label for="name">Nome</label>
-              <input id="name" name="name" placeholder="Seu nome" autocomplete="name">
+          <div class="signup-sections">
+            <div class="signup-section">
+              <h2>Sua conta</h2>
+              <div class="field-row">
+                <div>
+                  <label for="name">Nome</label>
+                  <input id="name" name="name" placeholder="Seu nome" autocomplete="name" required>
+                </div>
+                <div>
+                  <label for="email">E-mail</label>
+                  <input id="email" name="email" type="email" placeholder="voce@email.com" autocomplete="email" required>
+                </div>
+              </div>
+              <div class="field-row">
+                <div>
+                  <label for="password">Senha</label>
+                  <input id="password" name="password" type="password" placeholder="8+, Aa, número, símbolo" autocomplete="new-password" required>
+                </div>
+                <div>
+                  <label for="confirmation">Confirme a senha</label>
+                  <input id="confirmation" name="confirmation" type="password" placeholder="Repita a senha" autocomplete="new-password" required>
+                </div>
+              </div>
             </div>
-            <div>
-              <label for="email">E-mail</label>
-              <input id="email" name="email" type="email" placeholder="voce@email.com" autocomplete="email">
-            </div>
-          </div>
-          <div class="field-row">
-            <div>
-              <label for="password">Senha</label>
-              <input id="password" name="password" type="password" placeholder="8+ caracteres, Aa, número e símbolo" autocomplete="new-password">
-            </div>
-            <div>
-              <label for="confirmation">Confirme a senha</label>
-              <input id="confirmation" name="confirmation" type="password" placeholder="Repita a senha" autocomplete="new-password">
+
+            <div class="signup-section">
+              <h2>Seu perfil de jogador</h2>
+              <div class="field-row">
+                <div>
+                  <label for="rating">Rating</label>
+                  <input id="rating" name="rating" type="number" min="0" max="3500" step="1" placeholder="Ex.: 1500" required>
+                </div>
+                <div>
+                  <label for="start-year">Joga desde</label>
+                  <input id="start-year" name="startYear" type="number" min="1901" step="1" placeholder="Ex.: 2015" required>
+                </div>
+              </div>
+              <div class="field-row">
+                <div>
+                  <label for="opening">Abertura favorita</label>
+                  <select id="opening" name="opening" required>
+                    <option value="">Escolha uma</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="bio">Bio</label>
+                  <input id="bio" name="bio" maxlength="50" placeholder="Até 50 caracteres" required>
+                </div>
+              </div>
             </div>
           </div>
           <button class="btn" type="submit">Criar conta</button>
@@ -50,6 +81,7 @@
   <script src="../shared/session.js"></script>
   <script src="../shared/layout.js"></script>
   <script src="password.js"></script>
+  <script src="../shared/profile-form.js"></script>
   <script src="signup.js"></script>
 </body>
 </html>

@@ -16,18 +16,31 @@ async function findUserByEmail(email) {
 }
 
 /**
- * Creates a user. Fails with the MySQL code ER_DUP_ENTRY when the e-mail is already registered (RN01).
+ * Creates a user and their profile in one transaction, so an account never exists without its profile.
+ * Fails with ER_DUP_ENTRY when the e-mail is already registered (RN01), and with ER_NO_REFERENCED_ROW_2
+ * when the favorite opening does not exist; then neither row is saved.
  * @param {string} name
  * @param {string} email
  * @param {string} password - Stored as plain text.
- * @returns {Promise<object>} The insert result, with insertId.
+ * @param {{rating: number, anoInicio: number, bio: string, fkAberturaFavorita: number}} profile
+ * @returns {Promise<number>} The new user's id.
  */
-function createUser(name, email, password) {
-    const sql = `
+function createUser(name, email, password, profile) {
+    const userSql = `
         INSERT INTO usuario (nome, email, senha)
         VALUES (?, ?, ?);
     `;
-    return database.query(sql, [name, email, password]);
+    const profileSql = `
+        INSERT INTO perfil (fk_usuario, rating, ano_inicio, bio, fk_abertura_favorita)
+        VALUES (?, ?, ?, ?, ?);
+    `;
+
+    return database.transaction(async function (query) {
+        const userResult = await query(userSql, [name, email, password]);
+        const userId = userResult.insertId;
+        await query(profileSql, [userId, profile.rating, profile.anoInicio, profile.bio, profile.fkAberturaFavorita]);
+        return userId;
+    });
 }
 
 module.exports = {
