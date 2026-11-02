@@ -1,11 +1,9 @@
 const perfilModel = require("../models/perfilModel");
 
 const MAX_RATING = 3500;
-// The first year MySQL's YEAR type accepts.
-const FIRST_START_YEAR = 1901;
+const FIRST_START_YEAR = 1901; // The first year MySQL's YEAR type accepts.
+const LAST_YEAR = new Date().getFullYear();
 const MAX_BIO_LENGTH = 50;
-// MySQL error when a foreign key points to a row that does not exist. An update never changes the user,
-// so here it can only be the favorite opening.
 const MISSING_REFERENCE_CODE = "ER_NO_REFERENCED_ROW_2";
 
 /**
@@ -78,10 +76,10 @@ function validateProfile(body) {
     if (!isWholeNumberBetween(body.rating, 0, MAX_RATING)) {
         return "Rating inválido.";
     }
-    if (!isWholeNumberBetween(body.ano_inicio, FIRST_START_YEAR, new Date().getFullYear())) {
+    if (!isWholeNumberBetween(body.ano_inicio, FIRST_START_YEAR, LAST_YEAR)) {
         return "Ano de início inválido.";
     }
-    if (typeof body.bio !== "string" || body.bio.trim().length > MAX_BIO_LENGTH) {
+    if (body.bio.trim().length > MAX_BIO_LENGTH) {
         return `A bio pode ter no máximo ${MAX_BIO_LENGTH} caracteres.`;
     }
     if (!parseId(body.fk_abertura_favorita)) {
