@@ -63,6 +63,8 @@ function renderSidebar() {
   themeButton.addEventListener("click", () => {
     toggleTheme();
     updateThemeButton(themeButton);
+    // A clicked button keeps the focus, and :focus-within would keep the sidebar open after the mouse leaves.
+    themeButton.blur();
   });
 }
 
