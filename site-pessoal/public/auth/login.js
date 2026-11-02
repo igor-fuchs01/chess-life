@@ -16,12 +16,6 @@ async function login(event) {
     return;
   }
 
-  const passwordError = validatePasswordStrength(password);
-  if (passwordError) {
-    showMessage(loginMessage, passwordError, "error");
-    return;
-  }
-
   try {
     const response = await fetch("/usuarios/autenticar", {
       method: "POST",

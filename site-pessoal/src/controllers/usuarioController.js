@@ -52,12 +52,6 @@ async function authenticateUser(req, res) {
         return;
     }
 
-    const passwordError = validatePasswordStrength(password);
-    if (passwordError) {
-        res.status(400).send(passwordError);
-        return;
-    }
-
     try {
         const user = await usuarioModel.findUserByEmail(email);
         const isPasswordRight = user !== undefined && user.senha === password;

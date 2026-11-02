@@ -6,7 +6,7 @@ const SPECIAL_CHARACTER_PATTERN = /[^A-Za-z0-9]/;
 
 /**
  * Checks that a password is strong (RN02): at least 8 characters, with an uppercase letter,
- * a lowercase letter, a digit and a special character. Shared by the login and sign-up pages.
+ * a lowercase letter, a digit and a special character. Used by the sign-up page.
  * @param {string} password
  * @returns {string|null} The error message, or null when the password is strong.
  */
