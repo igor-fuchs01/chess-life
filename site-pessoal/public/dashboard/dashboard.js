@@ -22,11 +22,13 @@ let chartColors;
  */
 function startDashboard() {
   Chart.defaults.font.family = readCssVariable("--font-body");
-  // Each chart fills its panel's height, which the page layout sets, instead of keeping a fixed proportion.
+  // Each chart fills its .chart box, whose height the CSS sets, instead of keeping a fixed proportion.
   Chart.defaults.maintainAspectRatio = false;
   Chart.defaults.plugins.legend.display = false;
   Chart.register(barValuesPlugin);
   readChartColors();
+  // layout.js connected its own click first, so the theme has already switched when the charts redraw.
+  document.getElementById("theme-button").addEventListener("click", redrawChartsForTheme);
 
   loadGames();
 }
