@@ -62,7 +62,7 @@ async function loadGames() {
 function renderStats() {
   renderGamesToday();
   renderWinRate();
-  renderFavoriteOpening();
+  renderMostPlayedOpening();
   renderResultCounts();
 }
 
@@ -132,20 +132,20 @@ function renderWinRate() {
 /**
  * Shows the most played opening, with how many games it had and its win rate.
  */
-function renderFavoriteOpening() {
+function renderMostPlayedOpening() {
   const openings = countOpenings();
   let name = "—";
   let detail = "Jogue uma partida para descobrir";
 
   if (openings.length > 0) {
-    const favorite = openings[0];
-    const gamesWord = favorite.total === 1 ? "partida" : "partidas";
-    name = favorite.name;
-    detail = `${favorite.total} ${gamesWord} · ${calculateWinRate(favorite.wins, favorite.total)}% de vitórias`;
+    const mostPlayed = openings[0];
+    const gamesWord = mostPlayed.total === 1 ? "partida" : "partidas";
+    name = mostPlayed.name;
+    detail = `${mostPlayed.total} ${gamesWord} · ${calculateWinRate(mostPlayed.wins, mostPlayed.total)}% de vitórias`;
   }
 
-  document.getElementById("favorite-opening").textContent = name;
-  document.getElementById("favorite-opening-detail").textContent = detail;
+  document.getElementById("most-played-opening").textContent = name;
+  document.getElementById("most-played-opening-detail").textContent = detail;
 }
 
 /**
