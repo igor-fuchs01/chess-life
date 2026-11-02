@@ -32,15 +32,17 @@ function getCurrentTheme() {
 }
 
 /**
- * Switches between the light and dark themes, saves the choice and fires a "themechange" event
- * on document, for pages that draw with the theme's colors, such as the dashboard charts.
+ * Switches between the light and dark themes and saves the choice.
  */
 function toggleTheme() {
   const theme = getCurrentTheme() === DARK_THEME ? LIGHT_THEME : DARK_THEME;
   document.documentElement.dataset.theme = theme;
-  
-  localStorage.setItem(THEME_STORAGE_KEY, theme);
 
+  try {
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
+  } catch {
+    // Storage is blocked by the browser: the theme still switches, just without being saved.
+  }
 }
 
 document.documentElement.dataset.theme = getPreferredTheme();
