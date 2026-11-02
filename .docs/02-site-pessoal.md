@@ -37,7 +37,7 @@ site-pessoal/
     ├── home/               Home page styles (hero, story timeline, competencies, thanks, inspirations)
     ├── gallery/            Photo gallery page
     ├── assets/             Images shared by the pages: the gallery photos and the animated Accelerated Dragon board (`dragao-acelerado.svg`)
-    ├── auth/               Login and sign-up pages; password.js checks the password strength for both
+    ├── auth/               Login and sign-up pages; password.js checks the password strength on sign-up
     ├── play/               Restricted game page: rules.js (chess rules) and play.js (board and saving)
     └── dashboard/          Restricted dashboard: indicators, charts and games played on the site
 ```
@@ -81,7 +81,7 @@ The site uses the "classic" direction chosen by the user: cream paper (`--paper`
 - Authentication is the user's session in the browser, through `shared/session.js` (see "Authentication" below).
 - Form feedback uses `showMessage(element, text, "error" | "success")` from `shared/layout.js` (RF11).
 - Pages use relative paths for their files, so they also open straight from disk. Scripts build links from `SITE_ROOT` (`shared/session.js`). API calls only work when the site is served by `app.js`.
-- Forms are validated on the client too, for a quick reply: strong password (RN02: at least 8 characters with an uppercase letter, a lowercase letter, a digit and a special character), valid e-mail and matching confirmation. The server must repeat these checks. The password strength is checked by `validatePasswordStrength` in `auth/password.js`, on sign-up and on login, before any request is sent; the error shows in the form message below the submit button.
+- Forms are validated on the client too, for a quick reply: strong password (RN02: at least 8 characters with an uppercase letter, a lowercase letter, a digit and a special character), valid e-mail and matching confirmation. The server must repeat these checks. The password strength is checked by `validatePasswordStrength` in `auth/password.js`, on sign-up only, before any request is sent. Login does not check it, on the page or in the API, so users whose password was saved before RN02 can still log in. The sign-up error shows in the form message below the submit button.
 - Login and sign-up layout (`auth/auth.css`): the `.alt` section fills `<main>`, so its background reaches the footer, and the form sits in its middle. Spacing is compact and, on screens wider than 800px, the sign-up form shows its fields in pairs (`.field-row`), so the page fits the window with the footer, even with an error message, down to 1280×720. On phones the fields stack and sign-up may scroll.
 - User-provided text goes into the page with `textContent`, never `innerHTML`.
 - Chart.js 4.4.1 is loaded from cdnjs only on the dashboard.

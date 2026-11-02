@@ -61,7 +61,7 @@ Body:
 | Reply | Body |
 | --- | --- |
 | `200` | `{ "id": 1, "nome": "Igor", "email": "igor@exemplo.com" }`. The password is never returned |
-| `400` | `Informe o e-mail e a senha.`, or one of the password strength errors of `POST /usuarios/cadastrar`, checked before the database is read |
+| `400` | `Informe o e-mail e a senha.` The password strength is not checked at login, so users whose password was saved before RN02 can still log in |
 | `403` | `E-mail e/ou senha inválidos.` The same reply for an unknown e-mail and a wrong password, so it does not reveal which accounts exist |
 | `500` | `Não foi possível entrar.` |
 
