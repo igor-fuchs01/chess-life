@@ -195,8 +195,10 @@ section {
   white-space: nowrap;
   cursor: pointer;
 }
-/* A green tint, since a lighter glass tone barely shows over the light theme's cream. */
-.sidebar-item:hover {
+/* A green tint, since a lighter glass tone barely shows over the light theme's cream.
+   The "Agradecimentos" link keeps it while its section is the page's target, after the link is clicked. */
+.sidebar-item:hover,
+body:has(#agradecimentos:target) .sidebar-item[href="#agradecimentos"] {
   background: color-mix(in srgb, var(--green-text) 14%, transparent);
   color: var(--green-text);
 }
