@@ -2,7 +2,6 @@ const perfilModel = require("../models/perfilModel");
 
 const MAX_RATING = 3500;
 const FIRST_START_YEAR = 1901; // The first year MySQL's YEAR type accepts.
-const LAST_YEAR = new Date().getFullYear();
 const MAX_BIO_LENGTH = 50;
 const MISSING_REFERENCE_CODE = "ER_NO_REFERENCED_ROW_2";
 
@@ -76,10 +75,11 @@ function validateProfile(body) {
     if (!isWholeNumberBetween(body.rating, 0, MAX_RATING)) {
         return "Rating inválido.";
     }
-    if (!isWholeNumberBetween(body.ano_inicio, FIRST_START_YEAR, LAST_YEAR)) {
+    if (!isWholeNumberBetween(body.ano_inicio, FIRST_START_YEAR, new Date().getFullYear())) {
         return "Ano de início inválido.";
     }
-    if (body.bio.trim().length > MAX_BIO_LENGTH) {
+    // A bio that is not text would make trim() throw outside the try, which Express 4 does not catch.
+    if (typeof body.bio !== "string" || body.bio.trim().length > MAX_BIO_LENGTH) {
         return `A bio pode ter no máximo ${MAX_BIO_LENGTH} caracteres.`;
     }
     if (!parseId(body.fk_abertura_favorita)) {
