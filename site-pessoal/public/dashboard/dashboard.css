@@ -1,7 +1,23 @@
+/* Page height: the dashboard fills the window exactly, so the page never scrolls; the footer is hidden for it.
+   Each box below passes the free height on with flex: 1, and min-height: 0 lets it shrink below its content. */
+body {
+  height: 100vh;
+}
+main {
+  display: flex;
+  min-height: 0;
+}
 .dash {
+  display: flex;
+  flex: 1;
+  min-width: 0;
   padding: 14px 0 18px;
 }
 .dash .wrap {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
   max-width: calc(1400px + var(--sidebar-space));
 }
 /* Title: the ornament, the title and a short description on one line. */
@@ -22,15 +38,20 @@
   color: var(--muted);
 }
 
-/* Panels: indicators in a row on top, then two rows, each with a wide panel (2 parts) and a narrow one (1 part). */
+/* Panels: indicators in a row on top, then two rows that share the free height,
+   each with a wide panel (2 parts) and a narrow one (1 part). */
 .panels {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 12px;
+  min-height: 0;
 }
 .panel-row {
   display: flex;
+  flex: 1;
   gap: 12px;
+  min-height: 0;
 }
 /* min-width: 0 lets the panel shrink to the window instead of growing with its chart. */
 .panel {
@@ -38,6 +59,7 @@
   flex: 1;
   flex-direction: column;
   min-width: 0;
+  min-height: 0;
   padding: 12px 16px;
   border: 1px solid var(--line);
   background: var(--card);
@@ -56,11 +78,12 @@
 .panel h2 {
   font-size: 18px;
 }
-/* Chart.js sizes the canvas to this box. */
+/* Chart.js sizes the canvas to this box, which takes the panel's free height. */
 .chart {
   position: relative;
+  flex: 1;
   min-width: 0;
-  height: 260px;
+  min-height: 0;
 }
 
 /* Indicators: label, value and the comparison below, on cards with a brass top edge. */
@@ -118,13 +141,15 @@
 /* Results: a donut with the win rate in its middle, and the counts beside it. */
 .results {
   display: flex;
-  align-items: center;
+  flex: 1;
   gap: 18px;
+  min-height: 0;
 }
 .results .chart {
   flex: 1;
 }
 .results .legend {
+  align-self: center;
   flex-shrink: 0;
   flex-direction: column;
   gap: 8px;
@@ -148,13 +173,14 @@
   font-size: 12px;
 }
 
-/* Games table: it scrolls inside its panel when it is taller than the charts. */
+/* Games table: it scrolls inside its panel, which takes the free height. */
 .empty {
   color: var(--muted);
   font-size: 14px;
 }
 .table-scroll {
-  max-height: 260px;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
 }
 .games {
@@ -204,11 +230,25 @@
   background: var(--loss);
 }
 
-/* On phones the panels stack. */
+/* The footer is hidden here so the panels get the whole window height. */
+.site-footer {
+  display: none;
+}
+
+/* On phones the panels stack, with fixed chart and table heights, so the page scrolls again. */
 @media (max-width: 800px) {
+  body {
+    height: auto;
+  }
   .panel-row,
   .stats {
     flex-direction: column;
+  }
+  .chart {
+    height: 260px;
+  }
+  .table-scroll {
+    max-height: 260px;
   }
   .games th:nth-child(3),
   .games td:nth-child(3),
