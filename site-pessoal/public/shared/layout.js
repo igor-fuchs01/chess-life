@@ -16,12 +16,6 @@ function renderSidebar() {
     const activeClass = isCurrentPage(link.path) ? " active" : "";
     let address = SITE_ROOT + link.path;
 
-    // On the home page a section link keeps only its "#section" part, so the page scrolls instead of reloading
-    // (the server serves the home page at "/", a different address from "index.html").
-    if (link.path.startsWith(`${HOME_PATH}#`) && isCurrentPage(HOME_PATH)) {
-      address = link.path.slice(HOME_PATH.length);
-    }
-
     navigation += `
       <a href="${address}" class="sidebar-item${activeClass}" title="${link.label}">
         <span class="sidebar-icon" aria-hidden="true">${link.icon}</span><span class="sidebar-label">${link.label}</span>
