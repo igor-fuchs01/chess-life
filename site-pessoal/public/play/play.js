@@ -291,6 +291,7 @@ function renderBoard() {
       const column = isFlipped ? BOARD_SIZE - 1 - displayColumn : displayColumn;
       const square = createSquare(row, column, checkedKing);
 
+      // Creates the number and letter of the positions
       if (displayColumn === 0) {
         square.appendChild(createCoordinate("rank", BOARD_SIZE - row));
       }
@@ -315,7 +316,6 @@ function createSquare(row, column, checkedKing) {
   square.type = "button";
   square.className = (row + column) % 2 === 1 ? "dark" : "light";
   square.textContent = piece ? PIECE_SYMBOLS[piece.color][piece.type] : "";
-  square.setAttribute("aria-label", describeSquare(row, column));
   square.addEventListener("click", () => handleSquareClick(row, column));
 
   const target = selectedMoves.find((move) => move.to.row === row && move.to.column === column);
@@ -345,22 +345,6 @@ function createCoordinate(kind, text) {
   coordinate.className = `coordinate ${kind}`;
   coordinate.textContent = text;
   return coordinate;
-}
-
-/**
- * Describes a square for screen readers, such as "e4, cavalo das brancas".
- * @param {number} row
- * @param {number} column
- * @returns {string}
- */
-function describeSquare(row, column) {
-  const piece = game.board[row][column];
-  const name = getSquareName({ row, column });
-
-  if (!piece) {
-    return `${name}, vazia`;
-  }
-  return `${name}, ${PIECE_NAMES[piece.type]} das ${COLOR_NAMES[piece.color]}`;
 }
 
 /**
