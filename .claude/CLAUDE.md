@@ -130,6 +130,7 @@ When modifying code:
 # Documentation Rules
 
 * Do not create documentation files outside `.docs/`.
+* Change the reference documents (`.docs/01-project.md`, `.docs/02-site-pessoal.md` and the other numbered ones) only when strictly necessary: when what they describe actually changes or has become wrong. Small fixes and visual tweaks are recorded only in the prompt log. See `.docs/README.md`, Conventions.
 * Never forget to update the documentation, when necessary.
 * If no relevant documentation exists, create it.
 * Keep documentation synchronized with the current implementation.
