@@ -13,7 +13,8 @@ function renderSidebar() {
   let navigation = "";
 
   for (const link of getNavigationLinks(user)) {
-    const activeClass = isCurrentPage(link.path) ? " active" : "";
+    const isActive = isCurrentPage(link.path) || (link.relatedPath && isCurrentPage(link.relatedPath));
+    const activeClass = isActive ? " active" : "";
     let address = SITE_ROOT + link.path;
 
     navigation += `
@@ -78,7 +79,8 @@ function updateThemeButton(button) {
 /**
  * Lists the menu links, with paths relative to the site root.
  * @param {object|null} user - The logged-in user, or null for a visitor.
- * @returns {{path: string, label: string, icon: string}[]}
+ * A link's optional relatedPath is another page that also highlights it, such as the game page for "Jogar".
+ * @returns {{path: string, label: string, icon: string, relatedPath?: string}[]}
  */
 function getNavigationLinks(user) {
   const links = [
@@ -88,7 +90,7 @@ function getNavigationLinks(user) {
   ];
 
   if (user) {
-    links.push({ path: "play/play.html", label: "Jogar", icon: "♞" });
+    links.push({ path: "play/play.html", label: "Jogar", icon: "♞", relatedPath: "play/game.html" });
     links.push({ path: "dashboard/dashboard.html", label: "Dashboard", icon: "♜" });
   }
 
