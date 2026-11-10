@@ -5,7 +5,7 @@ const LOGIN_PATH = "auth/login.html";
 /**
  * Fills the page's <aside id="site-sidebar"> with the logo, the navigation menu and the bottom buttons.
  * Closed, the sidebar shows only the icons; the CSS opens it over the page on hover or keyboard focus.
- * Logged-in users see "Jogar" and "Dashboard" in the menu. At the bottom, everyone sees the theme button,
+ * Logged-in users see "Exercícios" and "Dashboard" in the menu. At the bottom, everyone sees the theme button,
  * followed by "Entrar" for visitors or, in its place, "Sair" for logged-in users.
  */
 function renderSidebar() {
@@ -79,7 +79,7 @@ function updateThemeButton(button) {
 /**
  * Lists the menu links, with paths relative to the site root.
  * @param {object|null} user - The logged-in user, or null for a visitor.
- * A link's optional relatedPath is another page that also highlights it, such as the game page for "Jogar".
+ * A link's optional relatedPath is another page that also highlights it, such as the exercise page for "Exercícios".
  * @returns {{path: string, label: string, icon: string, relatedPath?: string}[]}
  */
 function getNavigationLinks(user) {
@@ -90,7 +90,7 @@ function getNavigationLinks(user) {
   ];
 
   if (user) {
-    links.push({ path: "play/play.html", label: "Jogar", icon: "♞", relatedPath: "play/game.html" });
+    links.push({ path: "play/play.html", label: "Exercícios", icon: "♞", relatedPath: "play/game.html" });
     links.push({ path: "dashboard/dashboard.html", label: "Dashboard", icon: "♜" });
   }
 

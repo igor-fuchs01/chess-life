@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jogar | Chess Life</title>
+  <title>Exercícios | Chess Life</title>
   <link rel="icon" type="image/svg+xml" href="../assets/logo.svg">
   <link rel="stylesheet" href="../shared/style.css">
   <link rel="stylesheet" href="play.css">
@@ -33,31 +33,56 @@
         </div>
 
         <div class="start-heading">
-          <h2>Escolha suas peças</h2>
-          <p>A partida começa assim que você escolher.</p>
+          <h2>Listas de exercícios</h2>
+          <p>Escolha um nível e encontre o xeque-mate.</p>
         </div>
-        <div class="color-options">
-          <a class="color-option" href="game.html?cor=brancas">
-            <span class="color-piece" aria-hidden="true">♔</span>
-            <span><strong>Brancas</strong>Você faz o primeiro lance</span>
-            <span class="color-arrow" aria-hidden="true">→</span>
-          </a>
-          <a class="color-option" href="game.html?cor=pretas">
-            <span class="color-piece" aria-hidden="true">♚</span>
-            <span><strong>Pretas</strong>O adversário começa</span>
-            <span class="color-arrow" aria-hidden="true">→</span>
-          </a>
+        <div class="list-options" id="list-options"></div>
+        <template id="list-card-template">
+          <button class="list-option" type="button">
+            <span class="list-level" aria-hidden="true"></span>
+            <span>
+              <strong class="list-name"></strong>
+              <span class="list-description"></span>
+            </span>
+            <span class="list-progress"></span>
+          </button>
+        </template>
+        <div class="message" id="lists-message" role="alert"></div>
+
+        <div id="exercises-section" hidden>
+          <div class="start-heading">
+            <h2 id="exercises-title"></h2>
+            <p>Os exercícios resolvidos ganham ✓.</p>
+          </div>
+          <table class="exercise-table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Exercício</th>
+                <th scope="col">Status</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody id="exercise-list"></tbody>
+          </table>
+          <template id="exercise-row-template">
+            <tr>
+              <td class="exercise-number"></td>
+              <td><a class="exercise-link"></a></td>
+              <td class="exercise-status"></td>
+              <td class="exercise-action"><a class="btn exercise-open">Abrir</a></td>
+            </tr>
+          </template>
         </div>
 
         <div class="start-heading">
-          <h2>Regras da partida</h2>
+          <h2>Como funciona</h2>
         </div>
         <div class="rule-tiles">
-          <div class="rule-tile"><strong>Dois jogadores</strong>Mesmo computador, mesmo tabuleiro.</div>
           <div class="rule-tile"><strong>Mover</strong>Clique na peça e depois no destino.</div>
-          <div class="rule-tile"><strong>Especiais</strong>Roque, en passant e promoção.</div>
-          <div class="rule-tile"><strong>Fim</strong>Mate, afogamento, empate, abandono ou acordo.</div>
-          <div class="rule-tile"><strong>Dashboard</strong>A partida é salva com a abertura.</div>
+          <div class="rule-tile"><strong>Resposta</strong>O adversário responde sozinho.</div>
+          <div class="rule-tile"><strong>Erro</strong>Um lance errado encerra a tentativa.</div>
+          <div class="rule-tile"><strong>Dashboard</strong>Cada tentativa é salva, certa ou errada.</div>
         </div>
       </div>
     </section>
@@ -97,5 +122,7 @@
   <script src="../shared/layout.js"></script>
   <script src="../shared/profile-form.js"></script>
   <script src="profile.js"></script>
+  <script src="play.js"></script>
+  <script>startLists();</script>
 </body>
 </html>

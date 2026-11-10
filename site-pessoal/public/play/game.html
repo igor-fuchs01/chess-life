@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Partida | Chess Life</title>
+  <title>Exercício | Chess Life</title>
   <link rel="icon" type="image/svg+xml" href="../assets/logo.svg">
   <link rel="stylesheet" href="../shared/style.css">
   <link rel="stylesheet" href="game.css">
@@ -19,44 +19,40 @@
       <div class="wrap">
         <div class="section-title">
           <div class="ornament">♞</div>
-          <h1>Partida de xadrez</h1>
-          <p>Duas pessoas no mesmo computador. Ao terminar, a partida é salva no seu dashboard.</p>
+          <h1>Exercício de xadrez</h1>
+          <p>Encontre o xeque-mate. O adversário responde sozinho, e a tentativa é salva no seu dashboard.</p>
         </div>
 
         <div class="play-area">
           <div class="board game-board" id="board" aria-label="Tabuleiro"></div>
 
           <aside class="card game-panel">
-            <p class="eyebrow">Situação</p>
+            <p class="eyebrow">Exercício</p>
+            <h2 class="exercise-title" id="exercise-title"></h2>
             <p class="game-status" id="game-status" aria-live="polite"></p>
 
-            <button class="btn" type="button" id="new-game-button">Nova partida</button>
+            <div class="game-actions">
+              <button class="btn" type="button" id="retry-button" hidden>Tentar de novo</button>
+              <a class="btn" id="next-link" hidden>Próximo exercício</a>
+            </div>
 
             <h2>Lances</h2>
             <p class="moves-empty" id="moves-empty">Nenhum lance ainda.</p>
             <ol class="move-list" id="move-list"></ol>
 
-            <div class="game-actions">
-              <button class="btn ghost" type="button" id="resign-button">Abandonar</button>
-              <button class="btn ghost" type="button" id="draw-button">Empate por acordo</button>
-            </div>
             <div class="message" id="game-message" role="alert"></div>
-            <button class="btn" type="button" id="save-retry-button" hidden>Tentar salvar de novo</button>
+            <a class="btn ghost back-link" id="back-link" href="play.html">Voltar às listas</a>
           </aside>
         </div>
       </div>
     </section>
   </main>
 
-  <dialog class="promotion-dialog" id="promotion-dialog" aria-labelledby="promotion-title">
-    <h2 id="promotion-title">Promover o peão a</h2>
-    <div class="promotion-options" id="promotion-options"></div>
-  </dialog>
-
   <footer id="site-footer"></footer>
 
   <script src="../shared/layout.js"></script>
   <script src="rules.js"></script>
-  <script src="play.js"></script>
+  <script src="game.js"></script>
+  <script>startPage();</script>
 </body>
 </html>

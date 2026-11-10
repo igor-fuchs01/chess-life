@@ -71,20 +71,6 @@
   border: 5px solid var(--square-target);
   border-radius: 50%;
 }
-.coordinate {
-  position: absolute;
-  color: var(--green);
-  font-size: 11px;
-  font-weight: 600;
-}
-.rank {
-  top: 3px;
-  left: 4px;
-}
-.file {
-  right: 4px;
-  bottom: 2px;
-}
 
 /* Side panel: the moves list scrolls once it is taller than its limit. */
 .game-panel {
@@ -98,12 +84,18 @@
   margin-bottom: 6px;
 }
 .game-status {
+  margin-bottom: 12px;
   font-family: var(--font-heading);
-  font-size: 24px;
+  font-size: 22px;
 }
 .game-panel h2 {
   margin: 16px 0 8px;
   font-size: 20px;
+}
+.game-panel .exercise-title {
+  margin: 0 0 6px;
+  color: var(--green-text);
+  font-size: 26px;
 }
 .moves-empty {
   color: var(--muted);
@@ -115,18 +107,10 @@
   list-style: none;
   font-size: 15px;
 }
-/* Each line: move number, White's move and Black's move. */
+/* Each line: the move number, the user's move and the opponent's reply. */
 .move-list li {
-  display: flex;
   padding: 3px 0;
   border-bottom: 1px solid var(--line);
-}
-.move-list li span {
-  flex: 1;
-}
-.move-list li span:first-child {
-  flex: 0 0 2.5em;
-  color: var(--muted);
 }
 .game-actions {
   display: flex;
@@ -135,27 +119,8 @@
 .game-actions .btn {
   flex: 1;
 }
-
-/* Promotion dialog */
-.promotion-dialog h2 {
-  margin-bottom: 16px;
-  font-size: 22px;
-}
-.promotion-options {
-  display: flex;
-  gap: 10px;
-}
-.promotion-options button {
-  width: 64px;
-  height: 64px;
-  border: 1px solid var(--line);
-  background: var(--square-light);
-  color: var(--dark-ink);
-  font-size: 42px;
-  cursor: pointer;
-}
-.promotion-options button:hover {
-  border-color: var(--brass);
+.back-link {
+  margin-top: 16px;
 }
 
 /* On phones the panel goes below the board. */

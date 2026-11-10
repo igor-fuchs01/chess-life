@@ -1,4 +1,5 @@
-/* Start screen of the game: the player card, the color choice and the rules. Choosing a color opens game.html. */
+/* Start screen of the exercises: the player card, the lists, the chosen list's exercises and how it works.
+   Each exercise opens game.html. */
 .start .wrap {
   display: flex;
   flex-direction: column;
@@ -82,17 +83,17 @@
   border-color: var(--brass);
 }
 
-/* Color choice: two wide buttons, each with the king of its color. */
-.color-options {
+/* Lists: one wide button per level, with its number, name, description and progress. */
+.list-options {
   display: flex;
   gap: 18px;
 }
-.color-option {
+.list-option {
   display: flex;
   flex: 1;
   align-items: center;
-  gap: 20px;
-  padding: 18px 22px;
+  gap: 16px;
+  padding: 16px 18px;
   border: 1px solid var(--line);
   background: var(--card);
   color: var(--muted);
@@ -101,33 +102,83 @@
   text-align: left;
   cursor: pointer;
 }
-.color-option:hover {
+.list-option:hover,
+.list-option.selected {
   border-color: var(--brass);
   box-shadow: 0 12px 30px -18px var(--shadow);
 }
-.color-option strong {
+.list-option strong {
   display: block;
   color: var(--ink);
   font-family: var(--font-heading);
-  font-size: 26px;
+  font-size: 24px;
 }
-/* The king sits on a light square, so both colors read the same in both themes. */
-.color-piece {
+/* The level number sits on a light square, the same in both themes. */
+.list-level {
   display: flex;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: 80px;
-  height: 80px;
+  width: 64px;
+  height: 64px;
   background: var(--square-light);
   color: var(--dark-ink);
-  font-size: 58px;
-  line-height: 1;
+  font-family: var(--font-heading);
+  font-size: 36px;
 }
-.color-arrow {
+.list-progress {
   margin-left: auto;
   color: var(--brass);
-  font-size: 24px;
+  font-family: var(--font-heading);
+  font-size: 22px;
+}
+
+/* Exercises of the chosen list: a table with one row per exercise. */
+.exercise-table {
+  width: 100%;
+  margin-top: 10px;
+  border: 1px solid var(--line);
+  border-collapse: collapse;
+  background: var(--card);
+  font-size: 14px;
+}
+.exercise-table th,
+.exercise-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+.exercise-table th {
+  color: var(--muted);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.exercise-number {
+  width: 48px;
+  color: var(--brass);
+  font-family: var(--font-heading);
+  font-size: 18px;
+}
+.exercise-link {
+  color: var(--ink);
+  text-decoration: none;
+}
+.exercise-link:hover {
+  color: var(--green-text);
+  text-decoration: underline;
+}
+.exercise-action {
+  width: 1%;
+  text-align: right;
+  white-space: nowrap;
+}
+.exercise-solved {
+  color: var(--green-text);
+  font-weight: 700;
+}
+.exercise-pending {
+  color: var(--muted);
 }
 
 /* Rules: one short tile per topic, in a row. */
@@ -185,10 +236,10 @@
   margin-top: 16px;
 }
 
-/* On phones the card, the color buttons and the rule tiles stack. */
+/* On phones the card, the list buttons and the rule tiles stack. */
 @media (max-width: 800px) {
   .player-card,
-  .color-options,
+  .list-options,
   .rule-tiles {
     flex-direction: column;
     align-items: stretch;
