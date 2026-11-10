@@ -9,7 +9,7 @@ The code follows `routes/<resource>.js` → `controllers/<resource>Controller.js
 - **Request bodies** are JSON, sent with `Content-Type: application/json`.
 - **Successful replies** carry JSON, or no body (`204`).
 - **Error replies** carry a short plain-text message in Portuguese, written to be shown to the user as is, such as `E-mail e/ou senha inválidos.`. They never carry SQL errors or stack traces; the server logs the cause instead.
-- **Field names** are in Portuguese and follow the database (`resultado`, `abertura`). The user fields keep the names of the legacy template (`nomeServer`, `emailServer`, `senhaServer`), which the sign-up and login pages already send.
+- **Field names** are in Portuguese and follow the database (`acertou`, `fk_exercicio`). The user fields keep the names of the legacy template (`nomeServer`, `emailServer`, `senhaServer`), which the sign-up and login pages already send.
 - **Ids in the URL** must be positive whole numbers, or the reply is `400`.
 
 | Status | Meaning |
@@ -39,7 +39,7 @@ Body (every field is required except `fk_abertura_favorita`):
   "rating": 1650,
   "ano_inicio": 2014,
   "bio": "Aprendi na escola e nunca mais parei.",
-  "fk_abertura_favorita": 27
+  "fk_abertura_favorita": 26
 }
 ```
 
@@ -53,13 +53,13 @@ Body (every field is required except `fk_abertura_favorita`):
 | Reply | Body |
 | --- | --- |
 | `201` | `{ "id": 1 }` |
-| `400` | `Preencha o nome, o e-mail e a senha.`, `O nome pode ter no máximo 80 caracteres.`, `Informe um e-mail válido.`, `A senha pode ter no máximo 100 caracteres.`, or one of the password strength errors: `A senha precisa ter no mínimo 8 caracteres.`, `A senha precisa ter pelo menos uma letra maiúscula.`, `A senha precisa ter pelo menos uma letra minúscula.`, `A senha precisa ter pelo menos um número.`, `A senha precisa ter pelo menos um caractere especial.`, or one of the profile errors: `Preencha o rating, o ano de início e a bio.`, `Rating inválido.`, `Ano de início inválido.`, `A bio pode ter no máximo 50 caracteres.`, `Abertura inválida.` (also when the id is not in `abertura`) |
+| `400` | `Preencha o nome, o e-mail e a senha.`, `O nome pode ter no máximo 80 caracteres.`, `Informe um e-mail válido.`, `A senha pode ter no máximo 100 caracteres.`, or one of the password strength errors: `A senha precisa ter no mínimo 8 caracteres.`, `A senha precisa ter pelo menos uma letra maiúscula.`, `A senha precisa ter pelo menos uma letra minúscula.`, `A senha precisa ter pelo menos um número.`, `A senha precisa ter pelo menos um caractere especial.`, or one of the profile errors: `Preencha o rating, o ano de início e a bio.`, `Rating inválido.`, `Ano de início inválido.`, `A bio pode ter no máximo 50 caracteres.`, `Abertura inválida.` (also when the id is not one of the 49 openings) |
 | `409` | `Este e-mail já está cadastrado.` |
 | `500` | `Não foi possível criar a conta.` |
 
 ### `POST /usuarios/autenticar` — log in (RF03)
 
-Used by `public/auth/login.js`, which saves the reply in the user's session in the browser with `startSession` (see "Authentication" in section 3 of [`02-site-pessoal.md`](02-site-pessoal.md)). The game routes then take the user id from that session.
+Used by `public/auth/login.js`, which saves the reply in the user's session in the browser with `startSession` (see "Authentication" in section 3 of [`02-site-pessoal.md`](02-site-pessoal.md)). The other routes then take the user id from that session.
 
 Body:
 
@@ -74,79 +74,127 @@ Body:
 | `403` | `E-mail e/ou senha inválidos.` The same reply for an unknown e-mail and a wrong password, so it does not reveal which accounts exist |
 | `500` | `Não foi possível entrar.` |
 
-## 3. Games — `/partidas`
+## 3. Lists — `/listas`
 
-### `GET /partidas/listar/:idUsuario` — list a user's games (RF09, RF10)
+### `GET /listas/listar/:idUsuario` — list the exercise lists with the user's progress (RF08, RF09)
+
+Used by `public/play/play.js` on the start screen and by `public/dashboard/dashboard.js`.
+
+| Reply | Body |
+| --- | --- |
+| `200` | The lists, in their order |
+| `204` | No body: there are no lists (the seed was not loaded) |
+| `400` | `Usuário inválido.` |
+| `500` | `Não foi possível listar as listas de exercícios.` |
+
+```json
+[
+  { "id": 1, "nome": "Mate em 1", "descricao": "Um lance para dar xeque-mate.", "total_exercicios": 5, "resolvidos": 2 }
+]
+```
+
+- `resolvidos` counts the list's exercises the user has solved at least once in this list.
+
+## 4. Exercises — `/exercicios`
+
+### `GET /exercicios/listar/:idLista/:idUsuario` — list the exercises of a list (RF08)
+
+Used by `public/play/play.js` to show a list's exercises and by `public/play/game.js` to find the next exercise.
+
+| Reply | Body |
+| --- | --- |
+| `200` | The list's exercises, in their order |
+| `204` | No body: the list has no exercises, or does not exist |
+| `400` | `Lista inválida.` or `Usuário inválido.` |
+| `500` | `Não foi possível listar os exercícios.` |
+
+```json
+[
+  { "id": 6, "titulo": "Mate de Légal", "ordem": 1, "resolvido": true }
+]
+```
+
+- `resolvido` is `true` when the user has solved the exercise at least once in this list.
+
+### `GET /exercicios/buscar/:idExercicio` — read an exercise to solve (RF08)
+
+Used by `public/play/game.js` to set up the board.
+
+| Reply | Body |
+| --- | --- |
+| `200` | The exercise |
+| `400` | `Exercício inválido.` |
+| `404` | `Exercício não encontrado.` |
+| `500` | `Não foi possível buscar o exercício.` |
+
+```json
+{
+  "id": 6,
+  "titulo": "Mate de Légal",
+  "fen": "rn1qkbnr/ppp2p1p/3p2p1/4N3/2B1P3/2N5/PPPP1PPP/R1BbK2R w KQkq - 0 1",
+  "solucao": ["Bxf7+", "Ke7", "Nd5#"]
+}
+```
+
+- `fen` is the position, with the side the user plays to move.
+- `solucao` is the whole line in SAN: the user's moves at even indexes (0, 2, …) and the opponent's replies at odd indexes. The page compares each move with it and plays the replies itself. Sending the solution keeps the page simple; the API checks it again when the attempt is saved.
+
+## 5. Attempts — `/tentativas`
+
+### `POST /tentativas/cadastrar/:idUsuario` — save an attempt (RF08, RF10)
+
+Used by `public/play/game.js` when an attempt ends: after the last solution move, or right after a wrong move.
+
+Body:
+
+```json
+{ "fk_lista": 2, "fk_exercicio": 6, "lances": ["Bxf7+", "Ke7", "Nd5#"] }
+```
+
+| Field | Rule |
+| --- | --- |
+| `fk_lista` | The list the exercise was opened from: a positive whole number |
+| `fk_exercicio` | The exercise: a positive whole number, in that list |
+| `lances` | Every move of the attempt, the opponent's replies included, up to the last one played. At least one, each in standard algebraic notation (SAN), such as `Nf3`, `exd5`, `O-O`, `e8=Q+`. The server checks the format, not the legality: the page only allows the moves each piece can make |
+
+The server reads the exercise's solution and saves `acertou = true` only when `lances` is exactly the whole solution (RN04). The client sends no date: the database sets `data_tentativa` (RN05).
+
+| Reply | Body |
+| --- | --- |
+| `201` | `{ "id": 1, "acertou": true }` |
+| `400` | `Usuário inválido.`, `Lista inválida.`, `Exercício inválido.`, `Informe os lances da tentativa.` or `Lance inválido: <lance>` |
+| `404` | `Exercício não encontrado.` (no solution for the exercise) or `Usuário, lista ou exercício não encontrado.` (the user does not exist, or the exercise is not in the list) |
+| `500` | `Não foi possível registrar a tentativa.` |
+
+### `GET /tentativas/listar/:idUsuario` — list a user's attempts (RF09, RF10)
 
 Used by `public/dashboard/dashboard.js`.
 
 | Reply | Body |
 | --- | --- |
-| `200` | The games, newest first |
-| `204` | No body: the user has no games |
+| `200` | The attempts, newest first |
+| `204` | No body: the user has no attempts |
 | `400` | `Usuário inválido.` |
-| `500` | `Não foi possível listar as partidas.` |
+| `500` | `Não foi possível listar as tentativas.` |
 
 ```json
 [
-  {
-    "id": 1,
-    "resultado": "vitoria",
-    "adversario": "humano",
-    "cor": "brancas",
-    "abertura": "Siciliana: Dragão Acelerado",
-    "data_partida": "2026-10-15T19:15:25.000Z"
-  }
+  { "id": 1, "acertou": true, "data_tentativa": "2026-11-09T19:15:25.000Z", "lista": "Mate em 2", "exercicio": "Mate de Légal" }
 ]
 ```
 
-- `abertura` is the opening's name, from the `abertura` table.
-- `data_partida` is an ISO date in UTC. The dashboard shows it, and groups games by day, in the user's time zone.
-- The moves are not listed: no page uses them yet.
+- `data_tentativa` is an ISO date in UTC. The dashboard shows it, and groups attempts by day, in the user's time zone.
 
-### `POST /partidas/cadastrar/:idUsuario` — save a finished game (RF08, RF16)
+## 6. Profiles — `/perfis`
 
-Used by `public/play/play.js` when a game ends.
-
-Body:
-
-```json
-{
-  "resultado": "vitoria",
-  "adversario": "humano",
-  "cor": "brancas",
-  "lances": ["e4", "c5", "Nf3", "Nc6", "d4", "cxd4", "Nxd4", "g6"]
-}
-```
-
-| Field | Rule |
-| --- | --- |
-| `resultado` | `vitoria`, `derrota` or `empate`, from the user's side (RN04) |
-| `adversario` | `humano` or `ia` |
-| `cor` | `brancas` or `pretas`, the color the user played |
-| `lances` | At least one move, each in standard algebraic notation (SAN), such as `Nf3`, `exd5`, `O-O`, `e8=Q+`. The server checks the format, not the legality: the game page only allows legal moves (RF14) |
-
-The client sends no date: the database sets `data_partida` when the game is saved (RN05).
-
-The server identifies the opening from the moves: among the rows of the `abertura` table, it picks the longest sequence the game starts with, such as "Giuoco Piano" over "Abertura Italiana". A game that matches none gets "Abertura irregular". The game and its numbered moves (`lance` table) are saved in one transaction.
-
-| Reply | Body |
-| --- | --- |
-| `201` | `{ "id": 1, "abertura": "Siciliana: Dragão Acelerado" }` |
-| `400` | `Usuário inválido.`, `Resultado inválido.`, `Adversário inválido.`, `Cor inválida.`, `Informe os lances da partida.` or `Lance inválido: <lance>` |
-| `404` | `Usuário não encontrado.` |
-| `500` | `Não foi possível registrar a partida.` |
-
-## 4. Profiles — `/perfis`
-
-A user has zero or one profile (`perfil` table, 1:1 with `usuario`). Rating, starting year and bio are required when the profile is created or updated; the favorite opening is optional. The profile is created with the account, by `POST /usuarios/cadastrar`; these routes read and update it, used by `public/play/profile.js` on the start screen of the game (`play/play.html`).
+A user has zero or one profile (`perfil` table, 1:1 with `usuario`). Rating, starting year and bio are required when the profile is created or updated; the favorite opening is optional. The profile is created with the account, by `POST /usuarios/cadastrar`; these routes read and update it, used by `public/play/profile.js` on the start screen of the exercises (`play/play.html`).
 
 ### `GET /perfis/buscar/:idUsuario` — read a user's profile (RF17)
 
 | Reply | Body |
 | --- | --- |
 | `200` | The profile |
-| `204` | No body: the user has no profile (an account created before 2026-11-02; the `perfil` table in [`03-database.md`](03-database.md) shows how to give those accounts a profile) |
+| `204` | No body: the user has no profile. The sign-up always creates one, so only a row removed or added by hand in the database leads here |
 | `400` | `Usuário inválido.` |
 | `500` | `Não foi possível buscar o perfil.` |
 
@@ -155,13 +203,11 @@ A user has zero or one profile (`perfil` table, 1:1 with `usuario`). Rating, sta
   "rating": 1650,
   "ano_inicio": 2014,
   "bio": "Aprendi na escola e nunca mais parei.",
-  "fk_abertura_favorita": 27,
-  "abertura_favorita": "Siciliana: Dragão Acelerado"
+  "fk_abertura_favorita": 26
 }
 ```
 
-- An empty profile, given by SQL to an account created before 2026-11-02, has every field `null`.
-- `abertura_favorita` is the name of the favorite opening, from the `abertura` table.
+- `fk_abertura_favorita` is the id of the favorite opening, `null` when there is none. The openings are mocked in the front-end (`public/shared/profile-form.js`), so the reply carries no name: the page finds it from the same list.
 
 ### `PUT /perfis/atualizar/:idUsuario` — update a profile (RF17)
 
@@ -170,7 +216,7 @@ Replaces every field. Rating, starting year and bio are required, so they can ne
 Body:
 
 ```json
-{ "rating": 1650, "ano_inicio": 2014, "bio": "Aprendi na escola e nunca mais parei.", "fk_abertura_favorita": 27 }
+{ "rating": 1650, "ano_inicio": 2014, "bio": "Aprendi na escola e nunca mais parei.", "fk_abertura_favorita": 26 }
 ```
 
 | Field | Rule |
@@ -178,37 +224,30 @@ Body:
 | `rating` | Required. A whole number from 0 to 3500 |
 | `ano_inicio` | Required. A whole number from 1901 (the first year MySQL's `YEAR` accepts) to the current year |
 | `bio` | Required, not blank. Up to 50 characters, a limit of the API (the column holds 280); spaces at the ends are removed |
-| `fk_abertura_favorita` | Optional (`null`, for a user with no favorite opening). The id of a row of the `abertura` table, from `GET /aberturas/listar` |
+| `fk_abertura_favorita` | Optional (`null`, for a user with no favorite opening). An id from 1 to 49, one of the openings mocked in the front-end |
 
 | Reply | Body |
 | --- | --- |
 | `204` | No body: the profile was updated |
-| `400` | `Usuário inválido.`, `Preencha o rating, o ano de início e a bio.`, `Rating inválido.`, `Ano de início inválido.`, `A bio pode ter no máximo 50 caracteres.` or `Abertura inválida.` (also when the id is not in `abertura`) |
+| `400` | `Usuário inválido.`, `Preencha o rating, o ano de início e a bio.`, `Rating inválido.`, `Ano de início inválido.`, `A bio pode ter no máximo 50 caracteres.` or `Abertura inválida.` (also when the id is not from 1 to 49) |
 | `404` | `Perfil não encontrado.`: the user has no profile to update |
 | `500` | `Não foi possível atualizar o perfil.` |
 
-## 5. Openings — `/aberturas`
-
-### `GET /aberturas/listar` — list the known openings
-
-Used by `public/shared/profile-form.js` to fill the favorite opening options, on the sign-up page and in the profile dialog.
-
-| Reply | Body |
-| --- | --- |
-| `200` | The openings, in alphabetical order: `[{ "id": 9, "nome": "Abertura Italiana" }]` |
-| `500` | `Não foi possível listar as aberturas.` |
-
-## 6. Security
+## 7. Security
 
 - Passwords are stored as plain text in `usuario.senha`, without hashing, by the author's choice. Anyone who can read the table sees every password.
 - The API connects to MySQL as `chess_life_user`, which may only run this document's statements (see "Application user" in section 7 of [`03-database.md`](03-database.md)). A route that needs another statement also needs its `GRANT`.
 - Every query uses `?` placeholders, so request values are never read as SQL.
 - Error replies and logs never include passwords or SQL.
 - **Authentication**: done by the user's session in the browser (`sessionStorage`), described with examples in "Authentication" in section 3 of [`02-site-pessoal.md`](02-site-pessoal.md). The API checks the e-mail and password only at `POST /usuarios/autenticar`; it sends no token or cookie, and the page keeps the reply.
-- **Known limit**: the routes do not check who is calling. The game and profile routes trust the user id in the URL, which the page takes from the session, so anyone who sends another id to the API can read that user's games and profile, or save games and change the profile in their name. This is accepted for the academic project.
+- **Known limit**: the routes do not check who is calling. The list, exercise, attempt and profile routes trust the user id in the URL, which the page takes from the session, so anyone who sends another id to the API can read that user's progress, attempts and profile, or save attempts and change the profile in their name. The exercise route also sends the solution, so a user can read it before solving. This is accepted for the academic project.
 
-## 7. Removed routes
+## 8. Removed routes
 
 The legacy template's routes were deleted on 2026-10-15, since no page used them: `/avisos/*`, `/medidas/*`, `/aquarios/*`, `/empresas/*` and the `/` route of `routes/index.js`. The home page is served by `express.static` from `public/index.html`.
 
 `POST /perfis/cadastrar/:idUsuario` was removed on 2026-11-02, the day it was created: the profile is now created by `POST /usuarios/cadastrar`, together with the account.
+
+`GET /partidas/listar/:idUsuario` and `POST /partidas/cadastrar/:idUsuario` were removed on 2026-11-09, with the `partida` and `lance` tables and the opening identification: the site no longer saves games between two people. The lists, exercises and attempts routes (sections 3 to 5) took their place.
+
+`GET /aberturas/listar` was removed on 2026-11-09, with the `abertura` table: the openings are mocked in the front-end, and the profile routes check the id.

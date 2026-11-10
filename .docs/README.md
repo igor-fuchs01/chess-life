@@ -1,6 +1,6 @@
 # Chess Life — Documentation
 
-Development documentation for Chess Life, a personal chess website built for the *Projeto Individual* challenge of the *Pesquisa e Inovação* course at SPTech. Start here: this page lists every document, in the order they are meant to be read. How the project meets the challenge's objectives is in section 11 of [`01-project.md`](01-project.md).
+Development documentation for Chess Life, a personal chess website built for the *Projeto Individual* challenge of the *Pesquisa e Inovação* course at SPTech. Start here: this page lists every document, in the order they are meant to be read. How the project meets the challenge's objectives is in section 10 of [`01-project.md`](01-project.md).
 
 ## Documents
 
