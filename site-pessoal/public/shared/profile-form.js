@@ -3,28 +3,80 @@
 const PROFILE_MAX_RATING = 3500;
 // The first year MySQL's YEAR type accepts, the same limit as the API.
 const PROFILE_FIRST_START_YEAR = 1901;
+// The known openings, mocked here. The API accepts only these ids, from 1 to 49.
+const OPENINGS = [
+  { id: 1, nome: "Abertura do Peão do Rei" },
+  { id: 2, nome: "Abertura do Peão da Dama" },
+  { id: 3, nome: "Abertura Inglesa" },
+  { id: 4, nome: "Abertura Réti" },
+  { id: 5, nome: "Abertura Bird" },
+  { id: 6, nome: "Abertura Larsen" },
+  { id: 7, nome: "Abertura Húngara" },
+  { id: 8, nome: "Abertura Italiana" },
+  { id: 9, nome: "Giuoco Piano" },
+  { id: 10, nome: "Gambito Evans" },
+  { id: 11, nome: "Defesa dos Dois Cavalos" },
+  { id: 12, nome: "Abertura Espanhola" },
+  { id: 13, nome: "Espanhola: Defesa Morphy" },
+  { id: 14, nome: "Espanhola: Defesa Berlinense" },
+  { id: 15, nome: "Abertura Escocesa" },
+  { id: 16, nome: "Abertura dos Quatro Cavalos" },
+  { id: 17, nome: "Defesa Petrov" },
+  { id: 18, nome: "Defesa Philidor" },
+  { id: 19, nome: "Gambito do Rei" },
+  { id: 20, nome: "Abertura Vienense" },
+  { id: 21, nome: "Abertura do Bispo" },
+  { id: 22, nome: "Abertura Central" },
+  { id: 23, nome: "Defesa Siciliana" },
+  { id: 24, nome: "Siciliana: Najdorf" },
+  { id: 25, nome: "Siciliana: Dragão" },
+  { id: 26, nome: "Siciliana: Dragão Acelerado" },
+  { id: 27, nome: "Siciliana: Fechada" },
+  { id: 28, nome: "Siciliana: Alapin" },
+  { id: 29, nome: "Siciliana: Gambito Smith-Morra" },
+  { id: 30, nome: "Defesa Francesa" },
+  { id: 31, nome: "Defesa Caro-Kann" },
+  { id: 32, nome: "Defesa Escandinava" },
+  { id: 33, nome: "Defesa Alekhine" },
+  { id: 34, nome: "Defesa Pirc" },
+  { id: 35, nome: "Defesa Moderna" },
+  { id: 36, nome: "Gambito da Dama" },
+  { id: 37, nome: "Gambito da Dama Aceito" },
+  { id: 38, nome: "Gambito da Dama Recusado" },
+  { id: 39, nome: "Defesa Eslava" },
+  { id: 40, nome: "Sistema Londres" },
+  { id: 41, nome: "Sistema Londres" },
+  { id: 42, nome: "Sistema Londres" },
+  { id: 43, nome: "Defesa Índia" },
+  { id: 44, nome: "Defesa Índia do Rei" },
+  { id: 45, nome: "Defesa Grünfeld" },
+  { id: 46, nome: "Defesa Nimzo-Índia" },
+  { id: 47, nome: "Defesa Índia da Dama" },
+  { id: 48, nome: "Defesa Benoni" },
+  { id: 49, nome: "Defesa Holandesa" }
+];
 
 /**
- * Adds the openings the API knows to a select, after the options it already has.
+ * Adds the openings to a select, after the options it already has, in alphabetical order.
  * @param {HTMLSelectElement} select
- * @returns {Promise<boolean>} False when the openings could not be loaded.
  */
-async function loadOpeningOptions(select) {
-  try {
-    const response = await fetch("/aberturas/listar");
-    if (!response.ok) {
-      return false;
-    }
-    for (const opening of await response.json()) {
-      const option = document.createElement("option");
-      option.value = opening.id;
-      option.textContent = opening.nome;
-      select.append(option);
-    }
-    return true;
-  } catch {
-    return false;
+function fillOpeningOptions(select) {
+  const openingsByName = [...OPENINGS].sort((first, second) => first.nome.localeCompare(second.nome, "pt-BR"));
+  for (const opening of openingsByName) {
+    const option = document.createElement("option");
+    option.value = opening.id;
+    option.textContent = opening.nome;
+    select.append(option);
   }
+}
+
+/**
+ * @param {number|null} openingId
+ * @returns {string|null} The opening's name, or null when no opening has that id.
+ */
+function getOpeningName(openingId) {
+  const opening = OPENINGS.find((item) => item.id === openingId);
+  return opening ? opening.nome : null;
 }
 
 /**

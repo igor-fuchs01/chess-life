@@ -17,8 +17,7 @@ async function findUserByEmail(email) {
 
 /**
  * Creates a user and their profile in one transaction, so an account never exists without its profile.
- * Fails with ER_DUP_ENTRY when the e-mail is already registered (RN01), and with ER_NO_REFERENCED_ROW_2
- * when the favorite opening does not exist; then neither row is saved.
+ * Fails with ER_DUP_ENTRY when the e-mail is already registered (RN01); then neither row is saved.
  * @param {string} name
  * @param {string} email
  * @param {string} password - Stored as plain text.

@@ -68,5 +68,4 @@ function validateSignup(name, email, password, confirmation) {
 }
 
 signupForm.addEventListener("submit", createAccount);
-// The favorite opening is optional: without the list the user can still sign up with "Nenhuma".
-loadOpeningOptions(signupForm.opening);
+fillOpeningOptions(signupForm.opening);

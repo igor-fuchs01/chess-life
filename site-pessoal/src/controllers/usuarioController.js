@@ -11,7 +11,6 @@ const MAX_NAME_LENGTH = 80;
 const MAX_EMAIL_LENGTH = 120;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const DUPLICATE_ENTRY_CODE = "ER_DUP_ENTRY";
-const MISSING_REFERENCE_CODE = "ER_NO_REFERENCED_ROW_2";
 
 /**
  * Creates an account and its player profile (RF01, RF02, RF17). Replies 201 with { id }, 400 with the validation error,
@@ -35,10 +34,6 @@ async function registerUser(req, res) {
     } catch (error) {
         if (error.code === DUPLICATE_ENTRY_CODE) {
             res.status(409).send("Este e-mail já está cadastrado.");
-            return;
-        }
-        if (error.code === MISSING_REFERENCE_CODE) {
-            res.status(400).send("Abertura inválida.");
             return;
         }
         console.error("Error registering a user:", error.message);

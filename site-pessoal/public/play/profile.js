@@ -12,21 +12,19 @@ const bioField = document.getElementById("bio");
 
 // The user's profile as the API returned it, or null when it was not found.
 let savedProfile = null;
-let openingsFailed = false;
 
 /**
- * Connects the profile buttons and loads the openings and the user's profile.
+ * Connects the profile buttons, fills the opening options and loads the user's profile.
  */
-async function startProfile() {
+function startProfile() {
   document.getElementById("player-name").textContent = profileUser.name;
   document.getElementById("profile-button").addEventListener("click", openProfileDialog);
   document.getElementById("profile-cancel-button").addEventListener("click", () => profileDialog.close());
   profileForm.addEventListener("submit", saveProfile);
   bioField.addEventListener("input", updateBioCount);
 
+  fillOpeningOptions(profileForm.opening);
   loadProfile();
-  // Without the list, saving would clear the saved favorite opening, so the dialog blocks saving instead.
-  openingsFailed = !(await loadOpeningOptions(profileForm.opening));
 }
 
 /**
@@ -62,7 +60,7 @@ function renderPlayerCard() {
   document.getElementById("player-bio").textContent = savedProfile.bio ?? NO_BIO_TEXT;
   document.getElementById("player-rating").textContent = savedProfile.rating ?? EMPTY_FIELD_TEXT;
   document.getElementById("player-start-year").textContent = savedProfile.ano_inicio ?? EMPTY_FIELD_TEXT;
-  document.getElementById("player-opening").textContent = savedProfile.abertura_favorita ?? EMPTY_FIELD_TEXT;
+  document.getElementById("player-opening").textContent = getOpeningName(savedProfile.fk_abertura_favorita) ?? EMPTY_FIELD_TEXT;
 }
 
 /**
@@ -75,12 +73,7 @@ function openProfileDialog() {
   bioField.value = savedProfile.bio ?? "";
   updateBioCount();
 
-  document.getElementById("profile-save-button").disabled = openingsFailed;
   profileMessage.className = "message";
-  if (openingsFailed) {
-    showMessage(profileMessage, "Não foi possível carregar as aberturas. Recarregue a página para editar o perfil.", "error");
-  }
-
   profileDialog.showModal();
 }
 

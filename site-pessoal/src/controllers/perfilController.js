@@ -3,7 +3,8 @@ const perfilModel = require("../models/perfilModel");
 const MAX_RATING = 3500;
 const FIRST_START_YEAR = 1901; // The first year MySQL's YEAR type accepts.
 const MAX_BIO_LENGTH = 50;
-const MISSING_REFERENCE_CODE = "ER_NO_REFERENCED_ROW_2";
+// The openings are mocked in the front-end (public/shared/profile-form.js), with ids from 1 to this count.
+const OPENING_COUNT = 49;
 
 /**
  * Replies with the user's profile: 200 with it, 204 when there is none, or 400 for an invalid user id.
@@ -53,10 +54,6 @@ async function updateProfile(req, res) {
         }
         res.status(204).send();
     } catch (error) {
-        if (error.code === MISSING_REFERENCE_CODE) {
-            res.status(400).send("Abertura inválida.");
-            return;
-        }
         console.error("Error updating a profile:", error.message);
         res.status(500).send("Não foi possível atualizar o perfil.");
     }
@@ -83,7 +80,7 @@ function validateProfile(body) {
     if (typeof body.bio !== "string" || body.bio.trim().length > MAX_BIO_LENGTH) {
         return `A bio pode ter no máximo ${MAX_BIO_LENGTH} caracteres.`;
     }
-    if (!isEmpty(body.fk_abertura_favorita) && !parseId(body.fk_abertura_favorita)) {
+    if (!isEmpty(body.fk_abertura_favorita) && !isWholeNumberBetween(Number(body.fk_abertura_favorita), 1, OPENING_COUNT)) {
         return "Abertura inválida.";
     }
     return null;
