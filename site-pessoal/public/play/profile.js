@@ -60,7 +60,7 @@ function renderPlayerCard() {
   document.getElementById("player-bio").textContent = savedProfile.bio ?? NO_BIO_TEXT;
   document.getElementById("player-rating").textContent = savedProfile.rating ?? EMPTY_FIELD_TEXT;
   document.getElementById("player-start-year").textContent = savedProfile.ano_inicio ?? EMPTY_FIELD_TEXT;
-  document.getElementById("player-opening").textContent = getOpeningName(savedProfile.fk_abertura_favorita) ?? EMPTY_FIELD_TEXT;
+  document.getElementById("player-opening").textContent = savedProfile.abertura_favorita ?? EMPTY_FIELD_TEXT;
 }
 
 /**
@@ -69,7 +69,7 @@ function renderPlayerCard() {
 function openProfileDialog() {
   profileForm.rating.value = savedProfile.rating ?? "";
   profileForm.startYear.value = savedProfile.ano_inicio ?? "";
-  profileForm.opening.value = savedProfile.fk_abertura_favorita ?? "";
+  profileForm.opening.value = savedProfile.abertura_favorita ?? "";
   bioField.value = savedProfile.bio ?? "";
   updateBioCount();
 

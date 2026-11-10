@@ -21,7 +21,7 @@ async function findUserByEmail(email) {
  * @param {string} name
  * @param {string} email
  * @param {string} password - Stored as plain text.
- * @param {{rating: number, anoInicio: number, bio: string, fkAberturaFavorita: number|null}} profile
+ * @param {{rating: number, anoInicio: number, bio: string, aberturaFavorita: string|null}} profile
  * @returns {Promise<number>} The new user's id.
  */
 function createUser(name, email, password, profile) {
@@ -30,14 +30,14 @@ function createUser(name, email, password, profile) {
         VALUES (?, ?, ?);
     `;
     const profileSql = `
-        INSERT INTO perfil (fk_usuario, rating, ano_inicio, bio, fk_abertura_favorita)
+        INSERT INTO perfil (fk_usuario, rating, ano_inicio, bio, abertura_favorita)
         VALUES (?, ?, ?, ?, ?);
     `;
 
     return database.transaction(async function (query) {
         const userResult = await query(userSql, [name, email, password]);
         const userId = userResult.insertId;
-        await query(profileSql, [userId, profile.rating, profile.anoInicio, profile.bio, profile.fkAberturaFavorita]);
+        await query(profileSql, [userId, profile.rating, profile.anoInicio, profile.bio, profile.aberturaFavorita]);
         return userId;
     });
 }

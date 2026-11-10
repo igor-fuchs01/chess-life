@@ -3,8 +3,8 @@ const perfilModel = require("../models/perfilModel");
 const MAX_RATING = 3500;
 const FIRST_START_YEAR = 1901; // The first year MySQL's YEAR type accepts.
 const MAX_BIO_LENGTH = 50;
-// The openings are mocked in the front-end (public/shared/profile-form.js), with ids from 1 to this count.
-const OPENING_COUNT = 49;
+// The size of the column perfil.abertura_favorita.
+const MAX_OPENING_LENGTH = 50;
 
 /**
  * Replies with the user's profile: 200 with it, 204 when there is none, or 400 for an invalid user id.
@@ -80,7 +80,10 @@ function validateProfile(body) {
     if (typeof body.bio !== "string" || body.bio.trim().length > MAX_BIO_LENGTH) {
         return `A bio pode ter no máximo ${MAX_BIO_LENGTH} caracteres.`;
     }
-    if (!isEmpty(body.fk_abertura_favorita) && !isWholeNumberBetween(Number(body.fk_abertura_favorita), 1, OPENING_COUNT)) {
+    if (isEmpty(body.abertura_favorita)) {
+        return null;
+    }
+    if (typeof body.abertura_favorita !== "string" || body.abertura_favorita.trim().length > MAX_OPENING_LENGTH) {
         return "Abertura inválida.";
     }
     return null;
@@ -89,14 +92,14 @@ function validateProfile(body) {
 /**
  * Turns a validated body into the model's profile. Also used by the sign-up.
  * @param {object} body - The request body, already validated.
- * @returns {{rating: number, anoInicio: number, bio: string, fkAberturaFavorita: number|null}}
+ * @returns {{rating: number, anoInicio: number, bio: string, aberturaFavorita: string|null}}
  */
 function readProfile(body) {
     return {
         rating: body.rating,
         anoInicio: body.ano_inicio,
         bio: body.bio.trim(),
-        fkAberturaFavorita: isEmpty(body.fk_abertura_favorita) ? null : parseId(body.fk_abertura_favorita)
+        aberturaFavorita: isEmpty(body.abertura_favorita) ? null : body.abertura_favorita.trim()
     };
 }
 

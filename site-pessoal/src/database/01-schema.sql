@@ -13,14 +13,14 @@ CREATE TABLE usuario (
 );
 
 -- Chess details of a user: 1:1 with usuario, non-identifying relationship.
--- fk_abertura_favorita is the id of an opening from the list mocked in the front-end; the API checks its range.
+-- abertura_favorita is the name of an opening from the list mocked in the front-end, stored as text with no table.
 CREATE TABLE perfil (
     id INT PRIMARY KEY AUTO_INCREMENT,
     rating INT NULL,
     ano_inicio YEAR NULL,
     bio VARCHAR(280) NULL,
+    abertura_favorita VARCHAR(50) NULL,
     fk_usuario INT NOT NULL,
-    fk_abertura_favorita INT NULL,
     CONSTRAINT uq_perfil_usuario UNIQUE (fk_usuario),
     CONSTRAINT fk_perfil_usuario FOREIGN KEY (fk_usuario) REFERENCES usuario (id)
 );
