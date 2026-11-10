@@ -1,13 +1,9 @@
--- Chess Life — physical model, part 1: database and tables.
--- Implements the logical model in .docs/03-database.md. Requires MySQL 8.0.16 or later, which enforces CHECK constraints.
--- Run it before 02-seed.sql. It can run again safely: existing objects are kept.
-
 CREATE DATABASE IF NOT EXISTS chess_life;
 
 USE chess_life;
 
 -- A person with an account.
-CREATE TABLE IF NOT EXISTS usuario (
+CREATE TABLE usuario (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(80) NOT NULL,
     email VARCHAR(120) NOT NULL,
@@ -16,16 +12,9 @@ CREATE TABLE IF NOT EXISTS usuario (
     CONSTRAINT uq_usuario_email UNIQUE (email)
 );
 
--- A known opening and the SAN moves that define it. Strong entity.
-CREATE TABLE IF NOT EXISTS abertura (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    nome VARCHAR(60) NOT NULL,
-    lances VARCHAR(100) NOT NULL,
-    CONSTRAINT uq_abertura_lances UNIQUE (lances)
-) ;
-
--- Optional chess details of a user: 1:1 with usuario, non-identifying relationship.
-CREATE TABLE IF NOT EXISTS perfil (
+-- Chess details of a user: 1:1 with usuario, non-identifying relationship.
+-- fk_abertura_favorita is the id of an opening from the list mocked in the front-end; the API checks its range.
+CREATE TABLE perfil (
     id INT PRIMARY KEY AUTO_INCREMENT,
     rating INT NULL,
     ano_inicio YEAR NULL,
@@ -33,32 +22,51 @@ CREATE TABLE IF NOT EXISTS perfil (
     fk_usuario INT NOT NULL,
     fk_abertura_favorita INT NULL,
     CONSTRAINT uq_perfil_usuario UNIQUE (fk_usuario),
-    CONSTRAINT fk_perfil_usuario FOREIGN KEY (fk_usuario) REFERENCES usuario (id),
-    CONSTRAINT fk_perfil_abertura FOREIGN KEY (fk_abertura_favorita) REFERENCES abertura (id)
-) ;
+    CONSTRAINT fk_perfil_usuario FOREIGN KEY (fk_usuario) REFERENCES usuario (id)
+);
 
--- A game played on the site: 1:N with usuario and with abertura, non-identifying relationships.
-CREATE TABLE IF NOT EXISTS partida (
+-- An exercise list, one per level: "Mate em 1", "Mate em 2" and "Mate em 3". Strong entity.
+CREATE TABLE lista (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(40) NOT NULL,
+    descricao VARCHAR(120) NOT NULL,
+    ordem INT NOT NULL,
+    CONSTRAINT uq_lista_nome UNIQUE (nome),
+    CONSTRAINT uq_lista_ordem UNIQUE (ordem),
+    CONSTRAINT chk_lista_ordem CHECK (ordem >= 1)
+);
+
+-- A position to solve, in FEN; the side to move is the side the user plays. Strong entity.
+-- The solution is the moves in SAN separated by spaces, the user's moves first and then the replies in turn.
+CREATE TABLE exercicio (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    titulo VARCHAR(60) NOT NULL,
+    fen VARCHAR(100) NOT NULL,
+    solucao VARCHAR(100) NOT NULL,
+    CONSTRAINT uq_exercicio_fen UNIQUE (fen)
+);
+
+-- An exercise in a list, at a given place: N:N between lista and exercicio, identifying relationships.
+CREATE TABLE lista_exercicio (
+    fk_lista INT NOT NULL,
+    fk_exercicio INT NOT NULL,
+    ordem INT NOT NULL,
+    PRIMARY KEY (fk_lista, fk_exercicio),
+    CONSTRAINT uq_lista_exercicio_ordem UNIQUE (fk_lista, ordem),
+    CONSTRAINT fk_lista_exercicio_lista FOREIGN KEY (fk_lista) REFERENCES lista (id),
+    CONSTRAINT fk_lista_exercicio_exercicio FOREIGN KEY (fk_exercicio) REFERENCES exercicio (id),
+    CONSTRAINT chk_lista_exercicio_ordem CHECK (ordem >= 1)
+);
+
+-- One attempt of a user at an exercise of a list, right or wrong: 1:N with usuario and with lista_exercicio,
+-- non-identifying relationships. The composite foreign key keeps every attempt at an exercise that is in its list.
+CREATE TABLE tentativa (
     id INT PRIMARY KEY AUTO_INCREMENT,
     fk_usuario INT NOT NULL,
-    fk_abertura INT NOT NULL,
-    resultado VARCHAR(7) NOT NULL,
-    adversario VARCHAR(6) NOT NULL,
-    cor VARCHAR(7) NOT NULL,
-    data_partida DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_partida_usuario FOREIGN KEY (fk_usuario) REFERENCES usuario (id),
-    CONSTRAINT fk_partida_abertura FOREIGN KEY (fk_abertura) REFERENCES abertura (id),
-    CONSTRAINT chk_partida_resultado CHECK (resultado IN ('vitoria', 'derrota', 'empate')),
-    CONSTRAINT chk_partida_adversario CHECK (adversario IN ('humano', 'ia')),
-    CONSTRAINT chk_partida_cor CHECK (cor IN ('brancas', 'pretas'))
-) ;
-
--- One move of a game: weak entity, 1:N with partida, identifying relationship.
-CREATE TABLE IF NOT EXISTS lance (
-    fk_partida INT NOT NULL,
-    numero INT NOT NULL,
-    san VARCHAR(10) NOT NULL,
-    PRIMARY KEY (fk_partida, numero),
-    CONSTRAINT fk_lance_partida FOREIGN KEY (fk_partida) REFERENCES partida (id),
-    CONSTRAINT chk_lance_numero CHECK (numero >= 1)
-) ;
+    fk_lista INT NOT NULL,
+    fk_exercicio INT NOT NULL,
+    acertou BOOLEAN NOT NULL,
+    data_tentativa DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_tentativa_usuario FOREIGN KEY (fk_usuario) REFERENCES usuario (id),
+    CONSTRAINT fk_tentativa_lista_exercicio FOREIGN KEY (fk_lista, fk_exercicio) REFERENCES lista_exercicio (fk_lista, fk_exercicio)
+);

@@ -9,9 +9,10 @@ const cors = require("cors");
 const path = require("path");
 
 const usuariosRouter = require("./src/routes/usuarios");
-const partidasRouter = require("./src/routes/partidas");
 const perfisRouter = require("./src/routes/perfis");
-const aberturasRouter = require("./src/routes/aberturas");
+const listasExerciciosRouter = require("./src/routes/listasExercicios");
+const exerciciosRouter = require("./src/routes/exercicios");
+const tentativasRouter = require("./src/routes/tentativas");
 
 const app = express();
 
@@ -20,9 +21,10 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/usuarios", usuariosRouter);
-app.use("/partidas", partidasRouter);
 app.use("/perfis", perfisRouter);
-app.use("/aberturas", aberturasRouter);
+app.use("/listas", listasExerciciosRouter);
+app.use("/exercicios", exerciciosRouter);
+app.use("/tentativas", tentativasRouter);
 
 app.listen(process.env.APP_PORT, function () {
     console.log(`
