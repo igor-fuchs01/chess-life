@@ -29,7 +29,7 @@ The code follows `routes/<resource>.js` → `controllers/<resource>Controller.js
 
 Used by `public/auth/signup.js`. It creates the user and their player profile (`perfil`) in one transaction: if either fails, neither is saved, so every account made here has a profile.
 
-Body (every field is required except `fk_abertura_favorita`):
+Body (every field is required except `abertura_favorita`):
 
 ```json
 {
@@ -39,7 +39,7 @@ Body (every field is required except `fk_abertura_favorita`):
   "rating": 1650,
   "ano_inicio": 2014,
   "bio": "Aprendi na escola e nunca mais parei.",
-  "fk_abertura_favorita": 26
+  "abertura_favorita": "Siciliana: Dragão Acelerado"
 }
 ```
 
@@ -48,12 +48,12 @@ Body (every field is required except `fk_abertura_favorita`):
 | `nomeServer` | Required, up to 80 characters |
 | `emailServer` | Required, a valid e-mail, up to 120 characters. Unique, ignoring upper and lower case (RN01) |
 | `senhaServer` | Required, 8 to 100 characters, with an uppercase letter (`A-Z`), a lowercase letter (`a-z`), a digit and a special character (anything other than `A-Z`, `a-z` and `0-9`) (RN02). Stored as plain text |
-| `rating`, `ano_inicio`, `bio`, `fk_abertura_favorita` | The profile fields, with the rules of `PUT /perfis/atualizar/:idUsuario`: the favorite opening is optional, the others are required |
+| `rating`, `ano_inicio`, `bio`, `abertura_favorita` | The profile fields, with the rules of `PUT /perfis/atualizar/:idUsuario`: the favorite opening is optional, the others are required |
 
 | Reply | Body |
 | --- | --- |
 | `201` | `{ "id": 1 }` |
-| `400` | `Preencha o nome, o e-mail e a senha.`, `O nome pode ter no máximo 80 caracteres.`, `Informe um e-mail válido.`, `A senha pode ter no máximo 100 caracteres.`, or one of the password strength errors: `A senha precisa ter no mínimo 8 caracteres.`, `A senha precisa ter pelo menos uma letra maiúscula.`, `A senha precisa ter pelo menos uma letra minúscula.`, `A senha precisa ter pelo menos um número.`, `A senha precisa ter pelo menos um caractere especial.`, or one of the profile errors: `Preencha o rating, o ano de início e a bio.`, `Rating inválido.`, `Ano de início inválido.`, `A bio pode ter no máximo 50 caracteres.`, `Abertura inválida.` (also when the id is not one of the 49 openings) |
+| `400` | `Preencha o nome, o e-mail e a senha.`, `O nome pode ter no máximo 80 caracteres.`, `Informe um e-mail válido.`, `A senha pode ter no máximo 100 caracteres.`, or one of the password strength errors: `A senha precisa ter no mínimo 8 caracteres.`, `A senha precisa ter pelo menos uma letra maiúscula.`, `A senha precisa ter pelo menos uma letra minúscula.`, `A senha precisa ter pelo menos um número.`, `A senha precisa ter pelo menos um caractere especial.`, or one of the profile errors: `Preencha o rating, o ano de início e a bio.`, `Rating inválido.`, `Ano de início inválido.`, `A bio pode ter no máximo 50 caracteres.`, `Abertura inválida.` (when it is not text or is longer than 50 characters) |
 | `409` | `Este e-mail já está cadastrado.` |
 | `500` | `Não foi possível criar a conta.` |
 
@@ -203,11 +203,11 @@ A user has zero or one profile (`perfil` table, 1:1 with `usuario`). Rating, sta
   "rating": 1650,
   "ano_inicio": 2014,
   "bio": "Aprendi na escola e nunca mais parei.",
-  "fk_abertura_favorita": 26
+  "abertura_favorita": "Siciliana: Dragão Acelerado"
 }
 ```
 
-- `fk_abertura_favorita` is the id of the favorite opening, `null` when there is none. The openings are mocked in the front-end (`public/shared/profile-form.js`), so the reply carries no name: the page finds it from the same list.
+- `abertura_favorita` is the name of the favorite opening, as saved, `null` when there is none. The page offers the openings mocked in the front-end (`public/shared/profile-form.js`).
 
 ### `PUT /perfis/atualizar/:idUsuario` — update a profile (RF17)
 
@@ -216,7 +216,7 @@ Replaces every field. Rating, starting year and bio are required, so they can ne
 Body:
 
 ```json
-{ "rating": 1650, "ano_inicio": 2014, "bio": "Aprendi na escola e nunca mais parei.", "fk_abertura_favorita": 26 }
+{ "rating": 1650, "ano_inicio": 2014, "bio": "Aprendi na escola e nunca mais parei.", "abertura_favorita": "Siciliana: Dragão Acelerado" }
 ```
 
 | Field | Rule |
@@ -224,12 +224,12 @@ Body:
 | `rating` | Required. A whole number from 0 to 3500 |
 | `ano_inicio` | Required. A whole number from 1901 (the first year MySQL's `YEAR` accepts) to the current year |
 | `bio` | Required, not blank. Up to 50 characters, a limit of the API (the column holds 280); spaces at the ends are removed |
-| `fk_abertura_favorita` | Optional (`null`, for a user with no favorite opening). An id from 1 to 49, one of the openings mocked in the front-end |
+| `abertura_favorita` | Optional (`null` or empty, for a user with no favorite opening). The opening's name, as text of up to 50 characters; the page sends one of the openings mocked in the front-end |
 
 | Reply | Body |
 | --- | --- |
 | `204` | No body: the profile was updated |
-| `400` | `Usuário inválido.`, `Preencha o rating, o ano de início e a bio.`, `Rating inválido.`, `Ano de início inválido.`, `A bio pode ter no máximo 50 caracteres.` or `Abertura inválida.` (also when the id is not from 1 to 49) |
+| `400` | `Usuário inválido.`, `Preencha o rating, o ano de início e a bio.`, `Rating inválido.`, `Ano de início inválido.`, `A bio pode ter no máximo 50 caracteres.` or `Abertura inválida.` (when it is not text or is longer than 50 characters) |
 | `404` | `Perfil não encontrado.`: the user has no profile to update |
 | `500` | `Não foi possível atualizar o perfil.` |
 
@@ -250,4 +250,4 @@ The legacy template's routes were deleted on 2026-10-15, since no page used them
 
 `GET /partidas/listar/:idUsuario` and `POST /partidas/cadastrar/:idUsuario` were removed on 2026-11-09, with the `partida` and `lance` tables and the opening identification: the site no longer saves games between two people. The lists, exercises and attempts routes (sections 3 to 5) took their place.
 
-`GET /aberturas/listar` was removed on 2026-11-09, with the `abertura` table: the openings are mocked in the front-end, and the profile routes check the id.
+`GET /aberturas/listar` was removed on 2026-11-09, with the `abertura` table: the openings are mocked in the front-end, and the profile keeps the chosen name as text.

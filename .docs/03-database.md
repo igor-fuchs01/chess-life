@@ -2,7 +2,7 @@
 
 The logical data model of Chess Life. The database is modeled and implemented in **MySQL** (version 8.0 or later), hosted on the project's Linux VM (assumptions P02 and R03 in [`01-project.md`](01-project.md)). It changes here first whenever the data model changes.
 
-On 2026-11-09 the model was rebuilt around chess exercises: the games tables (`partida`, `lance`) were replaced by the exercise lists, their exercises and solutions, and the users' attempts. The openings table (`abertura`) and the solution table (`solucao`) were removed the same day: the openings are mocked in the front-end, and each exercise has one solution, stored in its own row. There is no migration: the scripts drop the database and create it again (section 7).
+On 2026-11-09 the model was rebuilt around chess exercises: the games tables (`partida`, `lance`) were replaced by the exercise lists, their exercises and solutions, and the users' attempts. The openings table (`abertura`) and the solution table (`solucao`) were removed the same day: the openings are mocked in the front-end and the profile keeps the chosen one's name, and each exercise has one solution, stored in its own row. There is no migration: the scripts drop the database and create it again (section 7).
 
 ## 1. Scope
 
@@ -10,7 +10,7 @@ The database stores only what the application reads and writes through the API:
 
 - **Users**: sign-up and login (RF01–RF05).
 - **Profiles**: chess details of each user (rating, year they started, bio, favorite opening).
-- **Openings**: not stored. The known openings are mocked in the front-end, and the profile keeps the id of the one the user chose (section 2).
+- **Openings**: not stored. The known openings are mocked in the front-end, and the profile keeps the name of the one the user chose, as text (section 2).
 - **Exercise lists**: the three levels, "Mate em 1", "Mate em 2" and "Mate em 3".
 - **Exercises**: a position to solve, in FEN, and its solution, as one line of moves.
 - **Attempts**: each try of a user at an exercise, solved or not, feeding the dashboard (RF08–RF10).
@@ -45,7 +45,7 @@ The model follows the MySQL Workbench convention:
 | `usuario` → `tentativa` | 1:N (one user makes zero or many attempts) | Non-identifying | `tentativa.fk_usuario` | An attempt has its own `id` |
 | `lista_exercicio` → `tentativa` | 1:N (one list item gets zero or many attempts) | Non-identifying | `tentativa.(fk_lista, fk_exercicio)`, a composite FK | The attempt records which list the exercise was solved in, since an exercise can be in more than one list |
 
-The favorite opening is not a relationship: `perfil.fk_abertura_favorita` holds the id of one of the 49 openings mocked in the front-end, so the column has no foreign key, and the API checks that the id is from 1 to 49. The solution is a column of `exercicio`, since an exercise has exactly one.
+The favorite opening is not a relationship: `perfil.abertura_favorita` holds the name of the opening, as text, chosen from the openings mocked in the front-end, so there is no openings table and no foreign key. The solution is a column of `exercicio`, since an exercise has exactly one.
 
 In the diagram, a solid line is an identifying relationship and a dashed line is a non-identifying one.
 
@@ -70,7 +70,7 @@ erDiagram
         INT rating
         YEAR ano_inicio
         VARCHAR bio
-        INT fk_abertura_favorita
+        VARCHAR abertura_favorita
     }
     lista {
         INT id PK
@@ -119,8 +119,8 @@ erDiagram
 | `rating` | `INT` | Yes | | The user's chess rating, such as 1500 |
 | `ano_inicio` | `YEAR` | Yes | | The year the user started playing chess |
 | `bio` | `VARCHAR(280)` | Yes | | Short text about the user. The API accepts up to 50 characters |
+| `abertura_favorita` | `VARCHAR(50)` | Yes | | The name of the opening the user names as their favorite, such as `Defesa Siciliana`, chosen from the openings mocked in the front-end. `NULL` when there is none. The API accepts text up to 50 characters |
 | `fk_usuario` | `INT` | No | FK → `usuario.id`, `UNIQUE` | The profile's owner. Being unique, it allows at most one profile per user |
-| `fk_abertura_favorita` | `INT` | Yes | | The id of the opening the user names as their favorite, from the 49 openings mocked in the front-end. It has no foreign key; the API accepts 1 to 49 |
 
 - The sign-up creates the profile together with the account, in one transaction, so every user has a row in `perfil`. The API requires rating, starting year and bio at sign-up and on update, and the favorite opening is optional. The columns stay nullable as they were; the API is what makes them required.
 
@@ -186,7 +186,7 @@ erDiagram
 | An exercise is once in each list, one per place | PK `(fk_lista, fk_exercicio)` and `UNIQUE (fk_lista, ordem)` on `lista_exercicio` |
 | An exercise has one solution | `exercicio.solucao`, a single column |
 | Places start at 1 | `CHECK` on `lista.ordem` and `lista_exercicio.ordem` |
-| The favorite opening is one of the 49 mocked openings | Checked by the API (`perfilController`), since the column has no foreign key |
+| The favorite opening is text of up to 50 characters | `VARCHAR(50)`, also checked by the API (`perfilController`) |
 
 `CHECK` constraints are enforced from MySQL 8.0.16 onward. Older versions accept and ignore them, so the API validates the values it receives.
 
@@ -198,7 +198,7 @@ Delete behavior of the foreign keys:
 
 - Table and column names are in Portuguese, lowercase, in `snake_case`, as in the original specification. Tables are singular (`tentativa`, not `tentativas`). The associative table joins the two names (`lista_exercicio`).
 - The primary key of a strong entity is `id`. An associative table's primary key is its two foreign keys. A 1:1 relationship is a unique foreign key (`perfil.fk_usuario`).
-- A foreign key is `fk_<table>`, such as `fk_usuario`. When the column has a role of its own, the role follows the table name, such as `fk_abertura_favorita`. That column is the exception to the rule: its id comes from the openings mocked in the front-end, so it has no foreign key.
+- A foreign key is `fk_<table>`, such as `fk_usuario`. When the column has a role of its own, the role follows the table name.
 - Yes-or-no values are `BOOLEAN` (`acertou`).
 - Tables use the `utf8mb4` character set, so names with accents ("Légal", "Ópera") are stored correctly. It is MySQL 8's default, so the script does not set it.
 
@@ -215,7 +215,7 @@ The legacy template's tables were built for the AquaTech sample project. `usuari
 | `partida` | Removed; `tentativa` takes its place in the dashboard | The site became an exercise solver: games between two people are no longer played or saved |
 | `lance` | Removed; the solution is stored in `exercicio.solucao` | The moves now belong to the exercise, not to what the user played |
 | `solucao` (table) | Removed; the solution is the column `exercicio.solucao` | An exercise has exactly one solution, so one column is enough |
-| `abertura` | Removed; the 49 openings are mocked in the front-end (`public/shared/profile-form.js`) | Only the profile's favorite opening uses them, and no rule reads them from the database. The profile keeps the id, which the API checks |
+| `abertura` | Removed; the openings are mocked in the front-end (`public/shared/profile-form.js`) | Only the profile's favorite opening uses them, and no rule reads them from the database. The profile keeps the name as text (`perfil.abertura_favorita`) |
 | — | `lista`, `exercicio`, `lista_exercicio`, new | The three levels and their exercises, in an N:N relationship |
 
 ## 7. Physical model (MySQL scripts)
@@ -304,7 +304,7 @@ ORDER BY t.data_tentativa DESC, t.id DESC;
 The routes are in [`04-api.md`](04-api.md).
 
 - **Connection**: `src/database/config.js` keeps one connection pool, with `query(sql, values)` for single statements and `transaction(runStatements)` for statements that must succeed or fail together.
-- **`usuario` and `perfil`**: sign-up stores the password as plain text and creates the profile in the same transaction (`usuarioModel.createUser`). A duplicate e-mail fails on `uq_usuario_email` (`ER_DUP_ENTRY`) and becomes a `409`. A favorite opening outside 1 to 49 is refused by `perfilController.validateProfile` with a `400` before any query runs. `perfilModel.findProfile` reads the profile's fields, and `updateProfile` replaces every field.
+- **`usuario` and `perfil`**: sign-up stores the password as plain text and creates the profile in the same transaction (`usuarioModel.createUser`). A duplicate e-mail fails on `uq_usuario_email` (`ER_DUP_ENTRY`) and becomes a `409`. A favorite opening that is not text or is longer than 50 characters is refused by `perfilController.validateProfile` with a `400` before any query runs. `perfilModel.findProfile` reads the profile's fields, and `updateProfile` replaces every field.
 - **Openings**: no table and no model. The list is in `public/shared/profile-form.js`, and the API only checks the id.
 - **`lista`**: `listaExerciciosModel.listLists` runs the progress query above.
 - **`exercicio` and `lista_exercicio`**: `exercicioModel.listExercises` reads a list's exercises in order, with whether the user has solved each one. `findExercise` reads the exercise, and `findSolution` reads its `solucao` column and splits it into the array of moves.

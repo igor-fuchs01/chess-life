@@ -154,7 +154,7 @@ The database is modeled in MySQL. The full model (entity-relationship diagram, d
 | Table | Columns | Notes |
 | --- | --- | --- |
 | `usuario` | `id` (PK), `nome`, `email` (unique), `senha`, `data_cadastro` | Access data |
-| `perfil` | `id` (PK), `fk_usuario` (FK → `usuario.id`, unique), `rating`, `ano_inicio`, `bio`, `fk_abertura_favorita` | Chess details of a user: 1:1 with `usuario`, non-identifying relationship. The favorite opening is an id from the openings mocked in the front-end, with no table |
+| `perfil` | `id` (PK), `fk_usuario` (FK → `usuario.id`, unique), `rating`, `ano_inicio`, `bio`, `abertura_favorita` | Chess details of a user: 1:1 with `usuario`, non-identifying relationship. The favorite opening is the name of one of the openings mocked in the front-end, stored as text, with no table |
 | `lista` | `id` (PK), `nome` (unique), `descricao`, `ordem` (unique) | An exercise list: "Mate em 1", "Mate em 2" or "Mate em 3" |
 | `exercicio` | `id` (PK), `titulo`, `fen` (unique), `solucao` | A position to solve, in FEN; the side to move is the user's. `solucao` is its one solution, the moves in SAN separated by spaces |
 | `lista_exercicio` | `fk_lista` (PK, FK → `lista.id`), `fk_exercicio` (PK, FK → `exercicio.id`), `ordem` | N:N between lists and exercises, with each exercise's place in the list |
