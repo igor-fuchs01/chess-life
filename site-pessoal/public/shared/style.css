@@ -14,10 +14,9 @@
   --danger: #a4472f;
   --danger-bg: #f3dcd5;
   --success-bg: #dbe6dc;
-  /* Game results in charts and tags: win and loss are opposite poles and a draw is neutral.
+  /* Exercise results in charts and tags: right (--win) and wrong (--loss) are opposite poles.
      Checked for color-blind readers (see "Themes" in .docs/02-site-pessoal.md). */
   --win: #2e7d4f;
-  --draw: #9c9384;
   --loss: #c0492b;
   /* Same in both themes: text on green or photo surfaces, and pieces on the board's squares. */
   --light-ink: #f4efe6;
@@ -57,7 +56,6 @@
   --danger-bg: #3e2621;
   --success-bg: #1f3529;
   --win: #409c68;
-  --draw: #7d766b;
   --loss: #e05d3d;
   --overlay: rgba(0, 0, 0, 0.65);
   --shadow: rgba(0, 0, 0, 0.6);
@@ -309,7 +307,7 @@ textarea:focus {
   min-width: 0;
 }
 
-/* Dialogs (pawn promotion and player profile) */
+/* Dialogs (player profile) */
 dialog {
   margin: auto;
   padding: 28px;

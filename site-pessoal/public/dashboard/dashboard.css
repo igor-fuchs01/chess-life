@@ -138,7 +138,7 @@ main {
   height: 10px;
 }
 
-/* Results: a donut with the win rate in its middle, and the counts beside it. */
+/* Results: a donut with the hit rate in its middle, and the counts beside it. */
 .results {
   display: flex;
   flex: 1;
@@ -173,7 +173,7 @@ main {
   font-size: 12px;
 }
 
-/* Games table: it scrolls inside its panel, which takes the free height. */
+/* Attempts table: it scrolls inside its panel, which takes the free height. */
 .empty {
   color: var(--muted);
   font-size: 14px;
@@ -183,18 +183,18 @@ main {
   min-height: 0;
   overflow-y: auto;
 }
-.games {
+.attempts {
   width: 100%;
   border-collapse: collapse;
   font-size: 13px;
 }
-.games th,
-.games td {
+.attempts th,
+.attempts td {
   padding: 6px 8px;
   border-bottom: 1px solid var(--line);
   text-align: left;
 }
-.games th {
+.attempts th {
   position: sticky;
   top: 0;
   background: var(--card);
@@ -217,16 +217,12 @@ main {
   height: 8px;
   border-radius: 50%;
 }
-.tag.vitoria::before,
-.swatch.vitoria {
+.tag.acerto::before,
+.swatch.acerto {
   background: var(--win);
 }
-.tag.empate::before,
-.swatch.empate {
-  background: var(--draw);
-}
-.tag.derrota::before,
-.swatch.derrota {
+.tag.erro::before,
+.swatch.erro {
   background: var(--loss);
 }
 
@@ -250,10 +246,8 @@ main {
   .table-scroll {
     max-height: 260px;
   }
-  .games th:nth-child(3),
-  .games td:nth-child(3),
-  .games th:nth-child(4),
-  .games td:nth-child(4) {
+  .attempts th:nth-child(2),
+  .attempts td:nth-child(2) {
     display: none;
   }
 }

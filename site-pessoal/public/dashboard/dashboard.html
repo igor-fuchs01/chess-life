@@ -25,29 +25,28 @@
         <div class="panels">
           <div class="stats">
             <div class="stat">
-              <p class="stat-label">Partidas hoje</p>
-              <b id="games-today">0</b>
-              <span class="change" id="games-today-change"></span>
+              <p class="stat-label">Acertos hoje</p>
+              <b id="solved-today">0</b>
+              <span class="change" id="solved-today-change"></span>
             </div>
             <div class="stat">
-              <p class="stat-label">Vitórias no total</p>
-              <b id="win-rate">0%</b>
-              <span class="change" id="win-rate-change"></span>
+              <p class="stat-label">Taxa de acerto</p>
+              <b id="hit-rate">0%</b>
+              <span class="change" id="hit-rate-change"></span>
             </div>
             <div class="stat">
-              <p class="stat-label">Abertura mais jogada</p>
-              <b id="most-played-opening">—</b>
-              <span class="change" id="most-played-opening-detail"></span>
+              <p class="stat-label">Exercícios resolvidos</p>
+              <b id="solved-exercises">0</b>
+              <span class="change" id="solved-exercises-detail"></span>
             </div>
           </div>
           <div class="panel-row">
             <div class="panel wide">
               <div class="panel-head">
-                <h2>Partidas por semana</h2>
+                <h2>Tentativas por semana</h2>
                 <ul class="legend">
-                  <li><i class="swatch vitoria"></i>Vitórias</li>
-                  <li><i class="swatch empate"></i>Empates</li>
-                  <li><i class="swatch derrota"></i>Derrotas</li>
+                  <li><i class="swatch acerto"></i>Acertos</li>
+                  <li><i class="swatch erro"></i>Erros</li>
                 </ul>
               </div>
               <div class="chart"><canvas id="weekly-chart"></canvas></div>
@@ -57,31 +56,30 @@
               <div class="results">
                 <div class="chart">
                   <canvas id="results-chart"></canvas>
-                  <div class="donut-center"><b id="results-win-rate">0%</b><span>de vitórias</span></div>
+                  <div class="donut-center"><b id="results-hit-rate">0%</b><span>de acertos</span></div>
                 </div>
                 <ul class="legend">
-                  <li><i class="swatch vitoria"></i>Vitórias <b id="results-vitoria">0</b></li>
-                  <li><i class="swatch empate"></i>Empates <b id="results-empate">0</b></li>
-                  <li><i class="swatch derrota"></i>Derrotas <b id="results-derrota">0</b></li>
+                  <li><i class="swatch acerto"></i>Acertos <b id="results-acerto">0</b></li>
+                  <li><i class="swatch erro"></i>Erros <b id="results-erro">0</b></li>
                 </ul>
               </div>
             </div>
           </div>
           <div class="panel-row">
             <div class="panel wide">
-              <div class="panel-head"><h2>Minhas partidas</h2></div>
-              <div class="message" id="games-message" role="alert"></div>
-              <p class="empty" id="games-empty">Nenhuma partida jogada ainda. As partidas que você jogar no site aparecem aqui.</p>
+              <div class="panel-head"><h2>Minhas tentativas</h2></div>
+              <div class="message" id="attempts-message" role="alert"></div>
+              <p class="empty" id="attempts-empty">Nenhuma tentativa ainda. Os exercícios que você resolver no site aparecem aqui.</p>
               <div class="table-scroll">
-                <table class="games" id="games-table" hidden>
-                  <thead><tr><th>Data</th><th>Abertura</th><th>Adversário</th><th>Cor</th><th>Resultado</th></tr></thead>
-                  <tbody id="games-body"></tbody>
+                <table class="attempts" id="attempts-table" hidden>
+                  <thead><tr><th>Data</th><th>Lista</th><th>Exercício</th><th>Resultado</th></tr></thead>
+                  <tbody id="attempts-body"></tbody>
                 </table>
               </div>
             </div>
             <div class="panel">
-              <div class="panel-head"><h2>Aberturas mais jogadas</h2></div>
-              <div class="chart"><canvas id="openings-chart"></canvas></div>
+              <div class="panel-head"><h2>Acerto por nível</h2></div>
+              <div class="chart"><canvas id="levels-chart"></canvas></div>
             </div>
           </div>
         </div>
