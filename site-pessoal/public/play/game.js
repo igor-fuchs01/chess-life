@@ -258,7 +258,7 @@ function renderBoard() {
   const checkedKing = findCheckedKing();
   boardElement.innerHTML = "";
 
-  for (let row = 0; row < BOARD_SIZE; row++) {
+  for (let row = BOARD_SIZE - 1; row >= 0; row--) {
     for (let column = 0; column < BOARD_SIZE; column++) {
       boardElement.appendChild(createSquare(row, column, checkedKing));
     }
@@ -277,7 +277,8 @@ function createSquare(row, column, checkedKing) {
   const piece = board[row][column];
   const square = document.createElement("button");
   square.type = "button";
-  square.className = (row + column) % 2 === 1 ? "dark" : "light";
+  // a1 (row 0, column 0) is a dark square.
+  square.className = (row + column) % 2 === 0 ? "dark" : "light";
   square.textContent = PIECE_SYMBOLS[piece] || "";
   square.addEventListener("click", () => handleSquareClick(row, column));
 

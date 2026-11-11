@@ -1,5 +1,5 @@
 // The board is an 8×8 matrix: board[row][column] holds a piece letter ("K" is the white king, "p" a black pawn)
-// or "" for an empty square. Uppercase letters are White. Row 0 is the 8th rank and column 0 is the a-file.
+// or "" for an empty square. Uppercase letters are White. Row 0 is the 1st rank and column 0 is the a-file.
 // Only the movement of each piece is checked: there is no castling, en passant or promotion, since no exercise uses them.
 const BOARD_SIZE = 8;
 const FILES = "abcdefgh";
@@ -9,7 +9,7 @@ const KING_STEPS = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0]
 const ROOK_DIRECTIONS = [[-1, 0], [1, 0], [0, -1], [0, 1]];
 const BISHOP_DIRECTIONS = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
 const QUEEN_DIRECTIONS = ROOK_DIRECTIONS.concat(BISHOP_DIRECTIONS);
-const WHITE_PAWN_START_ROW = 6;
+const WHITE_PAWN_START_ROW = 1;
 
 /**
  * Builds the board from the exercise's position: each piece with its square, separated by spaces,
@@ -26,7 +26,7 @@ function readBoardFromPosition(position) {
   for (const pieceText of position.split(" ")) {
     const piece = pieceText[0];
     const column = FILES.indexOf(pieceText[1]);
-    const row = BOARD_SIZE - Number(pieceText[2]);
+    const row = Number(pieceText[2]) - 1;
     board[row][column] = piece;
   }
   return board;
@@ -96,19 +96,19 @@ function getSlideTargets(board, row, column, directions) {
 }
 
 /**
- * White pawn: one square up the matrix (towards row 0) if it is empty, two from its starting row if both
- * are empty, and one square diagonally up to capture a black piece.
+ * White pawn: one square forward (towards the 8th rank) if it is empty, two from its starting row if both
+ * are empty, and one square diagonally forward to capture a black piece.
  * Only White's pawns are moved: the user plays White and Black's replies are never pawn moves.
  */
 function getPawnTargets(board, row, column) {
-  const nextRow = row - 1;
+  const nextRow = row + 1;
   const targets = [];
 
   if (board[nextRow][column] === "") {
     targets.push({ row: nextRow, column: column });
 
-    if (row === WHITE_PAWN_START_ROW && board[row - 2][column] === "") {
-      targets.push({ row: row - 2, column: column });
+    if (row === WHITE_PAWN_START_ROW && board[row + 2][column] === "") {
+      targets.push({ row: row + 2, column: column });
     }
   }
 
@@ -179,7 +179,7 @@ function writeSanMove(board, from, to) {
  * @returns {string}
  */
 function getSquareName(row, column) {
-  return FILES[column] + (BOARD_SIZE - row);
+  return FILES[column] + (row + 1);
 }
 
 /**
