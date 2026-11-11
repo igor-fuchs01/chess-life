@@ -36,7 +36,7 @@ CREATE TABLE lista (
     CONSTRAINT chk_lista_ordem CHECK (ordem >= 1)
 );
 
--- A position to solve, in FEN; the side to move is the side the user plays. Strong entity.
+-- A position to solve, in FEN, always with White to move: the user plays White. Strong entity.
 -- The solution is the moves in SAN separated by spaces, the user's moves first and then the replies in turn.
 CREATE TABLE exercicio (
     id INT PRIMARY KEY AUTO_INCREMENT,

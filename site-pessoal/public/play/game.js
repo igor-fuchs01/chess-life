@@ -19,7 +19,6 @@ const nextLink = document.getElementById("next-link");
 let listId;
 let exercise;
 let board;
-let playerIsWhite;
 // The moves played so far in SAN, the opponent's replies included. The user's moves are at even indexes.
 let moves;
 let lastMove;
@@ -92,11 +91,10 @@ async function loadNextExercise(exerciseId) {
 }
 
 /**
- * Sets up the exercise's position. The side to move is the user's side, drawn at the bottom of the board.
+ * Sets up the exercise's position. The user always plays White, drawn at the bottom of the board.
  */
 function startAttempt() {
   board = readBoardFromFen(exercise.fen);
-  playerIsWhite = exercise.fen.split(" ")[1] === "w";
   moves = [];
   lastMove = null;
   result = null;
@@ -127,7 +125,7 @@ function handleSquareClick(row, column) {
   }
 
   const piece = board[row][column];
-  if (piece !== "" && isWhitePiece(piece) === playerIsWhite) {
+  if (piece !== "" && isWhitePiece(piece)) {
     selectedSquare = { row, column };
     targets = getTargets(board, row, column);
   } else {
@@ -146,7 +144,7 @@ function handleSquareClick(row, column) {
  */
 function playUserMove(from, to) {
   const solutionSan = exercise.solucao[moves.length];
-  const expected = readSanMove(solutionSan, playerIsWhite);
+  const expected = readSanMove(solutionSan);
   const isRight = board[from.row][from.column] === expected.piece && getSquareName(to.row, to.column) === expected.square;
 
   if (isRight) {
@@ -169,15 +167,16 @@ function playUserMove(from, to) {
 }
 
 /**
- * Plays the opponent's reply written in the solution: finds the piece that can reach the reply's square.
+ * Plays Black's reply written in the solution: finds the piece that can reach the reply's square.
  */
 function playOpponentReply() {
   const san = exercise.solucao[moves.length];
-  const reply = readSanMove(san, !playerIsWhite);
+  const reply = readSanMove(san);
+  const blackPiece = reply.piece.toLowerCase();
 
   for (let row = 0; row < BOARD_SIZE; row++) {
     for (let column = 0; column < BOARD_SIZE; column++) {
-      if (board[row][column] !== reply.piece) {
+      if (board[row][column] !== blackPiece) {
         continue;
       }
       for (const target of getTargets(board, row, column)) {
@@ -253,20 +252,14 @@ function render() {
 }
 
 /**
- * Draws the 64 squares. When the user plays Black, the board is drawn upside down so Black is at the bottom.
+ * Draws the 64 squares, from the 8th rank at the top to the 1st at the bottom, so White is at the bottom.
  */
 function renderBoard() {
   const checkedKing = findCheckedKing();
   boardElement.innerHTML = "";
 
-  for (let displayRow = 0; displayRow < BOARD_SIZE; displayRow++) {
-    for (let displayColumn = 0; displayColumn < BOARD_SIZE; displayColumn++) {
-      let row = displayRow;
-      let column = displayColumn;
-      if (!playerIsWhite) {
-        row = BOARD_SIZE - 1 - displayRow;
-        column = BOARD_SIZE - 1 - displayColumn;
-      }
+  for (let row = 0; row < BOARD_SIZE; row++) {
+    for (let column = 0; column < BOARD_SIZE; column++) {
       boardElement.appendChild(createSquare(row, column, checkedKing));
     }
   }
@@ -313,8 +306,8 @@ function findCheckedKing() {
     return null;
   }
 
-  // The king in check belongs to the side to move: White when an even number of moves was played from a White start.
-  const isWhiteToMove = (moves.length % 2 === 0) === playerIsWhite;
+  // The king in check belongs to the side to move: White after an even number of moves, since White starts.
+  const isWhiteToMove = moves.length % 2 === 0;
   const king = isWhiteToMove ? "K" : "k";
   for (let row = 0; row < BOARD_SIZE; row++) {
     for (let column = 0; column < BOARD_SIZE; column++) {
@@ -345,8 +338,7 @@ function renderStatus() {
 
   // The solution alternates the user's moves and the replies, so the user's moves left are half of the rest, rounded up.
   const movesLeft = Math.ceil((exercise.solucao.length - moves.length) / 2);
-  const side = playerIsWhite ? "Brancas" : "Pretas";
-  statusElement.textContent = `${side} jogam e dão mate em ${movesLeft}.`;
+  statusElement.textContent = `Brancas jogam e dão mate em ${movesLeft}.`;
 }
 
 /**

@@ -147,10 +147,9 @@ function movePiece(board, from, to) {
  * Reads the piece and the destination of a move in standard algebraic notation (SAN).
  * "Qxf7#" is a queen going to f7; a move without a piece letter, such as "exd5", is a pawn move.
  * @param {string} san
- * @param {boolean} isWhite - Whether White plays the move.
- * @returns {{piece: string, square: string}} The piece as a FEN letter, such as "Q" or "q", and the square name.
+ * @returns {{piece: string, square: string}} The piece as White's FEN letter, such as "Q", and the square name.
  */
-function readSanMove(san, isWhite) {
+function readSanMove(san) {
   const move = san.replace("+", "").replace("#", "");
   let letter = "P";
   if (SAN_PIECE_LETTERS.includes(move[0])) {
@@ -158,7 +157,7 @@ function readSanMove(san, isWhite) {
   }
 
   return {
-    piece: isWhite ? letter : letter.toLowerCase(),
+    piece: letter,
     square: move.slice(-2)
   };
 }
