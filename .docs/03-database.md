@@ -12,7 +12,7 @@ The database stores only what the application reads and writes through the API:
 - **Profiles**: chess details of each user (rating, year they started, bio, favorite opening).
 - **Openings**: not stored. The known openings are mocked in the front-end, and the profile keeps the name of the one the user chose, as text (section 2).
 - **Exercise lists**: the three levels, "Mate em 1", "Mate em 2" and "Mate em 3".
-- **Exercises**: a position to solve, in FEN, and its solution, as one line of moves.
+- **Exercises**: a position to solve, as a list of pieces and their squares, and its solution, as one line of moves.
 - **Attempts**: each try of a user at an exercise, solved or not, feeding the dashboard (RF08–RF10).
 
 Out of the database:
@@ -81,7 +81,7 @@ erDiagram
     exercicio {
         INT id PK
         VARCHAR titulo
-        VARCHAR fen UK
+        VARCHAR posicao UK
         VARCHAR solucao
     }
     lista_exercicio {
@@ -139,10 +139,10 @@ erDiagram
 | --- | --- | --- | --- | --- |
 | `id` | `INT` | No | PK, `AUTO_INCREMENT` | Exercise identifier |
 | `titulo` | `VARCHAR(60)` | No | | Name shown on the site, such as "Mate de Légal" |
-| `fen` | `VARCHAR(100)` | No | `UNIQUE` | The position in FEN (Forsyth–Edwards Notation), such as `7k/7p/5N2/8/8/8/8/6RK w - - 0 1`. It holds the pieces, the side to move, the castling rights and the en passant square. The same position cannot be two exercises |
+| `posicao` | `VARCHAR(150)` | No | `UNIQUE` | The position: each piece with its square, separated by spaces, such as `Kh1 Rg1 Nf6 kh8 ph7` (white king on h1, white rook on g1, white knight on f6, black king on h8, black pawn on h7). Uppercase is White, lowercase is Black, and `P`/`p` is a pawn. The pieces are written White first, then Black, each in the order K, Q, R, B, N, P and, for the same piece, from a1 to h8, so a position has only one spelling. A full board of 32 pieces takes 127 characters. The same position cannot be two exercises |
 | `solucao` | `VARCHAR(100)` | No | | The solution in SAN, the moves separated by spaces, such as `Bxf7+ Ke7 Nd5#`. The user's moves are the 1st, 3rd, 5th… and the opponent's replies the even ones. The last move ends in `#` |
 
-- Every exercise has White to move (`w` in the FEN): the user always plays White, so the board is never turned.
+- Every exercise has White to move: the user always plays White, so the board is never turned and the position needs no side to move.
 - How many moves the mate takes comes from the solution: a solution of `n` moves is a mate in `(n + 1) / 2`.
 - An exercise has exactly one solution, with at least one move. The API splits the column into the array of moves it sends to the page.
 - Each solution has one main line: the opponent's replies are fixed, and every user move in it is the only one that keeps the mate in the remaining moves.
@@ -252,7 +252,7 @@ Five exercises per list, written in `02-seed.sql`. Most come from famous games o
 | Mate em 2 | Mate de Légal, Partida da Ópera, Sacrifício de dama na oitava, Sacrifício de dama em e8 (espelhado), Mate de Damiano (espelhado) |
 | Mate em 3 | Réti contra Tartakower, Partida Sempre-Viva, Partida Imortal, Mate de Anastasia (espelhado), Mate sufocado |
 
-Every exercise was checked with the full chess rules the site had at the time (castling, en passant, check) and a mate-in-N search: the FEN loads, every solution move is legal, the line ends in checkmate, and each user move is the only one that forces the mate in the moves left. So the page and the API can compare the user's moves with the solution exactly.
+Every exercise was checked with the full chess rules the site had at the time (castling, en passant, check) and a mate-in-N search: the position loads, every solution move is legal, the line ends in checkmate, and each user move is the only one that forces the mate in the moves left. So the page and the API can compare the user's moves with the solution exactly.
 
 ### Application user
 

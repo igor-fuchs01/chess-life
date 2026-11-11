@@ -145,7 +145,7 @@ Client-server application in three layers:
 | Authentication | `sessionStorage` | Login state and access to the restricted pages |
 | Infrastructure | Linux VM | Hosts only the database (R09) |
 | Version control | Git, GitHub | Source control |
-| Chess rules | Own JavaScript code (`play/rules.js`), board as an 8×8 matrix | Positions read from FEN and the movement of each piece; no special moves, since no exercise uses them |
+| Chess rules | Own JavaScript code (`play/rules.js`), board as an 8×8 matrix | Positions read from the list of pieces and their squares, and the movement of each piece; no special moves, since no exercise uses them |
 
 ## 6. Data model
 
@@ -156,7 +156,7 @@ The database is modeled in MySQL. The full model (entity-relationship diagram, d
 | `usuario` | `id` (PK), `nome`, `email` (unique), `senha`, `data_cadastro` | Access data |
 | `perfil` | `id` (PK), `fk_usuario` (FK → `usuario.id`, unique), `rating`, `ano_inicio`, `bio`, `abertura_favorita` | Chess details of a user: 1:1 with `usuario`, non-identifying relationship. The favorite opening is the name of one of the openings mocked in the front-end, stored as text, with no table |
 | `lista` | `id` (PK), `nome` (unique), `descricao`, `ordem` (unique) | An exercise list: "Mate em 1", "Mate em 2" or "Mate em 3" |
-| `exercicio` | `id` (PK), `titulo`, `fen` (unique), `solucao` | A position to solve, in FEN, always with White to move: the user plays White. `solucao` is its one solution, the moves in SAN separated by spaces |
+| `exercicio` | `id` (PK), `titulo`, `posicao` (unique), `solucao` | A position to solve, written as each piece with its square (`Kh1 Rg1 Nf6 kh8 ph7`), always with White to move: the user plays White. `solucao` is its one solution, the moves in SAN separated by spaces |
 | `lista_exercicio` | `fk_lista` (PK, FK → `lista.id`), `fk_exercicio` (PK, FK → `exercicio.id`), `ordem` | N:N between lists and exercises, with each exercise's place in the list |
 | `tentativa` | `id` (PK), `fk_usuario` (FK → `usuario.id`), `fk_lista` and `fk_exercicio` (FK → `lista_exercicio`), `acertou`, `data_tentativa` | One attempt of a user at an exercise of a list, right or wrong |
 
@@ -240,7 +240,7 @@ The PI challenge (*Desafio do Semestre — Projeto Individual*) asks the project
 | --- | --- | --- | --- |
 | Tecnologia da Informação | Project document, planning in Trello, Git governance | This documentation (`.docs/`); Git with typed commit messages and small commits (`commit` skill); planning in Trello | Documentation and Git done; the Trello board is not linked from the repository yet |
 | Banco de Dados | Logical model, relationships, SQL commands | [`03-database.md`](03-database.md): ER diagram, 1:1 and N:N (`lista_exercicio`) relationships, a composite foreign key, constraints; the scripts in `src/database/` and the queries in `src/models/` | Done |
-| Algoritmos | Variables, functions, math operations, conditionals, loops, arrays | `dashboard/dashboard.js` counts right and wrong attempts, attempts per day of the chosen period and the hit rate of each list with loops over the attempts array; `play/rules.js` reads a FEN into an 8×8 matrix and lists the squares each piece can move to; `isWholeSolution` in `src/controllers/tentativaController.js` compares an attempt with the solution in a loop | Done |
+| Algoritmos | Variables, functions, math operations, conditionals, loops, arrays | `dashboard/dashboard.js` counts right and wrong attempts, attempts per day of the chosen period and the hit rate of each list with loops over the attempts array; `play/rules.js` reads the exercise's position into an 8×8 matrix and lists the squares each piece can move to; `isWholeSolution` in `src/controllers/tentativaController.js` compares an attempt with the solution in a loop | Done |
 | Arquitetura de Computadores and Matemática | Applying math calculations | Hit rate as a percentage, attempts per day, the current and previous weeks' dates (Monday to Sunday), and the share of exercises solved (`dashboard/dashboard.js`); board coordinates and piece movement as row and column arithmetic (`play/rules.js`) | Done |
 | Introdução aos Sistemas Operacionais | A Linux VM holding only the database | MySQL on the VM (R09), with its own application user (`src/database/03-app-user.sql`) | To do: the database still runs locally |
 | Pesquisa e Inovação | Context, planning, dashboard and indicators | Context and planning in this document (sections 1 to 8); the "Desempenho no Xadrez" dashboard with three indicators and three Chart.js charts (section 7) | Done |

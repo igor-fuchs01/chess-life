@@ -131,12 +131,12 @@ Used by `public/play/game.js` to set up the board.
 {
   "id": 6,
   "titulo": "Mate de Légal",
-  "fen": "rn1qkbnr/ppp2p1p/3p2p1/4N3/2B1P3/2N5/PPPP1PPP/R1BbK2R w KQkq - 0 1",
+  "posicao": "Ke1 Ra1 Rh1 Bc1 Bc4 Nc3 Ne5 Pa2 Pb2 Pc2 Pd2 Pf2 Pg2 Ph2 Pe4 ke8 qd8 ra8 rh8 bd1 bf8 nb8 ng8 pd6 pg6 pa7 pb7 pc7 pf7 ph7",
   "solucao": ["Bxf7+", "Ke7", "Nd5#"]
 }
 ```
 
-- `fen` is the position, always with White to move: the user plays White.
+- `posicao` is the position: each piece with its square, separated by spaces (uppercase is White, lowercase is Black, `P`/`p` is a pawn). White is always to move: the user plays White.
 - `solucao` is the whole line in SAN: the user's moves at even indexes (0, 2, …) and the opponent's replies at odd indexes. The page compares each move with it and plays the replies itself. Sending the solution keeps the page simple; the API checks it again when the attempt is saved.
 
 ## 5. Attempts — `/tentativas`
