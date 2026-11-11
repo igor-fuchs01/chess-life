@@ -71,9 +71,9 @@ The site uses the "classic" direction chosen by the user: cream paper (`--paper`
 | `/gallery/gallery.html` | `gallery/` | Public | — |
 | `/auth/login.html` | `auth/` | Public | `POST /usuarios/autenticar` |
 | `/auth/signup.html` | `auth/` | Public | `POST /usuarios/cadastrar` |
-| `/play/play.html` (`?lista=` opens a list) | `play/` | Restricted | `GET /perfis/buscar`, `PUT /perfis/atualizar`, `GET /listas/listar`, `GET /exercicios/listar` |
+| `/play/play.html` (`?lista=` opens a list) | `play/` | Restricted | `GET /perfis/buscar`, `PUT /perfis/atualizar`, `GET /listasExercicios/listar`, `GET /exercicios/listar` |
 | `/play/game.html` (`?lista=2&exercicio=6`) | `play/` | Restricted | `GET /exercicios/buscar`, `GET /exercicios/listar`, `POST /tentativas/cadastrar` |
-| `/dashboard/dashboard.html` | `dashboard/` | Restricted | `GET /tentativas/listar`, `GET /listas/listar` |
+| `/dashboard/dashboard.html` | `dashboard/` | Restricted | `GET /tentativas/listar`, `GET /listasExercicios/listar` |
 
 ### Conventions
 
@@ -113,7 +113,7 @@ The restricted area is an exercise solver, on two pages. `/play/play.html` (the 
 
 - **Start screen** (`play/play.html`, styles in `play/play.css`), from top to bottom:
   - **Player card** (`.player-card`): a green band with the logged-in user's name and their profile (bio, rating, "Joga desde" and favorite opening), with the "Editar perfil" button.
-  - **Listas de exercícios** (`play/play.js`, with the `<template>`s `#list-card-template` and `#exercise-row-template` in `play/play.html`): one wide button per list (`.list-option`), with its level number on a light square, its name, its description and the user's progress ("2/5"), from `GET /listas/listar/:idUsuario`. Clicking one marks it (`.selected`) and fills a table below (`#exercises-section`) with its exercises, from `GET /exercicios/listar/:idLista/:idUsuario`: a row per exercise with its number, a link to it, its status ("✓ Resolvido" or "Pendente") and an "Abrir" button. Both open `game.html?lista=<id>&exercicio=<id>`. The page opens the list named in `?lista=`, which the exercise page's "Voltar às listas" link sends.
+  - **Listas de exercícios** (`play/play.js`, with the `<template>`s `#list-card-template` and `#exercise-row-template` in `play/play.html`): one wide button per list (`.list-option`), with its level number on a light square, its name, its description and the user's progress ("2/5"), from `GET /listasExercicios/listar/:idUsuario`. Clicking one marks it (`.selected`) and fills a table below (`#exercises-section`) with its exercises, from `GET /exercicios/listar/:idLista/:idUsuario`: a row per exercise with its number, a link to it, its status ("✓ Resolvido" or "Pendente") and an "Abrir" button. Both open `game.html?lista=<id>&exercicio=<id>`. The page opens the list named in `?lista=`, which the exercise page's "Voltar às listas" link sends.
   - **Como funciona** (`.rule-tiles`): four short tiles in a row: moving, the opponent's reply, a wrong move ends the attempt, and every attempt is saved.
 - **Profile** (`play/profile.js`, with `shared/profile-form.js`): the profile is created at sign-up, so here it is only read and edited. The start screen reads it with `GET /perfis/buscar/:idUsuario`, fills the favorite opening options with the openings mocked in `shared/profile-form.js`, and shows on the card the opening's name, which the API returns as it was saved. The player card's "Editar perfil" button, shown only when the profile was found, opens a `<dialog>` (`#profile-dialog`) with the profile form: rating, "Joga desde" (`ano_inicio`), favorite opening, shown as a box of six rows with its own scrollbar (`size="6"`, since the native dropdown list cannot be limited with CSS and would grow past the dialog), and a bio of up to 50 characters with a counter. The list starts with "Nenhuma", since the favorite opening is optional; the other fields are required. Saving sends `PUT /perfis/atualizar/:idUsuario`, then closes the dialog and reads the profile again, so the card shows the new information right away. The page checks that rating, year and bio are filled, the rating (0 to 3500) and the year (1901 to the current year) before sending, and shows the API's errors in the dialog. A user with no profile sees "Perfil não encontrado." and no edit button.
 - **Rules** (`play/rules.js`): written for this project, with no library, and kept to what the exercises need. The board is an 8×8 matrix, `board[row][column]`, holding the piece's FEN letter (`"K"` is the white king, `"p"` a black pawn; uppercase is White) or `""` for an empty square. Row 0 is the 8th rank and column 0 is the a-file. `readBoardFromFen` builds it from the first field of the exercise's FEN. `getTargets` lists the squares a piece can move to: the knight and the king one jump or step to each side, the rook, bishop and queen along their lines until the edge or a piece (stopping on an enemy piece), and the pawn one square forward, two from its starting row, or one diagonally to capture. `movePiece` moves it on the board.
@@ -141,7 +141,7 @@ The API contracts (routes, bodies, replies and error messages) are in [`04-api.m
 The back-end was rebuilt on 2026-10-15 from the legacy template's code. It keeps the template's structure and drops every resource Chess Life does not use:
 
 ```
-app.js                       Loads the environment file, serves public/ and mounts /usuarios, /perfis, /listas, /exercicios and /tentativas
+app.js                       Loads the environment file, serves public/ and mounts /usuarios, /perfis, /listasExercicios, /exercicios and /tentativas
 src/
 ├── routes/                  URL → controller function
 │   ├── usuarios.js

@@ -19,7 +19,7 @@ The PI challenge asks for a website with a sign-up form, on a theme that represe
 | --- | --- |
 | A theme that represents the student or something they like | Chess, and how it shaped the author's life (section 9) |
 | HTML, CSS and form validation in JavaScript | The pages in `site-pessoal/public/`; sign-up and login validate their fields in `auth/signup.js` and `auth/login.js` before calling the API |
-| A Node.js API to register and/or query data in the database | The Express API: sign-up and login (`/usuarios`), the player profile (`/perfis`), and the exercise lists, exercises and attempts (`/listas`, `/exercicios`, `/tentativas`), described in [`04-api.md`](04-api.md) |
+| A Node.js API to register and/or query data in the database | The Express API: sign-up and login (`/usuarios`), the player profile (`/perfis`), and the exercise lists, exercises and attempts (`/listasExercicios`, `/exercicios`, `/tentativas`), described in [`04-api.md`](04-api.md) |
 | Focus on individual learning and on applying the semester's technical courses | Section 10 maps each course to where the project applies it |
 
 ### Goals

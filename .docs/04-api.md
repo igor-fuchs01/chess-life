@@ -74,9 +74,9 @@ Body:
 | `403` | `E-mail e/ou senha inválidos.` The same reply for an unknown e-mail and a wrong password, so it does not reveal which accounts exist |
 | `500` | `Não foi possível entrar.` |
 
-## 3. Lists — `/listas`
+## 3. Lists — `/listasExercicios`
 
-### `GET /listas/listar/:idUsuario` — list the exercise lists with the user's progress (RF08, RF09)
+### `GET /listasExercicios/listar/:idUsuario` — list the exercise lists with the user's progress (RF08, RF09)
 
 Used by `public/play/play.js` on the start screen and by `public/dashboard/dashboard.js`.
 
