@@ -59,7 +59,7 @@ async function loadAttempts() {
  */
 async function loadLists() {
   try {
-    const response = await fetch(`/listas/listar/${currentUser.id}`);
+    const response = await fetch(`/listasExercicios/listar/${currentUser.id}`);
     if (response.status === 200) {
       return await response.json();
     }

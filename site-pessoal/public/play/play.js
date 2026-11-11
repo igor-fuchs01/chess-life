@@ -33,7 +33,7 @@ async function startLists() {
  */
 async function loadLists() {
   try {
-    const response = await fetch(`/listas/listar/${currentUser.id}`);
+    const response = await fetch(`/listasExercicios/listar/${currentUser.id}`);
     if (!response.ok) {
       throw new Error(await response.text());
     }

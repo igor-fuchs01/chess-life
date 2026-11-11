@@ -22,7 +22,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/usuarios", usuariosRouter);
 app.use("/perfis", perfisRouter);
-app.use("/listas", listasExerciciosRouter);
+app.use("/listasExercicios", listasExerciciosRouter);
 app.use("/exercicios", exerciciosRouter);
 app.use("/tentativas", tentativasRouter);
 
