@@ -15,13 +15,21 @@ const customPeriodFields = document.getElementById("custom-period");
 const startDateInput = document.getElementById("start-date");
 const endDateInput = document.getElementById("end-date");
 
+// Read once from the theme's CSS variables: the result colors (--win for right, --loss for wrong),
+// the bar color of the levels chart, the panel color for the gaps between marks and the text color.
+const chartColors = {
+  acerto: readCssVariable("--win"),
+  erro: readCssVariable("--loss"),
+  brass: readCssVariable("--brass"),
+  card: readCssVariable("--card"),
+  ink: readCssVariable("--ink")
+};
+
 let attempts = [];
 let lists = [];
 let charts = [];
 // The period shown on the page, as { start, end } days written "YYYY-MM-DD", both included.
 let period;
-// Read from the theme's CSS variables when the page starts.
-let chartColors;
 
 /**
  * Prepares the page and loads the attempts and the lists of the current week.
@@ -31,8 +39,9 @@ function startDashboard() {
   // Each chart fills its .chart box, whose height the CSS sets, instead of keeping a fixed proportion.
   Chart.defaults.maintainAspectRatio = false;
   Chart.defaults.plugins.legend.display = false;
+  Chart.defaults.color = readCssVariable("--muted");
+  Chart.defaults.borderColor = readCssVariable("--line");
   Chart.register(barValuesPlugin);
-  readChartColors();
   periodSelect.addEventListener("change", handlePeriodChange);
   document.getElementById("period-form").addEventListener("submit", handleCustomPeriodSubmit);
 
@@ -51,11 +60,8 @@ function handlePeriodChange() {
   if (isCustomPeriod) {
     return;
   }
-  if (periodSelect.value === PREVIOUS_WEEK) {
-    loadDashboard(getWeekPeriod(1));
-    return;
-  }
-  loadDashboard(getWeekPeriod(0));
+  const weeksAgo = periodSelect.value === PREVIOUS_WEEK ? 1 : 0;
+  loadDashboard(getWeekPeriod(weeksAgo));
 }
 
 /**
@@ -87,8 +93,8 @@ async function loadDashboard(chosenPeriod) {
   periodMessage.className = "message";
   attemptsMessage.className = "message";
 
-  attempts = await loadAttempts();
-  lists = await loadLists();
+  attempts = await fetchPeriodData("tentativas", "Não foi possível carregar as tentativas.");
+  lists = await fetchPeriodData("listasExercicios", "Não foi possível carregar as listas de exercícios.");
 
   renderStats();
   renderCharts();
@@ -96,102 +102,48 @@ async function loadDashboard(chosenPeriod) {
 }
 
 /**
- * Fetches the user's attempts in the period, newest first.
- * @returns {Promise<object[]>} The attempts, or an empty array when there are none or they could not be loaded.
+ * Fetches one of the dashboard routes for the current user and the period shown on the page.
+ * @param {string} route - "tentativas" (attempts, newest first) or "listasExercicios" (lists, in their order).
+ * @param {string} errorText - Shown above the table when the request fails.
+ * @returns {Promise<object[]>} The rows, or an empty array when there are none (204) or they could not be loaded.
  */
-async function loadAttempts() {
+async function fetchPeriodData(route, errorText) {
   try {
-    const response = await fetch(`/dashboard/tentativas/${currentUser.id}?${getPeriodQuery()}`);
-    // 204 means the user has no attempts yet.
+    const response = await fetch(`/dashboard/${route}/${currentUser.id}?data_inicio=${period.start}&data_fim=${period.end}`);
     if (response.status === 200) {
       return await response.json();
     }
     return [];
   } catch {
-    showMessage(attemptsMessage, "Não foi possível carregar as tentativas.", "error");
+    showMessage(attemptsMessage, errorText, "error");
     return [];
   }
-}
-
-/**
- * Fetches the exercise lists, in their order, with the exercises the user solved in the period.
- * @returns {Promise<object[]>} The lists, or an empty array when they could not be loaded.
- */
-async function loadLists() {
-  try {
-    const response = await fetch(`/dashboard/listasExercicios/${currentUser.id}?${getPeriodQuery()}`);
-    if (response.status === 200) {
-      return await response.json();
-    }
-    return [];
-  } catch {
-    showMessage(attemptsMessage, "Não foi possível carregar as listas de exercícios.", "error");
-    return [];
-  }
-}
-
-/**
- * Writes the period shown on the page as the query string the dashboard routes read.
- * @returns {string} Such as "data_inicio=2026-11-09&data_fim=2026-11-15".
- */
-function getPeriodQuery() {
-  return `data_inicio=${period.start}&data_fim=${period.end}`;
 }
 
 /**
  * Fills the three indicator cards at the top of the page and the numbers next to the results chart.
  */
 function renderStats() {
-  renderSolvedInPeriod();
-  renderHitRate();
-  renderSolvedExercises();
-  renderResultCounts();
-}
-
-/**
- * Shows how many right attempts the user made in the period, with the period below.
- */
-function renderSolvedInPeriod() {
-  document.getElementById("solved-in-period").textContent = countResults().acerto;
-  document.getElementById("solved-in-period-detail").textContent = describePeriod();
-}
-
-/**
- * Shows the hit rate of the attempts made in the period, with the period below.
- */
-function renderHitRate() {
-  const hitRate = calculateRate(countResults().acerto, attempts.length);
-
-  document.getElementById("hit-rate").textContent = `${hitRate}%`;
-  document.getElementById("hit-rate-detail").textContent = describePeriod();
-}
-
-/**
- * Shows how many exercises the user solved at least once in the period, out of all the exercises in the lists.
- */
-function renderSolvedExercises() {
-  let solved = 0;
-  let total = 0;
+  const results = countResults();
+  const hitRate = `${calculateRate(results.acerto, attempts.length)}%`;
+  const periodText = describePeriod();
+  let solvedExercises = 0;
+  let totalExercises = 0;
 
   for (const list of lists) {
-    solved += list.resolvidos;
-    total += list.total_exercicios;
+    solvedExercises += list.resolvidos;
+    totalExercises += list.total_exercicios;
   }
 
-  document.getElementById("solved-exercises").textContent = `${solved}/${total}`;
-  document.getElementById("solved-exercises-detail").textContent = `${calculateRate(solved, total)}% dos exercícios`;
-}
-
-/**
- * Writes the number of right and wrong attempts in the legend of the results chart, and the hit rate in its middle.
- */
-function renderResultCounts() {
-  const results = countResults();
-
-  for (const result of RESULTS_IN_CHARTS) {
-    document.getElementById(`results-${result}`).textContent = results[result];
-  }
-  document.getElementById("results-hit-rate").textContent = `${calculateRate(results.acerto, attempts.length)}%`;
+  document.getElementById("solved-in-period").textContent = results.acerto;
+  document.getElementById("solved-in-period-detail").textContent = periodText;
+  document.getElementById("hit-rate").textContent = hitRate;
+  document.getElementById("hit-rate-detail").textContent = periodText;
+  document.getElementById("solved-exercises").textContent = `${solvedExercises}/${totalExercises}`;
+  document.getElementById("solved-exercises-detail").textContent =`${calculateRate(solvedExercises, totalExercises)}% dos exercícios`;
+  document.getElementById("results-acerto").textContent = results.acerto;
+  document.getElementById("results-erro").textContent = results.erro;
+  document.getElementById("results-hit-rate").textContent = hitRate;
 }
 
 /**
@@ -203,22 +155,6 @@ function describePeriod() {
     return formatDay(period.start);
   }
   return `${formatDay(period.start)} a ${formatDay(period.end)}`;
-}
-
-/**
- * Reads the chart colors from the current theme: the result colors (--win for right, --loss for wrong),
- * the panel color for the gaps between marks, and the text and line colors.
- */
-function readChartColors() {
-  chartColors = {
-    acerto: readCssVariable("--win"),
-    erro: readCssVariable("--loss"),
-    brass: readCssVariable("--brass"),
-    card: readCssVariable("--card"),
-    ink: readCssVariable("--ink")
-  };
-  Chart.defaults.color = readCssVariable("--muted");
-  Chart.defaults.borderColor = readCssVariable("--line");
 }
 
 /**
@@ -239,32 +175,21 @@ function renderCharts() {
  * @returns {Chart}
  */
 function createDailyChart() {
-  const days = countAttemptsPerDay();
   const labels = [];
-  const datasets = [];
+  const rightCounts = [];
+  const wrongCounts = [];
 
-  for (const day of days) {
+  for (const day of countAttemptsPerDay()) {
     labels.push(day.label);
+    rightCounts.push(day.acerto);
+    wrongCounts.push(day.erro);
   }
 
-  for (const result of RESULTS_IN_CHARTS) {
-    const counts = [];
-    for (const day of days) {
-      counts.push(day[result]);
-    }
-
-    const isTopOfBar = result === RESULTS_IN_CHARTS[RESULTS_IN_CHARTS.length - 1];
-    datasets.push({
-      label: RESULT_CHART_LABELS[result],
-      data: counts,
-      backgroundColor: chartColors[result],
-      borderColor: chartColors.card,
-      borderWidth: { top: 2 },
-      borderSkipped: false,
-      borderRadius: isTopOfBar ? { topLeft: 4, topRight: 4 } : 0,
-      maxBarThickness: 28
-    });
-  }
+  const barStyle = { borderColor: chartColors.card, borderWidth: { top: 2 }, borderSkipped: false, maxBarThickness: 28 };
+  const datasets = [
+    { ...barStyle, label: RESULT_CHART_LABELS.acerto, data: rightCounts, backgroundColor: chartColors.acerto },
+    { ...barStyle, label: RESULT_CHART_LABELS.erro, data: wrongCounts, backgroundColor: chartColors.erro, borderRadius: { topLeft: 4, topRight: 4 } }
+  ];
 
   return new Chart(document.getElementById("daily-chart"), {
     type: "bar",
@@ -492,24 +417,13 @@ function countAttemptsPerDay() {
  * @returns {{start: string, end: string}} Days written "YYYY-MM-DD".
  */
 function getWeekPeriod(weeksAgo) {
-  const monday = getWeekStart(new Date());
-  monday.setDate(monday.getDate() - weeksAgo * DAYS_IN_WEEK);
-  const sunday = new Date(monday);
-  sunday.setDate(sunday.getDate() + DAYS_IN_WEEK - 1);
-  return { start: getDayKey(monday), end: getDayKey(sunday) };
-}
-
-/**
- * Returns the Monday at midnight of the week a date is in.
- * @param {Date} date
- * @returns {Date}
- */
-function getWeekStart(date) {
-  const weekStart = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const today = new Date();
   // getDay() counts from Sunday (0); this counts from Monday instead.
-  const daysSinceMonday = (weekStart.getDay() + 6) % DAYS_IN_WEEK;
-  weekStart.setDate(weekStart.getDate() - daysSinceMonday);
-  return weekStart;
+  const daysSinceMonday = (today.getDay() + 6) % DAYS_IN_WEEK;
+  // Date moves days outside the month, such as day 0 or 32, into the previous or next month.
+  const monday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysSinceMonday - weeksAgo * DAYS_IN_WEEK);
+  const sunday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + DAYS_IN_WEEK - 1);
+  return { start: getDayKey(monday), end: getDayKey(sunday) };
 }
 
 /**
@@ -518,9 +432,16 @@ function getWeekStart(date) {
  * @returns {string} Day as "YYYY-MM-DD".
  */
 function getDayKey(date) {
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${date.getFullYear()}-${month}-${day}`;
+  let month = date.getMonth() + 1;
+  let day = date.getDate();
+
+  if (month < 10) {
+    month = "0" + month;
+  }
+  if (day < 10) {
+    day = "0" + day;
+  }
+  return date.getFullYear() + "-" + month + "-" + day;
 }
 
 /**
