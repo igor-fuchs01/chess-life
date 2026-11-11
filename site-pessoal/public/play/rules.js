@@ -1,4 +1,4 @@
-// The board is an 8×8 matrix: board[row][column] holds a FEN letter ("K" is the white king, "p" a black pawn)
+// The board is an 8×8 matrix: board[row][column] holds a piece letter ("K" is the white king, "p" a black pawn)
 // or "" for an empty square. Uppercase letters are White. Row 0 is the 8th rank and column 0 is the a-file.
 // Only the movement of each piece is checked: there is no castling, en passant or promotion, since no exercise uses them.
 const BOARD_SIZE = 8;
@@ -12,27 +12,22 @@ const QUEEN_DIRECTIONS = ROOK_DIRECTIONS.concat(BISHOP_DIRECTIONS);
 const WHITE_PAWN_START_ROW = 6;
 
 /**
- * Builds the board from the first field of a FEN, such as "6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 1".
- * A digit is that many empty squares; a letter is a piece.
- * @param {string} fen
+ * Builds the board from the exercise's position: each piece with its square, separated by spaces,
+ * such as "Kh1 Rg1 Nf6 kh8 ph7" (white king on h1, white rook on g1, … black pawn on h7).
+ * @param {string} position
  * @returns {string[][]}
  */
-function readBoardFromFen(fen) {
-  const placement = fen.split(" ")[0];
+function readBoardFromPosition(position) {
   const board = [];
+  for (let row = 0; row < BOARD_SIZE; row++) {
+    board.push(Array(BOARD_SIZE).fill(""));
+  }
 
-  for (const rankText of placement.split("/")) {
-    const row = [];
-    for (const symbol of rankText) {
-      const emptySquares = Number(symbol);
-      for (let i = 0; i < emptySquares; i++) {
-        row.push("");
-      }
-      if (!emptySquares) {
-        row.push(symbol);
-      }
-    }
-    board.push(row);
+  for (const pieceText of position.split(" ")) {
+    const piece = pieceText[0];
+    const column = FILES.indexOf(pieceText[1]);
+    const row = BOARD_SIZE - Number(pieceText[2]);
+    board[row][column] = piece;
   }
   return board;
 }
@@ -143,7 +138,7 @@ function movePiece(board, from, to) {
  * Reads the piece and the destination of a move in standard algebraic notation (SAN).
  * "Qxf7#" is a queen going to f7; a move without a piece letter, such as "exd5", is a pawn move.
  * @param {string} san
- * @returns {{piece: string, square: string}} The piece as White's FEN letter, such as "Q", and the square name.
+ * @returns {{piece: string, square: string}} The piece as White's letter, such as "Q", and the square name.
  */
 function readSanMove(san) {
   const move = san.replace("+", "").replace("#", "");

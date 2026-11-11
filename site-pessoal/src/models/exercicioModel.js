@@ -36,11 +36,11 @@ async function listExercises(listId, userId) {
 /**
  * Reads an exercise's title and position.
  * @param {number} exerciseId
- * @returns {Promise<object|undefined>} The exercise { id, titulo, fen }, or undefined when it does not exist.
+ * @returns {Promise<object|undefined>} The exercise { id, titulo, posicao }, or undefined when it does not exist.
  */
 async function findExercise(exerciseId) {
     const sql = `
-        SELECT id, titulo, fen
+        SELECT id, titulo, posicao
         FROM exercicio
         WHERE id = ?;
     `;

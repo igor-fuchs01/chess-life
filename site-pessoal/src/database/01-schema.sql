@@ -36,14 +36,16 @@ CREATE TABLE lista (
     CONSTRAINT chk_lista_ordem CHECK (ordem >= 1)
 );
 
--- A position to solve, in FEN, always with White to move: the user plays White. Strong entity.
+-- A position to solve, always with White to move: the user plays White. Strong entity.
+-- The position is each piece with its square, separated by spaces, such as 'Kh1 Rg1 Nf6 kh8 ph7':
+-- uppercase is White, lowercase is Black, and P/p is a pawn. A full board of 32 pieces takes 127 characters.
 -- The solution is the moves in SAN separated by spaces, the user's moves first and then the replies in turn.
 CREATE TABLE exercicio (
     id INT PRIMARY KEY AUTO_INCREMENT,
     titulo VARCHAR(60) NOT NULL,
-    fen VARCHAR(100) NOT NULL,
+    posicao VARCHAR(150) NOT NULL,
     solucao VARCHAR(100) NOT NULL,
-    CONSTRAINT uq_exercicio_fen UNIQUE (fen)
+    CONSTRAINT uq_exercicio_posicao UNIQUE (posicao)
 );
 
 -- An exercise in a list, at a given place: N:N between lista and exercicio, identifying relationships.

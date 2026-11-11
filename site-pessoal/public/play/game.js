@@ -94,7 +94,7 @@ async function loadNextExercise(exerciseId) {
  * Sets up the exercise's position. The user always plays White, drawn at the bottom of the board.
  */
 function startAttempt() {
-  board = readBoardFromFen(exercise.fen);
+  board = readBoardFromPosition(exercise.posicao);
   moves = [];
   lastMove = null;
   result = null;
