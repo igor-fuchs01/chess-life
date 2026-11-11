@@ -10,7 +10,6 @@ const ROOK_DIRECTIONS = [[-1, 0], [1, 0], [0, -1], [0, 1]];
 const BISHOP_DIRECTIONS = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
 const QUEEN_DIRECTIONS = ROOK_DIRECTIONS.concat(BISHOP_DIRECTIONS);
 const WHITE_PAWN_START_ROW = 6;
-const BLACK_PAWN_START_ROW = 1;
 
 /**
  * Builds the board from the first field of a FEN, such as "6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 1".
@@ -102,30 +101,27 @@ function getSlideTargets(board, row, column, directions) {
 }
 
 /**
- * Pawn: one square forward if it is empty, two from its starting row if both are empty,
- * and one square diagonally forward to capture. White moves up the matrix (towards row 0), Black down.
+ * White pawn: one square up the matrix (towards row 0) if it is empty, two from its starting row if both
+ * are empty, and one square diagonally up to capture a black piece.
+ * Only White's pawns are moved: the user plays White and Black's replies are never pawn moves.
  */
 function getPawnTargets(board, row, column) {
-  const isWhite = isWhitePiece(board[row][column]);
-  const direction = isWhite ? -1 : 1;
-  const startRow = isWhite ? WHITE_PAWN_START_ROW : BLACK_PAWN_START_ROW;
-  const nextRow = row + direction;
+  const nextRow = row - 1;
   const targets = [];
 
-  if (isInsideBoard(nextRow, column) && board[nextRow][column] === "") {
+  if (board[nextRow][column] === "") {
     targets.push({ row: nextRow, column: column });
 
-    const doubleStepRow = row + 2 * direction;
-    if (row === startRow && board[doubleStepRow][column] === "") {
-      targets.push({ row: doubleStepRow, column: column });
+    if (row === WHITE_PAWN_START_ROW && board[row - 2][column] === "") {
+      targets.push({ row: row - 2, column: column });
     }
   }
 
   for (const targetColumn of [column - 1, column + 1]) {
-    const hasEnemy = isInsideBoard(nextRow, targetColumn)
+    const hasBlackPiece = isInsideBoard(nextRow, targetColumn)
       && board[nextRow][targetColumn] !== ""
-      && !isSameColor(board, row, column, nextRow, targetColumn);
-    if (hasEnemy) {
+      && !isWhitePiece(board[nextRow][targetColumn]);
+    if (hasBlackPiece) {
       targets.push({ row: nextRow, column: targetColumn });
     }
   }
@@ -164,14 +160,14 @@ function readSanMove(san) {
 
 /**
  * Writes a move in short SAN, such as "Nf3", "Qxf7" or "exd5", without check or mate signs.
- * Used for wrong moves, which are saved but never compared with anything.
+ * Used for the user's wrong moves, which are saved but never compared with anything.
  * @param {string[][]} board - The board before the move.
- * @param {{row: number, column: number}} from
+ * @param {{row: number, column: number}} from - The square of one of White's pieces, so its letter is uppercase.
  * @param {{row: number, column: number}} to
  * @returns {string}
  */
 function writeSanMove(board, from, to) {
-  const letter = board[from.row][from.column].toUpperCase();
+  const letter = board[from.row][from.column];
   const isCapture = board[to.row][to.column] !== "";
   const square = getSquareName(to.row, to.column);
 

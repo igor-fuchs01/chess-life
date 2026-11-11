@@ -296,8 +296,8 @@ function createSquare(row, column, checkedKing) {
 }
 
 /**
- * Finds the king that the last move put in check. Only solution moves carry the "+" or "#" sign,
- * so the sign tells it without checking the rules.
+ * Finds the black king when the last move put it in check. Only the user's solution moves carry the "+" or "#"
+ * sign (Black's replies never give check), so the sign tells it without checking the rules.
  * @returns {{row: number, column: number}|null}
  */
 function findCheckedKing() {
@@ -306,12 +306,9 @@ function findCheckedKing() {
     return null;
   }
 
-  // The king in check belongs to the side to move: White after an even number of moves, since White starts.
-  const isWhiteToMove = moves.length % 2 === 0;
-  const king = isWhiteToMove ? "K" : "k";
   for (let row = 0; row < BOARD_SIZE; row++) {
     for (let column = 0; column < BOARD_SIZE; column++) {
-      if (board[row][column] === king) {
+      if (board[row][column] === "k") {
         return { row, column };
       }
     }
