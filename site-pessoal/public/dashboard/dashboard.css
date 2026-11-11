@@ -37,6 +37,34 @@ main {
 .dash-title p {
   color: var(--muted);
 }
+/* Period filter: on the title's line, pushed to the right; the date fields show only for a custom period. */
+.period,
+.custom-period {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.period {
+  margin-left: auto;
+}
+/* display: flex above would otherwise override the hidden attribute. */
+.custom-period[hidden] {
+  display: none;
+}
+.period select,
+.period input {
+  width: auto;
+  padding: 6px 10px;
+  font-size: 14px;
+}
+.period .btn {
+  padding: 6px 16px;
+  font-size: 14px;
+}
+.dash-title + .message {
+  margin: 0 0 12px;
+}
 
 /* Panels: indicators in a row on top, then two rows that share the free height,
    each with a wide panel (2 parts) and a narrow one (1 part). */

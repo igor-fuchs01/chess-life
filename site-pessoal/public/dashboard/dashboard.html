@@ -20,19 +20,32 @@
         <div class="dash-title">
           <span class="ornament">♛</span>
           <h1>Desempenho no Xadrez</h1>
+          <form class="period" id="period-form">
+            <select id="period-select" aria-label="Período" autocomplete="off">
+              <option value="current-week" selected>Semana atual</option>
+              <option value="previous-week">Semana anterior</option>
+              <option value="custom">Data personalizada</option>
+            </select>
+            <div class="custom-period" id="custom-period" hidden>
+              <input type="date" id="start-date" aria-label="Data de início">
+              <input type="date" id="end-date" aria-label="Data de fim">
+              <button class="btn" type="submit">Filtrar</button>
+            </div>
+          </form>
         </div>
+        <div class="message" id="period-message" role="alert"></div>
 
         <div class="panels">
           <div class="stats">
             <div class="stat">
-              <p class="stat-label">Acertos hoje</p>
-              <b id="solved-today">0</b>
-              <span class="change" id="solved-today-change"></span>
+              <p class="stat-label">Acertos no período</p>
+              <b id="solved-in-period">0</b>
+              <span class="change" id="solved-in-period-detail"></span>
             </div>
             <div class="stat">
               <p class="stat-label">Taxa de acerto</p>
               <b id="hit-rate">0%</b>
-              <span class="change" id="hit-rate-change"></span>
+              <span class="change" id="hit-rate-detail"></span>
             </div>
             <div class="stat">
               <p class="stat-label">Exercícios resolvidos</p>
@@ -43,13 +56,13 @@
           <div class="panel-row">
             <div class="panel wide">
               <div class="panel-head">
-                <h2>Tentativas por semana</h2>
+                <h2>Tentativas por dia</h2>
                 <ul class="legend">
                   <li><i class="swatch acerto"></i>Acertos</li>
                   <li><i class="swatch erro"></i>Erros</li>
                 </ul>
               </div>
-              <div class="chart"><canvas id="weekly-chart"></canvas></div>
+              <div class="chart"><canvas id="daily-chart"></canvas></div>
             </div>
             <div class="panel">
               <div class="panel-head"><h2>Resultados</h2></div>
@@ -69,7 +82,7 @@
             <div class="panel wide">
               <div class="panel-head"><h2>Minhas tentativas</h2></div>
               <div class="message" id="attempts-message" role="alert"></div>
-              <p class="empty" id="attempts-empty">Nenhuma tentativa ainda. Os exercícios que você resolver no site aparecem aqui.</p>
+              <p class="empty" id="attempts-empty">Nenhuma tentativa neste período. Os exercícios que você resolver no site aparecem aqui.</p>
               <div class="table-scroll">
                 <table class="attempts" id="attempts-table" hidden>
                   <thead><tr><th>Data</th><th>Lista</th><th>Exercício</th><th>Resultado</th></tr></thead>

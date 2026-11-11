@@ -2,22 +2,31 @@
 const RESULTS_IN_CHARTS = ["acerto", "erro"];
 const RESULT_LABELS = { acerto: "Acerto", erro: "Erro" };
 const RESULT_CHART_LABELS = { acerto: "Acertos", erro: "Erros" };
-const WEEKS_IN_CHART = 8;
+// Values of the period select's options.
+const PREVIOUS_WEEK = "previous-week";
+const CUSTOM_PERIOD = "custom";
 const DAYS_IN_WEEK = 7;
 const FULL_RATE = 100;
 const currentUser = getSessionUser();
 const attemptsMessage = document.getElementById("attempts-message");
+const periodMessage = document.getElementById("period-message");
+const periodSelect = document.getElementById("period-select");
+const customPeriodFields = document.getElementById("custom-period");
+const startDateInput = document.getElementById("start-date");
+const endDateInput = document.getElementById("end-date");
 
 let attempts = [];
 let lists = [];
 let charts = [];
+// The period shown on the page, as { start, end } days written "YYYY-MM-DD", both included.
+let period;
 // Read from the theme's CSS variables, and read again when the theme changes.
 let chartColors;
 
 /**
- * Prepares the page and loads the user's attempts and the lists.
+ * Prepares the page and loads the attempts and the lists of the current week.
  */
-async function startDashboard() {
+function startDashboard() {
   Chart.defaults.font.family = readCssVariable("--font-body");
   // Each chart fills its .chart box, whose height the CSS sets, instead of keeping a fixed proportion.
   Chart.defaults.maintainAspectRatio = false;
@@ -26,6 +35,59 @@ async function startDashboard() {
   readChartColors();
   // layout.js connected its own click first, so the theme has already switched when the charts redraw.
   document.getElementById("theme-button").addEventListener("click", redrawChartsForTheme);
+  periodSelect.addEventListener("change", handlePeriodChange);
+  document.getElementById("period-form").addEventListener("submit", handleCustomPeriodSubmit);
+
+  loadDashboard(getWeekPeriod(0));
+}
+
+/**
+ * Loads the page again as soon as another week is chosen. A custom period only shows the date fields,
+ * and loads when the button is clicked.
+ */
+function handlePeriodChange() {
+  const isCustomPeriod = periodSelect.value === CUSTOM_PERIOD;
+  customPeriodFields.hidden = !isCustomPeriod;
+  periodMessage.className = "message";
+
+  if (isCustomPeriod) {
+    return;
+  }
+  if (periodSelect.value === PREVIOUS_WEEK) {
+    loadDashboard(getWeekPeriod(1));
+    return;
+  }
+  loadDashboard(getWeekPeriod(0));
+}
+
+/**
+ * Checks the custom period's days and loads the page with them.
+ * @param {SubmitEvent} event
+ */
+function handleCustomPeriodSubmit(event) {
+  event.preventDefault();
+  const customPeriod = { start: startDateInput.value, end: endDateInput.value };
+
+  if (!customPeriod.start || !customPeriod.end) {
+    showMessage(periodMessage, "Informe a data de início e a data de fim.", "error");
+    return;
+  }
+  // Days written as "YYYY-MM-DD" compare as text in date order.
+  if (customPeriod.start > customPeriod.end) {
+    showMessage(periodMessage, "A data de início não pode ser depois da data de fim.", "error");
+    return;
+  }
+  loadDashboard(customPeriod);
+}
+
+/**
+ * Fetches the attempts and the lists of a period and draws the whole page with them.
+ * @param {{start: string, end: string}} chosenPeriod - Days written "YYYY-MM-DD", both included.
+ */
+async function loadDashboard(chosenPeriod) {
+  period = chosenPeriod;
+  periodMessage.className = "message";
+  attemptsMessage.className = "message";
 
   attempts = await loadAttempts();
   lists = await loadLists();
@@ -36,12 +98,12 @@ async function startDashboard() {
 }
 
 /**
- * Fetches the user's attempts, newest first.
+ * Fetches the user's attempts in the period, newest first.
  * @returns {Promise<object[]>} The attempts, or an empty array when there are none or they could not be loaded.
  */
 async function loadAttempts() {
   try {
-    const response = await fetch(`/tentativas/listar/${currentUser.id}`);
+    const response = await fetch(`/dashboard/tentativas/${currentUser.id}?${getPeriodQuery()}`);
     // 204 means the user has no attempts yet.
     if (response.status === 200) {
       return await response.json();
@@ -54,12 +116,12 @@ async function loadAttempts() {
 }
 
 /**
- * Fetches the exercise lists with the user's progress, in their order.
+ * Fetches the exercise lists, in their order, with the exercises the user solved in the period.
  * @returns {Promise<object[]>} The lists, or an empty array when they could not be loaded.
  */
 async function loadLists() {
   try {
-    const response = await fetch(`/listasExercicios/listar/${currentUser.id}`);
+    const response = await fetch(`/dashboard/listasExercicios/${currentUser.id}?${getPeriodQuery()}`);
     if (response.status === 200) {
       return await response.json();
     }
@@ -71,82 +133,43 @@ async function loadLists() {
 }
 
 /**
+ * Writes the period shown on the page as the query string the dashboard routes read.
+ * @returns {string} Such as "data_inicio=2026-11-09&data_fim=2026-11-15".
+ */
+function getPeriodQuery() {
+  return `data_inicio=${period.start}&data_fim=${period.end}`;
+}
+
+/**
  * Fills the three indicator cards at the top of the page and the numbers next to the results chart.
  */
 function renderStats() {
-  renderSolvedToday();
+  renderSolvedInPeriod();
   renderHitRate();
   renderSolvedExercises();
   renderResultCounts();
 }
 
 /**
- * Shows how many right attempts the user made today, compared with yesterday.
+ * Shows how many right attempts the user made in the period, with the period below.
  */
-function renderSolvedToday() {
-  const todayKey = getDayKey(new Date());
-  const yesterdayKey = getDayKey(getYesterday());
-  let solvedToday = 0;
-  let solvedYesterday = 0;
-
-  for (const attempt of attempts) {
-    if (!attempt.acertou) {
-      continue;
-    }
-    const attemptDayKey = getDayKey(new Date(attempt.data_tentativa));
-
-    if (attemptDayKey === todayKey) {
-      solvedToday++;
-    }
-    if (attemptDayKey === yesterdayKey) {
-      solvedYesterday++;
-    }
-  }
-
-  document.getElementById("solved-today").textContent = solvedToday;
-  document.getElementById("solved-today-change").textContent =
-    describeChange(solvedToday - solvedYesterday, "", "em relação a ontem");
+function renderSolvedInPeriod() {
+  document.getElementById("solved-in-period").textContent = countResults().acerto;
+  document.getElementById("solved-in-period-detail").textContent = describePeriod();
 }
 
 /**
- * Shows the hit rate of all attempts, compared with the hit rate of the attempts made until yesterday.
+ * Shows the hit rate of the attempts made in the period, with the period below.
  */
 function renderHitRate() {
-  const todayKey = getDayKey(new Date());
-  let rightAttempts = 0;
-  let attemptsUntilYesterday = 0;
-  let rightUntilYesterday = 0;
-
-  for (const attempt of attempts) {
-    // Day keys are "YYYY-MM-DD", so comparing them as text compares the dates.
-    const isBeforeToday = getDayKey(new Date(attempt.data_tentativa)) < todayKey;
-
-    if (attempt.acertou) {
-      rightAttempts++;
-    }
-    if (isBeforeToday) {
-      attemptsUntilYesterday++;
-    }
-    if (attempt.acertou && isBeforeToday) {
-      rightUntilYesterday++;
-    }
-  }
-
-  const hitRate = calculateRate(rightAttempts, attempts.length);
-  let change = "Sem tentativas até ontem";
-  if (attemptsUntilYesterday > 0) {
-    const hitRateUntilYesterday = calculateRate(rightUntilYesterday, attemptsUntilYesterday);
-    // Rounded like the rates themselves: subtracting two decimals leaves noise such as 2.5500000000000043.
-    const difference = Number((hitRate - hitRateUntilYesterday).toFixed(2));
-    change = describeChange(difference, " p.p.", "desde ontem");
-  }
+  const hitRate = calculateRate(countResults().acerto, attempts.length);
 
   document.getElementById("hit-rate").textContent = `${hitRate}%`;
-  document.getElementById("hit-rate-change").textContent = change;
+  document.getElementById("hit-rate-detail").textContent = describePeriod();
 }
 
 /**
- * Shows how many exercises the user has solved at least once, out of all the exercises in the lists.
+ * Shows how many exercises the user solved at least once in the period, out of all the exercises in the lists.
  */
 function renderSolvedExercises() {
   let solved = 0;
@@ -174,20 +197,14 @@ function renderResultCounts() {
 }
 
 /**
- * Describes a change between two values, such as "▲ 2 em relação a ontem".
- * @param {number} difference - Current value minus the previous one.
- * @param {string} unit - Text after the number, such as " p.p.".
- * @param {string} comparison - What the value is compared with, such as "desde ontem".
+ * Describes the period shown on the page, such as "09/11/2026 a 15/11/2026", or only the day when it has one.
  * @returns {string}
  */
-function describeChange(difference, unit, comparison) {
-  if (difference > 0) {
-    return `▲ ${difference}${unit} ${comparison}`;
+function describePeriod() {
+  if (period.start === period.end) {
+    return formatDay(period.start);
   }
-  if (difference < 0) {
-    return `▼ ${-difference}${unit} ${comparison}`;
-  }
-  return `Sem variação ${comparison}`;
+  return `${formatDay(period.start)} a ${formatDay(period.end)}`;
 }
 
 /**
@@ -223,27 +240,27 @@ function renderCharts() {
     chart.destroy();
   }
 
-  charts = [createWeeklyChart(), createResultsChart(), createLevelsChart()];
+  charts = [createDailyChart(), createResultsChart(), createLevelsChart()];
 }
 
 /**
- * Stacked bar chart with the right and wrong attempts of each of the last weeks.
+ * Stacked bar chart with the right and wrong attempts of each day of the period.
  * A 2px gap in the panel color separates the stacked results; only the top of each bar is rounded.
  * @returns {Chart}
  */
-function createWeeklyChart() {
-  const weeks = countAttemptsPerWeek();
+function createDailyChart() {
+  const days = countAttemptsPerDay();
   const labels = [];
   const datasets = [];
 
-  for (const week of weeks) {
-    labels.push(week.label);
+  for (const day of days) {
+    labels.push(day.label);
   }
 
   for (const result of RESULTS_IN_CHARTS) {
     const counts = [];
-    for (const week of weeks) {
-      counts.push(week[result]);
+    for (const day of days) {
+      counts.push(day[result]);
     }
 
     const isTopOfBar = result === RESULTS_IN_CHARTS[RESULTS_IN_CHARTS.length - 1];
@@ -259,7 +276,7 @@ function createWeeklyChart() {
     });
   }
 
-  return new Chart(document.getElementById("weekly-chart"), {
+  return new Chart(document.getElementById("daily-chart"), {
     type: "bar",
     data: { labels: labels, datasets: datasets },
     options: {
@@ -451,30 +468,45 @@ function calculateListHitRate(listName) {
 }
 
 /**
- * Counts the right and wrong attempts of each of the last WEEKS_IN_CHART weeks, from the oldest week to the current one.
- * Weeks start on Monday and are labeled with that day, as "DD/MM".
- * @returns {{start: number, label: string, acerto: number, erro: number}[]}
+ * Counts the right and wrong attempts of each day of the period, from its first day to its last.
+ * Days are labeled as "DD/MM".
+ * @returns {{key: string, label: string, acerto: number, erro: number}[]}
  */
-function countAttemptsPerWeek() {
-  const weeks = [];
-  const weekStart = getWeekStart(new Date());
+function countAttemptsPerDay() {
+  const days = [];
+  // "T00:00" makes the browser read the day at midnight in the user's time zone, not in UTC.
+  const day = new Date(`${period.start}T00:00`);
+  const lastDay = new Date(`${period.end}T00:00`);
 
-  for (let i = 0; i < WEEKS_IN_CHART; i++) {
-    const label = weekStart.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
-    weeks.unshift({ start: weekStart.getTime(), label: label, acerto: 0, erro: 0 });
-    weekStart.setDate(weekStart.getDate() - DAYS_IN_WEEK);
+  while (day <= lastDay) {
+    const label = day.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+    days.push({ key: getDayKey(day), label: label, acerto: 0, erro: 0 });
+    day.setDate(day.getDate() + 1);
   }
 
   for (const attempt of attempts) {
-    const attemptWeekStart = getWeekStart(new Date(attempt.data_tentativa)).getTime();
-    const week = weeks.find((item) => item.start === attemptWeekStart);
+    const attemptDayKey = getDayKey(new Date(attempt.data_tentativa));
+    const attemptDay = days.find((item) => item.key === attemptDayKey);
 
-    if (week) {
-      week[getResult(attempt)]++;
+    if (attemptDay) {
+      attemptDay[getResult(attempt)]++;
     }
   }
 
-  return weeks;
+  return days;
+}
+
+/**
+ * Returns a week from Monday to Sunday, counted back from the current one.
+ * @param {number} weeksAgo - 0 for the current week, 1 for the previous one.
+ * @returns {{start: string, end: string}} Days written "YYYY-MM-DD".
+ */
+function getWeekPeriod(weeksAgo) {
+  const monday = getWeekStart(new Date());
+  monday.setDate(monday.getDate() - weeksAgo * DAYS_IN_WEEK);
+  const sunday = new Date(monday);
+  sunday.setDate(sunday.getDate() + DAYS_IN_WEEK - 1);
+  return { start: getDayKey(monday), end: getDayKey(sunday) };
 }
 
 /**
@@ -488,16 +520,6 @@ function getWeekStart(date) {
   const daysSinceMonday = (weekStart.getDay() + 6) % DAYS_IN_WEEK;
   weekStart.setDate(weekStart.getDate() - daysSinceMonday);
   return weekStart;
-}
-
-/**
- * Returns the current moment one day earlier.
- * @returns {Date}
- */
-function getYesterday() {
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  return yesterday;
 }
 
 /**
@@ -540,6 +562,16 @@ function readCssVariable(name) {
  */
 function formatDate(isoDate) {
   return new Date(isoDate).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
+}
+
+/**
+ * Turns a day of the period into the Brazilian format.
+ * @param {string} dayKey - Day written "YYYY-MM-DD".
+ * @returns {string} Day as "DD/MM/YYYY".
+ */
+function formatDay(dayKey) {
+  const [year, month, day] = dayKey.split("-");
+  return `${day}/${month}/${year}`;
 }
 
 startDashboard();
