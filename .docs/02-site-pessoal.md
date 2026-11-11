@@ -73,7 +73,7 @@ The site uses the "classic" direction chosen by the user: cream paper (`--paper`
 | `/auth/signup.html` | `auth/` | Public | `POST /usuarios/cadastrar` |
 | `/play/play.html` (`?lista=` opens a list) | `play/` | Restricted | `GET /perfis/buscar`, `PUT /perfis/atualizar`, `GET /listasExercicios/listar`, `GET /exercicios/listar` |
 | `/play/game.html` (`?lista=2&exercicio=6`) | `play/` | Restricted | `GET /exercicios/buscar`, `GET /exercicios/listar`, `POST /tentativas/cadastrar` |
-| `/dashboard/dashboard.html` | `dashboard/` | Restricted | `GET /tentativas/listar`, `GET /listasExercicios/listar` |
+| `/dashboard/dashboard.html` | `dashboard/` | Restricted | `GET /dashboard/tentativas`, `GET /dashboard/listasExercicios` (with the chosen period) |
 
 ### Conventions
 
@@ -141,26 +141,29 @@ The API contracts (routes, bodies, replies and error messages) are in [`04-api.m
 The back-end was rebuilt on 2026-10-15 from the legacy template's code. It keeps the template's structure and drops every resource Chess Life does not use:
 
 ```
-app.js                       Loads the environment file, serves public/ and mounts /usuarios, /perfis, /listasExercicios, /exercicios and /tentativas
+app.js                       Loads the environment file, serves public/ and mounts /usuarios, /perfis, /listasExercicios, /exercicios, /tentativas and /dashboard
 src/
 ├── routes/                  URL → controller function
 │   ├── usuarios.js
 │   ├── perfis.js
 │   ├── listasExercicios.js
 │   ├── exercicios.js
-│   └── tentativas.js
+│   ├── tentativas.js
+│   └── dashboard.js
 ├── controllers/             Read the request, validate it and reply (status and message)
 │   ├── usuarioController.js Sign-up, login
 │   ├── perfilController.js  Read and update the profile, and check its fields (also for sign-up)
 │   ├── listaExerciciosController.js List the exercise lists with the user's progress
 │   ├── exercicioController.js List a list's exercises, read one exercise with its solution
-│   └── tentativaController.js Save an attempt (compares it with the solution) and list the attempts
+│   ├── tentativaController.js Save an attempt (compares it with the solution) and list the attempts
+│   └── dashboardController.js Check the period and list the dashboard's attempts and lists in it
 ├── models/                  Build and run the SQL
 │   ├── usuarioModel.js
 │   ├── perfilModel.js       Reads and updates a user's profile
 │   ├── listaExerciciosModel.js Reads the lists and how many exercises the user solved in each
 │   ├── exercicioModel.js    Reads a list's exercises, an exercise and its solution
-│   └── tentativaModel.js    Saves and lists the attempts
+│   ├── tentativaModel.js    Saves and lists the attempts
+│   └── dashboardModel.js    Reads the attempts and the lists' progress of a period
 └── database/
     ├── config.js            Connection pool: query(sql, values) and transaction(runStatements)
     ├── 01-schema.sql        Drops and creates the database and its tables

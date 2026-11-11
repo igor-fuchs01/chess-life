@@ -78,7 +78,7 @@ Body:
 
 ### `GET /listasExercicios/listar/:idUsuario` — list the exercise lists with the user's progress (RF08, RF09)
 
-Used by `public/play/play.js` on the start screen and by `public/dashboard/dashboard.js`.
+Used by `public/play/play.js` on the start screen. The dashboard reads the lists from `GET /dashboard/listasExercicios/:idUsuario` (section 7), which counts only a period.
 
 | Reply | Body |
 | --- | --- |
@@ -168,7 +168,7 @@ The server reads the exercise's solution and saves `acertou = true` only when `l
 
 ### `GET /tentativas/listar/:idUsuario` — list a user's attempts (RF09, RF10)
 
-Used by `public/dashboard/dashboard.js`.
+Lists every attempt, with no period. No page uses it since 2026-11-10, when the dashboard moved to `GET /dashboard/tentativas/:idUsuario` (section 7); it is kept so the contract does not break.
 
 | Reply | Body |
 | --- | --- |
@@ -233,16 +233,65 @@ Body:
 | `404` | `Perfil não encontrado.`: the user has no profile to update |
 | `500` | `Não foi possível atualizar o perfil.` |
 
-## 7. Security
+## 7. Dashboard — `/dashboard`
+
+The data of the "Desempenho no Xadrez" page, always limited to a period. Used only by `public/dashboard/dashboard.js`, which sends the period chosen on the page: the current week (the default), the previous week, or a custom interval. The routes have their own controller and model (`dashboardController`, `dashboardModel`), apart from the lists and attempts ones.
+
+Both routes require the period in the query string, `?data_inicio=2026-11-09&data_fim=2026-11-15`:
+
+| Parameter | Rule |
+| --- | --- |
+| `data_inicio` | Required. The first day of the period, a real day written `YYYY-MM-DD` |
+| `data_fim` | Required. The last day, written the same way, not before `data_inicio` |
+
+Both days are included: an attempt counts when its `data_tentativa` is from the start of `data_inicio` to the end of `data_fim`, compared in the database's time. A wrong period is a `400`: `Informe a data de início e a data de fim.` (one or both missing), `Data inválida.` (not a real `YYYY-MM-DD` day, such as `2026-02-30`) or `A data de início não pode ser depois da data de fim.`
+
+### `GET /dashboard/tentativas/:idUsuario` — list the user's attempts in a period (RF09, RF10)
+
+| Reply | Body |
+| --- | --- |
+| `200` | The attempts of the period, newest first |
+| `204` | No body: the user has no attempts in the period |
+| `400` | `Usuário inválido.` or a period error |
+| `500` | `Não foi possível listar as tentativas.` |
+
+The body is the same as in `GET /tentativas/listar/:idUsuario` (section 5):
+
+```json
+[
+  { "id": 1, "acertou": true, "data_tentativa": "2026-11-09T19:15:25.000Z", "lista": "Mate em 2", "exercicio": "Mate de Légal" }
+]
+```
+
+### `GET /dashboard/listasExercicios/:idUsuario` — list the exercise lists with what the user solved in a period (RF09)
+
+| Reply | Body |
+| --- | --- |
+| `200` | The lists, in their order |
+| `204` | No body: there are no lists (the seed was not loaded) |
+| `400` | `Usuário inválido.` or a period error |
+| `500` | `Não foi possível listar as listas de exercícios.` |
+
+The body is the same as in `GET /listasExercicios/listar/:idUsuario` (section 3):
+
+```json
+[
+  { "id": 1, "nome": "Mate em 1", "descricao": "Um lance para dar xeque-mate.", "total_exercicios": 5, "resolvidos": 2 }
+]
+```
+
+- `resolvidos` counts the list's exercises the user solved at least once in this list during the period. `total_exercicios` does not depend on the period.
+
+## 8. Security
 
 - Passwords are stored as plain text in `usuario.senha`, without hashing, by the author's choice. Anyone who can read the table sees every password.
 - The API connects to MySQL as `chess_life_user`, which may only run this document's statements (see "Application user" in section 7 of [`03-database.md`](03-database.md)). A route that needs another statement also needs its `GRANT`.
 - Every query uses `?` placeholders, so request values are never read as SQL.
 - Error replies and logs never include passwords or SQL.
 - **Authentication**: done by the user's session in the browser (`sessionStorage`), described with examples in "Authentication" in section 3 of [`02-site-pessoal.md`](02-site-pessoal.md). The API checks the e-mail and password only at `POST /usuarios/autenticar`; it sends no token or cookie, and the page keeps the reply.
-- **Known limit**: the routes do not check who is calling. The list, exercise, attempt and profile routes trust the user id in the URL, which the page takes from the session, so anyone who sends another id to the API can read that user's progress, attempts and profile, or save attempts and change the profile in their name. The exercise route also sends the solution, so a user can read it before solving. This is accepted for the academic project.
+- **Known limit**: the routes do not check who is calling. The list, exercise, attempt, profile and dashboard routes trust the user id in the URL, which the page takes from the session, so anyone who sends another id to the API can read that user's progress, attempts and profile, or save attempts and change the profile in their name. The exercise route also sends the solution, so a user can read it before solving. This is accepted for the academic project.
 
-## 8. Removed routes
+## 9. Removed routes
 
 The legacy template's routes were deleted on 2026-10-15, since no page used them: `/avisos/*`, `/medidas/*`, `/aquarios/*`, `/empresas/*` and the `/` route of `routes/index.js`. The home page is served by `express.static` from `public/index.html`.
 

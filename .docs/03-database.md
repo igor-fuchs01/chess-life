@@ -288,7 +288,7 @@ GROUP BY l.id, l.nome, l.descricao, l.ordem
 ORDER BY l.ordem;
 ```
 
-The user's attempts, for the dashboard:
+The user's attempts:
 
 ```sql
 SELECT t.id, t.acertou, t.data_tentativa, l.nome AS lista, e.titulo AS exercicio
@@ -296,6 +296,18 @@ FROM tentativa t
     JOIN lista l ON l.id = t.fk_lista
     JOIN exercicio e ON e.id = t.fk_exercicio
 WHERE t.fk_usuario = ?
+ORDER BY t.data_tentativa DESC, t.id DESC;
+```
+
+The dashboard runs the same two queries limited to a period, with the first and last days (`YYYY-MM-DD`) as two more values. The condition is `data_tentativa >= ? AND data_tentativa < DATE_ADD(?, INTERVAL 1 DAY)`, so the whole last day is included. It goes in the attempts query's `WHERE` (with the `t.` prefix) and in the derived table of the progress query, so `resolvidos` counts only the exercises solved in the period and `total_exercicios` stays the same:
+
+```sql
+SELECT t.id, t.acertou, t.data_tentativa, l.nome AS lista, e.titulo AS exercicio
+FROM tentativa t
+    JOIN lista l ON l.id = t.fk_lista
+    JOIN exercicio e ON e.id = t.fk_exercicio
+WHERE t.fk_usuario = ?
+    AND t.data_tentativa >= ? AND t.data_tentativa < DATE_ADD(?, INTERVAL 1 DAY)
 ORDER BY t.data_tentativa DESC, t.id DESC;
 ```
 
@@ -309,3 +321,4 @@ The routes are in [`04-api.md`](04-api.md).
 - **`lista`**: `listaExerciciosModel.listLists` runs the progress query above.
 - **`exercicio` and `lista_exercicio`**: `exercicioModel.listExercises` reads a list's exercises in order, with whether the user has solved each one. `findExercise` reads the exercise, and `findSolution` reads its `solucao` column and splits it into the array of moves.
 - **`tentativa`**: `tentativaController.registerAttempt` reads the solution, compares it with the moves sent, and `tentativaModel.registerAttempt` inserts the result. A user, or a list and exercise pair, that does not exist fails on a foreign key (`ER_NO_REFERENCED_ROW_2`) and becomes a `404`. `listAttempts` runs the attempts query above.
+- **Dashboard**: `dashboardModel` has its own copies of the two reading queries, limited to a period: `listAttempts` (`tentativa`, `lista`, `exercicio`) and `listLists` (`lista`, `lista_exercicio`, `tentativa`). `dashboardController` checks the period before any query runs. They only read tables the API user can already read, so `03-app-user.sql` needs no new `GRANT`.

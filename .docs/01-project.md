@@ -19,7 +19,7 @@ The PI challenge asks for a website with a sign-up form, on a theme that represe
 | --- | --- |
 | A theme that represents the student or something they like | Chess, and how it shaped the author's life (section 9) |
 | HTML, CSS and form validation in JavaScript | The pages in `site-pessoal/public/`; sign-up and login validate their fields in `auth/signup.js` and `auth/login.js` before calling the API |
-| A Node.js API to register and/or query data in the database | The Express API: sign-up and login (`/usuarios`), the player profile (`/perfis`), and the exercise lists, exercises and attempts (`/listasExercicios`, `/exercicios`, `/tentativas`), described in [`04-api.md`](04-api.md) |
+| A Node.js API to register and/or query data in the database | The Express API: sign-up and login (`/usuarios`), the player profile (`/perfis`), the exercise lists, exercises and attempts (`/listasExercicios`, `/exercicios`, `/tentativas`), and the dashboard's data by period (`/dashboard`), described in [`04-api.md`](04-api.md) |
 | Focus on individual learning and on applying the semester's technical courses | Section 10 maps each course to where the project applies it |
 
 ### Goals
@@ -164,13 +164,14 @@ Gallery photos are not stored in the database: the image files stay in `public/a
 
 ## 7. Dashboard charts
 
-The dashboard, titled "Desempenho no Xadrez", fetches the user's attempts and the lists from the API and shows:
+The dashboard, titled "Desempenho no Xadrez", fetches the user's attempts and the lists of a period from the API (`/dashboard` routes) and shows only that period.
 
+- **Period**: a select next to the title offers "Semana atual" (the default when the page opens), "Semana anterior" and "Data personalizada". Weeks run from Monday to Sunday. Choosing a week loads the page again at once. "Data personalizada" shows two date fields, start and end, and loads only when "Filtrar" is clicked; an empty field or a start after the end shows an error message.
 - **Indicators**:
-  - Exercises solved today (right attempts), compared with yesterday.
-  - Hit rate ("Taxa de acerto") of all attempts, compared with the hit rate of the attempts made until yesterday (in percentage points).
-  - Exercises solved ("Exercícios resolvidos"): how many of the 15 exercises the user has solved at least once, and the share that is.
-- **Stacked bar chart**: attempts per week over the last 8 weeks (weeks start on Monday), split into right and wrong.
+  - Right attempts in the period ("Acertos no período"), with the period written below.
+  - Hit rate ("Taxa de acerto") of the attempts in the period, with the period written below.
+  - Exercises solved ("Exercícios resolvidos"): how many of the 15 exercises the user solved at least once in the period, and the share that is.
+- **Stacked bar chart** ("Tentativas por dia"): attempts on each day of the period, split into right and wrong.
 - **Donut chart**: share of right and wrong attempts, with the hit rate in its middle and the count of each next to it.
 - **Bar chart**: hit rate of each list ("Mate em 1", "Mate em 2", "Mate em 3"), with the percentage at the end of each bar.
 - **Table**: the attempts, with date and time, list, exercise and result (RF10).
@@ -239,8 +240,8 @@ The PI challenge (*Desafio do Semestre — Projeto Individual*) asks the project
 | --- | --- | --- | --- |
 | Tecnologia da Informação | Project document, planning in Trello, Git governance | This documentation (`.docs/`); Git with typed commit messages and small commits (`commit` skill); planning in Trello | Documentation and Git done; the Trello board is not linked from the repository yet |
 | Banco de Dados | Logical model, relationships, SQL commands | [`03-database.md`](03-database.md): ER diagram, 1:1 and N:N (`lista_exercicio`) relationships, a composite foreign key, constraints; the scripts in `src/database/` and the queries in `src/models/` | Done |
-| Algoritmos | Variables, functions, math operations, conditionals, loops, arrays | `dashboard/dashboard.js` counts right and wrong attempts, attempts per week and the hit rate of each list with loops over the attempts array; `play/rules.js` reads a FEN into an 8×8 matrix and lists the squares each piece can move to; `isWholeSolution` in `src/controllers/tentativaController.js` compares an attempt with the solution in a loop | Done |
-| Arquitetura de Computadores and Matemática | Applying math calculations | Hit rate as a percentage and its change in percentage points, attempts per week and per day, and the share of exercises solved (`dashboard/dashboard.js`); board coordinates and piece movement as row and column arithmetic (`play/rules.js`) | Done |
+| Algoritmos | Variables, functions, math operations, conditionals, loops, arrays | `dashboard/dashboard.js` counts right and wrong attempts, attempts per day of the chosen period and the hit rate of each list with loops over the attempts array; `play/rules.js` reads a FEN into an 8×8 matrix and lists the squares each piece can move to; `isWholeSolution` in `src/controllers/tentativaController.js` compares an attempt with the solution in a loop | Done |
+| Arquitetura de Computadores and Matemática | Applying math calculations | Hit rate as a percentage, attempts per day, the current and previous weeks' dates (Monday to Sunday), and the share of exercises solved (`dashboard/dashboard.js`); board coordinates and piece movement as row and column arithmetic (`play/rules.js`) | Done |
 | Introdução aos Sistemas Operacionais | A Linux VM holding only the database | MySQL on the VM (R09), with its own application user (`src/database/03-app-user.sql`) | To do: the database still runs locally |
 | Pesquisa e Inovação | Context, planning, dashboard and indicators | Context and planning in this document (sections 1 to 8); the "Desempenho no Xadrez" dashboard with three indicators and three Chart.js charts (section 7) | Done |
 | Socioemocional | Applying the concepts worked in class | The home page's "Competências socioemocionais" section (section 9) and the presentation below | Section done; presentation to do |
