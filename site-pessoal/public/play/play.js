@@ -11,8 +11,6 @@ const listsMessage = document.getElementById("lists-message");
 const exercisesSection = document.getElementById("exercises-section");
 const exercisesTitle = document.getElementById("exercises-title");
 const exerciseList = document.getElementById("exercise-list");
-const listCardTemplate = document.getElementById("list-card-template");
-const exerciseRowTemplate = document.getElementById("exercise-row-template");
 
 /**
  * Shows the lists and opens the list named in the address (?lista=), which the exercise page links back to.
@@ -55,18 +53,28 @@ async function loadLists() {
 }
 
 /**
- * Fills the list card template with the list's level, name, description and the user's progress.
+ * Builds a list's card: its level, name, description and the user's progress.
  * @param {{id: number, nome: string, descricao: string, total_exercicios: number, resolvidos: number}} list
  * @param {number} level - The list's place on the screen, from 1.
  * @returns {HTMLButtonElement}
  */
 function createListCard(list, level) {
-  const card = listCardTemplate.content.firstElementChild.cloneNode(true);
+  const card = document.createElement("button");
+  card.type = "button";
+  card.className = "list-option";
   card.dataset.listId = list.id;
-  card.querySelector(".list-level").textContent = level;
-  card.querySelector(".list-name").textContent = list.nome;
-  card.querySelector(".list-description").textContent = list.descricao;
-  card.querySelector(".list-progress").textContent = `${list.resolvidos}/${list.total_exercicios}`;
+
+  const levelSquare = createTextElement("span", "list-level", level);
+
+  const texts = document.createElement("span");
+  texts.appendChild(createTextElement("strong", "list-name", list.nome));
+  texts.appendChild(createTextElement("span", "list-description", list.descricao));
+
+  const progressText = `${list.resolvidos}/${list.total_exercicios}`;
+
+  card.appendChild(levelSquare);
+  card.appendChild(texts);
+  card.appendChild(createTextElement("span", "list-progress", progressText));
   card.addEventListener("click", () => openList(list));
   return card;
 }
@@ -100,25 +108,48 @@ async function openList(list) {
 }
 
 /**
- * Fills the exercise row template: number, link and "Abrir" button to the exercise page, and the status in the list.
+ * Builds an exercise's table row: number, link and "Abrir" button to the exercise page, and the status in the list.
  * @param {number} listId
  * @param {{id: number, titulo: string, ordem: number, resolvido: boolean}} exercise
  * @returns {HTMLTableRowElement}
  */
 function createExerciseRow(listId, exercise) {
-  const row = exerciseRowTemplate.content.firstElementChild.cloneNode(true);
   const exerciseUrl = `${EXERCISE_PAGE}?lista=${listId}&exercicio=${exercise.id}`;
-  const link = row.querySelector(".exercise-link");
-  const status = row.querySelector(".exercise-status");
+  const row = document.createElement("tr");
 
-  row.querySelector(".exercise-number").textContent = exercise.ordem;
+  row.appendChild(createTextElement("td", "exercise-number", exercise.ordem));
+
+  const link = createTextElement("a", "exercise-link", exercise.titulo);
   link.href = exerciseUrl;
-  link.textContent = exercise.titulo;
-  row.querySelector(".exercise-open").href = exerciseUrl;
+  const linkCell = document.createElement("td");
+  linkCell.appendChild(link);
+  row.appendChild(linkCell);
 
-  status.classList.add(exercise.resolvido ? "exercise-solved" : "exercise-pending");
-  status.textContent = exercise.resolvido ? SOLVED_STATUS : PENDING_STATUS;
+  const statusClass = exercise.resolvido ? "exercise-solved" : "exercise-pending";
+  const statusText = exercise.resolvido ? SOLVED_STATUS : PENDING_STATUS;
+  row.appendChild(createTextElement("td", statusClass, statusText));
+
+  const openButton = createTextElement("a", "btn", "Abrir");
+  openButton.href = exerciseUrl;
+  const actionCell = createTextElement("td", "exercise-action", "");
+  actionCell.appendChild(openButton);
+  row.appendChild(actionCell);
+
   return row;
+}
+
+/**
+ * Creates an element with a class and a text. Uses textContent, so text from the database is never read as HTML.
+ * @param {string} tagName
+ * @param {string} className
+ * @param {string|number} text
+ * @returns {HTMLElement}
+ */
+function createTextElement(tagName, className, text) {
+  const element = document.createElement(tagName);
+  element.className = className;
+  element.textContent = text;
+  return element;
 }
 
 /**

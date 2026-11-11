@@ -37,16 +37,6 @@
           <p>Escolha um nível e encontre o xeque-mate.</p>
         </div>
         <div class="list-options" id="list-options"></div>
-        <template id="list-card-template">
-          <button class="list-option" type="button">
-            <span class="list-level" aria-hidden="true"></span>
-            <span>
-              <strong class="list-name"></strong>
-              <span class="list-description"></span>
-            </span>
-            <span class="list-progress"></span>
-          </button>
-        </template>
         <div class="message" id="lists-message" role="alert"></div>
 
         <div id="exercises-section" hidden>
@@ -65,14 +55,6 @@
             </thead>
             <tbody id="exercise-list"></tbody>
           </table>
-          <template id="exercise-row-template">
-            <tr>
-              <td class="exercise-number"></td>
-              <td><a class="exercise-link"></a></td>
-              <td class="exercise-status"></td>
-              <td class="exercise-action"><a class="btn exercise-open">Abrir</a></td>
-            </tr>
-          </template>
         </div>
 
         <div class="start-heading">
