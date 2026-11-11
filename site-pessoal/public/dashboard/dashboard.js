@@ -20,7 +20,7 @@ let lists = [];
 let charts = [];
 // The period shown on the page, as { start, end } days written "YYYY-MM-DD", both included.
 let period;
-// Read from the theme's CSS variables, and read again when the theme changes.
+// Read from the theme's CSS variables when the page starts.
 let chartColors;
 
 /**
@@ -33,8 +33,6 @@ function startDashboard() {
   Chart.defaults.plugins.legend.display = false;
   Chart.register(barValuesPlugin);
   readChartColors();
-  // layout.js connected its own click first, so the theme has already switched when the charts redraw.
-  document.getElementById("theme-button").addEventListener("click", redrawChartsForTheme);
   periodSelect.addEventListener("change", handlePeriodChange);
   document.getElementById("period-form").addEventListener("submit", handleCustomPeriodSubmit);
 
@@ -205,14 +203,6 @@ function describePeriod() {
     return formatDay(period.start);
   }
   return `${formatDay(period.start)} a ${formatDay(period.end)}`;
-}
-
-/**
- * Draws the charts again with the colors of the theme the user switched to.
- */
-function redrawChartsForTheme() {
-  readChartColors();
-  renderCharts();
 }
 
 /**
