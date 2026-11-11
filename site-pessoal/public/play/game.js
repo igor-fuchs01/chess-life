@@ -267,6 +267,7 @@ function renderBoard() {
 
 /**
  * Builds one square button, marked when it is selected, a move target, part of the last move or a king in check.
+ * After a wrong move, its squares are marked in red instead of the usual highlight.
  * @param {number} row
  * @param {number} column
  * @param {{row: number, column: number}|null} checkedKing
@@ -287,7 +288,7 @@ function createSquare(row, column, checkedKing) {
     square.classList.add("selected");
   }
   if (lastMove && (isSameSquare(lastMove.from, row, column) || isSameSquare(lastMove.to, row, column))) {
-    square.classList.add("last-move");
+    square.classList.add(result === "wrong" ? "wrong-move" : "last-move");
   }
   if (isSameSquare(checkedKing, row, column)) {
     square.classList.add("check");
@@ -320,6 +321,7 @@ function findCheckedKing() {
  * Shows how many moves are left to mate, that the opponent is replying, or how the attempt ended.
  */
 function renderStatus() {
+  statusElement.classList.toggle("wrong", result === "wrong");
   if (result === "solved") {
     statusElement.textContent = "Xeque-mate! Exercício resolvido.";
     return;

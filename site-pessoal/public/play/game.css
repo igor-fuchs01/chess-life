@@ -55,6 +55,9 @@
 .game-board .check {
   background: var(--square-check);
 }
+.game-board .wrong-move {
+  background: var(--square-wrong);
+}
 .game-board .target::after {
   content: "";
   position: absolute;
@@ -87,6 +90,9 @@
   margin-bottom: 12px;
   font-family: var(--font-heading);
   font-size: 22px;
+}
+.game-status.wrong {
+  color: var(--danger);
 }
 .game-panel h2 {
   margin: 16px 0 8px;
