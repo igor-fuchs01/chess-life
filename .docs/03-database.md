@@ -142,7 +142,7 @@ erDiagram
 | `fen` | `VARCHAR(100)` | No | `UNIQUE` | The position in FEN (Forsyth–Edwards Notation), such as `7k/7p/5N2/8/8/8/8/6RK w - - 0 1`. It holds the pieces, the side to move, the castling rights and the en passant square. The same position cannot be two exercises |
 | `solucao` | `VARCHAR(100)` | No | | The solution in SAN, the moves separated by spaces, such as `Bxf7+ Ke7 Nd5#`. The user's moves are the 1st, 3rd, 5th… and the opponent's replies the even ones. The last move ends in `#` |
 
-- The side to move is the side the user plays; it is read from the FEN, so it needs no column.
+- Every exercise has White to move (`w` in the FEN): the user always plays White, so the board is never turned.
 - How many moves the mate takes comes from the solution: a solution of `n` moves is a mate in `(n + 1) / 2`.
 - An exercise has exactly one solution, with at least one move. The API splits the column into the array of moves it sends to the page.
 - Each solution has one main line: the opponent's replies are fixed, and every user move in it is the only one that keeps the mate in the remaining moves.
@@ -244,13 +244,13 @@ The same files can be opened and run in MySQL Workbench.
 
 ### The exercises
 
-Five exercises per list, written in `02-seed.sql`. Most come from famous games or classic mating patterns; the ones marked "pretas" are played by Black.
+Five exercises per list, written in `02-seed.sql`. Most come from famous games or classic mating patterns. The ones marked "espelhado" were first played by Black and are stored mirrored (board upside down, colors swapped) so White plays them; "Sacrifício de dama em e8" is also mirrored left to right, since otherwise it would be the same position as "Sacrifício de dama na oitava".
 
 | List | Exercises |
 | --- | --- |
-| Mate em 1 | Mate do Louco (pretas), Mate do Pastor, Mate sufocado na Caro-Kann, Armadilha do Gambito Budapeste (pretas), Mate árabe |
-| Mate em 2 | Mate de Légal, Partida da Ópera, Sacrifício de dama na oitava, Sacrifício de dama na primeira (pretas), Mate de Damiano (pretas) |
-| Mate em 3 | Réti contra Tartakower, Partida Sempre-Viva, Partida Imortal, Mate de Anastasia (pretas), Mate sufocado |
+| Mate em 1 | Mate do Louco (espelhado), Mate do Pastor, Mate sufocado na Caro-Kann, Armadilha do Gambito Budapeste (espelhado), Mate árabe |
+| Mate em 2 | Mate de Légal, Partida da Ópera, Sacrifício de dama na oitava, Sacrifício de dama em e8 (espelhado), Mate de Damiano (espelhado) |
+| Mate em 3 | Réti contra Tartakower, Partida Sempre-Viva, Partida Imortal, Mate de Anastasia (espelhado), Mate sufocado |
 
 Every exercise was checked with the full chess rules the site had at the time (castling, en passant, check) and a mate-in-N search: the FEN loads, every solution move is legal, the line ends in checkmate, and each user move is the only one that forces the mate in the moves left. So the page and the API can compare the user's moves with the solution exactly.
 

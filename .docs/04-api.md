@@ -136,7 +136,7 @@ Used by `public/play/game.js` to set up the board.
 }
 ```
 
-- `fen` is the position, with the side the user plays to move.
+- `fen` is the position, always with White to move: the user plays White.
 - `solucao` is the whole line in SAN: the user's moves at even indexes (0, 2, …) and the opponent's replies at odd indexes. The page compares each move with it and plays the replies itself. Sending the solution keeps the page simple; the API checks it again when the attempt is saved.
 
 ## 5. Attempts — `/tentativas`
