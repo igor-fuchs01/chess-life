@@ -13,6 +13,7 @@ const perfisRouter = require("./src/routes/perfis");
 const listasExerciciosRouter = require("./src/routes/listasExercicios");
 const exerciciosRouter = require("./src/routes/exercicios");
 const tentativasRouter = require("./src/routes/tentativas");
+const dashboardRouter = require("./src/routes/dashboard");
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use("/perfis", perfisRouter);
 app.use("/listasExercicios", listasExerciciosRouter);
 app.use("/exercicios", exerciciosRouter);
 app.use("/tentativas", tentativasRouter);
+app.use("/dashboard", dashboardRouter);
 
 app.listen(process.env.APP_PORT, function () {
     console.log(`
