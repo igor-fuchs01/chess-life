@@ -33,8 +33,9 @@ let targets;
  */
 function startPage() {
   const address = new URLSearchParams(window.location.search);
-  listId = parsePositiveId(address.get("lista"));
-  const exerciseId = parsePositiveId(address.get("exercicio"));
+  listId = address.get("lista");
+  // A number, as the ids the API sends, so loadNextExercise can find it in the list.
+  const exerciseId = Number(address.get("exercicio"));
   if (!listId || !exerciseId) {
     window.location = START_PAGE;
     return;
@@ -204,13 +205,13 @@ function applyMove(from, to) {
 }
 
 /**
- * Stops the attempt, offers to try again or go to the next exercise, and saves the attempt.
+ * Stops the attempt, offers to try again, offers the next exercise when this one was solved, and saves the attempt.
  * @param {"solved"|"wrong"} attemptResult
  */
 function endAttempt(attemptResult) {
   result = attemptResult;
   retryButton.hidden = false;
-  nextLink.hidden = !nextLink.getAttribute("href");
+  nextLink.hidden = attemptResult !== "solved" || !nextLink.getAttribute("href");
   render();
   saveAttempt();
 }
@@ -350,10 +351,9 @@ function renderMoveList() {
 
   for (let index = 0; index < moves.length; index += 2) {
     const line = document.createElement("li");
-    line.textContent = `${index / 2 + 1}. ${moves[index]}`;
-    if (index + 1 < moves.length) {
-      line.textContent += ` ${moves[index + 1]}`;
-    }
+    // slice stops at the end of the array, so the last line holds only the user's move while the reply is missing.
+    const movePair = moves.slice(index, index + 2).join(" ");
+    line.textContent = `${index / 2 + 1}. ${movePair}`;
     moveListElement.appendChild(line);
   }
 }
@@ -382,14 +382,4 @@ function isTarget(row, column) {
  */
 function isSameSquare(square, row, column) {
   return square !== null && square.row === row && square.column === column;
-}
-
-/**
- * Reads an id from the address.
- * @param {string|null} value
- * @returns {number|null} The id, or null when it is not a positive whole number.
- */
-function parsePositiveId(value) {
-  const id = Number(value);
-  return Number.isInteger(id) && id > 0 ? id : null;
 }
