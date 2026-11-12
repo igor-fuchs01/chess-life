@@ -25,6 +25,14 @@
   --on-green-line: rgba(244, 239, 230, 0.25);
   --overlay: rgba(31, 26, 20, 0.65);
   --shadow: rgba(31, 26, 20, 0.5);
+  /* Board design. The --square-* variables keep their wood colors in both themes:
+     --square-light and --square-dark are the two square colors;
+     --square-highlight marks the last move and the selected square;
+     --square-check marks the king in check, --square-wrong the squares of a wrong move;
+     --square-target draws the dot on an empty target square and the ring on a capture.
+     The board also uses shared variables: --green for its frame, --dark-ink for the pieces,
+     --brass for the selected square's inner border and --shadow under the board
+     (--green, --brass and --shadow change in the dark theme). */
   --square-light: #e9dcc3;
   --square-dark: #a88a63;
   --square-highlight: #d4b56a;
