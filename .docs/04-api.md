@@ -1,8 +1,8 @@
 # Chess Life — API contracts
 
-The REST API of Chess Life, served by `site-pessoal/app.js` together with the site, on the same address. This document is the contract between the front-end and the back-end: a route changes here first, and every change keeps the front-end working.
+The REST API of Chess Life, served by `web-data-viz/app.js` together with the site, on the same address. This document is the contract between the front-end and the back-end: a route changes here first, and every change keeps the front-end working.
 
-The code follows `routes/<resource>.js` → `controllers/<resource>Controller.js` → `models/<resource>Model.js` (see section 4 of [`02-site-pessoal.md`](02-site-pessoal.md)). The tables are described in [`03-database.md`](03-database.md).
+The code follows `routes/<resource>.js` → `controllers/<resource>Controller.js` → `models/<resource>Model.js` (see section 4 of [`02-web-data-viz.md`](02-web-data-viz.md)). The tables are described in [`03-database.md`](03-database.md).
 
 ## 1. Conventions
 
@@ -59,7 +59,7 @@ Body (every field is required except `abertura_favorita`):
 
 ### `POST /usuarios/autenticar` — log in (RF03)
 
-Used by `public/auth/login.js`, which saves the reply in the user's session in the browser with `startSession` (see "Authentication" in section 3 of [`02-site-pessoal.md`](02-site-pessoal.md)). The other routes then take the user id from that session.
+Used by `public/auth/login.js`, which saves the reply in the user's session in the browser with `startSession` (see "Authentication" in section 3 of [`02-web-data-viz.md`](02-web-data-viz.md)). The other routes then take the user id from that session.
 
 Body:
 
@@ -288,7 +288,7 @@ The body is the same as in `GET /listasExercicios/listar/:idUsuario` (section 3)
 - The API connects to MySQL as `chess_life_user`, which may only run this document's statements (see "Application user" in section 7 of [`03-database.md`](03-database.md)). A route that needs another statement also needs its `GRANT`.
 - Every query uses `?` placeholders, so request values are never read as SQL.
 - Error replies and logs never include passwords or SQL.
-- **Authentication**: done by the user's session in the browser (`sessionStorage`), described with examples in "Authentication" in section 3 of [`02-site-pessoal.md`](02-site-pessoal.md). The API checks the e-mail and password only at `POST /usuarios/autenticar`; it sends no token or cookie, and the page keeps the reply.
+- **Authentication**: done by the user's session in the browser (`sessionStorage`), described with examples in "Authentication" in section 3 of [`02-web-data-viz.md`](02-web-data-viz.md). The API checks the e-mail and password only at `POST /usuarios/autenticar`; it sends no token or cookie, and the page keeps the reply.
 - **Known limit**: the routes do not check who is calling. The list, exercise, attempt, profile and dashboard routes trust the user id in the URL, which the page takes from the session, so anyone who sends another id to the API can read that user's progress, attempts and profile, or save attempts and change the profile in their name. The exercise route also sends the solution, so a user can read it before solving. This is accepted for the academic project.
 
 ## 9. Removed routes

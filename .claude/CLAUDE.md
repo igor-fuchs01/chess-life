@@ -11,11 +11,11 @@ Full specification (requirements, business rules, plan): `.docs/01-project.md`. 
 
 The database is modeled and implemented in **MySQL** (8.0 or later). The data model (entities, data dictionary, constraints and DDL) is in `.docs/03-database.md`. Read it before changing any table or query, and update it first when the model changes.
 
-The application lives in `site-pessoal/`, built on SPTech's legacy web-data-viz template. Run it with `npm install` and `npm start` inside that folder. Structure and front-end and back-end conventions are in `.docs/02-site-pessoal.md`.
+The application lives in `web-data-viz/`, built on SPTech's legacy web-data-viz template. Run it with `npm install` and `npm start` inside that folder. Structure and front-end and back-end conventions are in `.docs/02-web-data-viz.md`.
 
 API contracts (routes, bodies, replies, error messages): `.docs/04-api.md`. Update it first when a route changes.
 
-- Do not change or create APIs (`site-pessoal/src/`, `site-pessoal/app.js`) without asking the user first.
+- Do not change or create APIs (`web-data-viz/src/`, `web-data-viz/app.js`) without asking the user first.
 - Ask before changing or deleting existing front-end pages and scripts.
 - There are no automated tests or lint setup yet.
 
@@ -130,7 +130,7 @@ When modifying code:
 # Documentation Rules
 
 * Do not create documentation files outside `.docs/`.
-* Change the reference documents (`.docs/01-project.md`, `.docs/02-site-pessoal.md` and the other numbered ones) only when strictly necessary: when what they describe actually changes or has become wrong. Small fixes and visual tweaks are recorded only in the prompt log. See `.docs/README.md`, Conventions.
+* Change the reference documents (`.docs/01-project.md`, `.docs/02-web-data-viz.md` and the other numbered ones) only when strictly necessary: when what they describe actually changes or has become wrong. Small fixes and visual tweaks are recorded only in the prompt log. See `.docs/README.md`, Conventions.
 * Never forget to update the documentation, when necessary.
 * If no relevant documentation exists, create it.
 * Keep documentation synchronized with the current implementation.

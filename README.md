@@ -2,7 +2,7 @@
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:2f4a3a,100:1f3328&height=120&section=header" alt="" width="100%" />
 
-<img src="site-pessoal/public/assets/logo.svg" alt="Logo Chess Life" width="120" />
+<img src="web-data-viz/public/assets/logo.svg" alt="Logo Chess Life" width="120" />
 
 # Chess Life
 
@@ -39,12 +39,12 @@ O site tem **5 páginas**:
 
 Requer Node.js e MySQL 8.0 ou mais recente.
 
-1. Crie o banco rodando, em ordem, os scripts de `site-pessoal/src/database/`: `01-schema.sql`, `02-seed.sql` e `03-app-user.sql`.
-2. Em `site-pessoal/`, crie o `.env.dev` a partir do `.env.dev.example`, com `DB_DATABASE=chess_life`, `DB_USER=chess_life_user` e a senha desse usuário em `DB_PASSWORD`.
+1. Crie o banco rodando, em ordem, os scripts de `web-data-viz/src/database/`: `01-schema.sql`, `02-seed.sql` e `03-app-user.sql`.
+2. Em `web-data-viz/`, crie o `.env.dev` a partir do `.env.dev.example`, com `DB_DATABASE=chess_life`, `DB_USER=chess_life_user` e a senha desse usuário em `DB_PASSWORD`.
 3. Suba o servidor e abra `http://localhost:3333`:
 
    ```bash
-   cd site-pessoal
+   cd web-data-viz
    npm install
    npm start
    ```

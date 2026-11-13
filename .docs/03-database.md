@@ -18,7 +18,7 @@ The database stores only what the application reads and writes through the API:
 Out of the database:
 
 - **Gallery photos**: the image files stay in `public/assets/` and the captions in the gallery's HTML. The page is visual only (P06), so the photos need no table.
-- **Sessions**: authentication is the user's session in the browser's `sessionStorage` (see "Authentication" in section 3 of [`02-site-pessoal.md`](02-site-pessoal.md)), so sessions need no table.
+- **Sessions**: authentication is the user's session in the browser's `sessionStorage` (see "Authentication" in section 3 of [`02-web-data-viz.md`](02-web-data-viz.md)), so sessions need no table.
 
 ## 2. Entities and relationships
 
@@ -220,7 +220,7 @@ The legacy template's tables were built for the AquaTech sample project. `usuari
 
 ## 7. Physical model (MySQL scripts)
 
-The physical model is implemented by three scripts in `site-pessoal/src/database/`. Run them in order, as an administrator such as `root`:
+The physical model is implemented by three scripts in `web-data-viz/src/database/`. Run them in order, as an administrator such as `root`:
 
 | Script | What it does |
 | --- | --- |
@@ -229,9 +229,9 @@ The physical model is implemented by three scripts in `site-pessoal/src/database
 | `03-app-user.sql` | Drops and creates `chess_life_user`@`localhost`, the MySQL user the API connects with, and grants it only what the API needs |
 
 ```
-mysql -u <user> -p < site-pessoal/src/database/01-schema.sql
-mysql -u <user> -p < site-pessoal/src/database/02-seed.sql
-mysql -u <user> -p < site-pessoal/src/database/03-app-user.sql
+mysql -u <user> -p < web-data-viz/src/database/01-schema.sql
+mysql -u <user> -p < web-data-viz/src/database/02-seed.sql
+mysql -u <user> -p < web-data-viz/src/database/03-app-user.sql
 ```
 
 The same files can be opened and run in MySQL Workbench.

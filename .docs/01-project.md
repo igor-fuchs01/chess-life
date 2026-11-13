@@ -18,7 +18,7 @@ The PI challenge asks for a website with a sign-up form, on a theme that represe
 | The challenge asks for | In Chess Life |
 | --- | --- |
 | A theme that represents the student or something they like | Chess, and how it shaped the author's life (section 9) |
-| HTML, CSS and form validation in JavaScript | The pages in `site-pessoal/public/`; sign-up and login validate their fields in `auth/signup.js` and `auth/login.js` before calling the API |
+| HTML, CSS and form validation in JavaScript | The pages in `web-data-viz/public/`; sign-up and login validate their fields in `auth/signup.js` and `auth/login.js` before calling the API |
 | A Node.js API to register and/or query data in the database | The Express API: sign-up and login (`/usuarios`), the player profile (`/perfis`), the exercise lists, exercises and attempts (`/listasExercicios`, `/exercicios`, `/tentativas`), and the dashboard's data by period (`/dashboard`), described in [`04-api.md`](04-api.md) |
 | Focus on individual learning and on applying the semester's technical courses | Section 10 maps each course to where the project applies it |
 
@@ -178,7 +178,7 @@ The dashboard, titled "Desempenho no Xadrez", fetches the user's attempts and th
 
 Attempts are not typed in by hand: they reach the dashboard only by solving exercises on the site.
 
-The page uses the site's look: the paper background, white cards with a brass top edge for the indicators, Georgia numbers and titles, and result colors from `--win` (right) and `--loss` (wrong) (see "Themes" in [`02-site-pessoal.md`](02-site-pessoal.md)). On screens wider than 800px the indicators sit in a row on top, and the charts and the table sit in two rows below them, each with a wide and a narrow panel. The charts are 260px tall, the table scrolls inside its panel past that height, and the page scrolls when needed. On phones the panels stack.
+The page uses the site's look: the paper background, white cards with a brass top edge for the indicators, Georgia numbers and titles, and result colors from `--win` (right) and `--loss` (wrong) (see "Themes" in [`02-web-data-viz.md`](02-web-data-viz.md)). On screens wider than 800px the indicators sit in a row on top, and the charts and the table sit in two rows below them, each with a wide and a narrow panel. The charts are 260px tall, the table scrolls inside its panel past that height, and the page scrolls when needed. On phones the panels stack.
 
 ## 8. Development plan
 
@@ -281,7 +281,7 @@ saves the user in     <--200 { id, nome, email }---  replies with the user, or 4
 sessionStorage
 ```
 
-Saving an attempt follows the same path: `game.js` sends `POST /tentativas/cadastrar/:idUsuario`, `tentativaController.js` validates it and compares the moves with the solution read by `exercicioModel.js`, and `tentativaModel.js` inserts the attempt into `tentativa`. The contracts are in [`04-api.md`](04-api.md), and the authentication flow is in section 3 of [`02-site-pessoal.md`](02-site-pessoal.md).
+Saving an attempt follows the same path: `game.js` sends `POST /tentativas/cadastrar/:idUsuario`, `tentativaController.js` validates it and compares the moves with the solution read by `exercicioModel.js`, and `tentativaModel.js` inserts the attempt into `tentativa`. The contracts are in [`04-api.md`](04-api.md), and the authentication flow is in section 3 of [`02-web-data-viz.md`](02-web-data-viz.md).
 
 ## References
 

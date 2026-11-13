@@ -1,13 +1,13 @@
-# site-pessoal — Application
+# web-data-viz — Application
 
-`site-pessoal/` holds the Chess Life application. The specification it implements is in [`01-project.md`](01-project.md).
+`web-data-viz/` holds the Chess Life application. The specification it implements is in [`01-project.md`](01-project.md).
 
-The folder started as a copy of SPTech's **web-data-viz** template (`BandTec/web-data-viz`, built for the "AquaTech" sample project). Its back-end (`app.js` and `src/`) was rebuilt from the template's code for Chess Life (section 4). Its legacy front-end was removed and rebuilt for Chess Life.
+The folder started as a copy of SPTech's **web-data-viz** template (`BandTec/web-data-viz`, built for the "AquaTech" sample project), whose name it keeps. Its back-end (`app.js` and `src/`) was rebuilt from the template's code for Chess Life (section 4). Its legacy front-end was removed and rebuilt for Chess Life.
 
 ## 1. Running
 
 ```
-cd site-pessoal
+cd web-data-viz
 npm install
 npm start        # or: npm run dev (restarts on file changes, uses nodemon)
 ```
@@ -22,7 +22,7 @@ There are no automated tests or lint setup yet.
 ## 2. Structure
 
 ```
-site-pessoal/
+web-data-viz/
 ├── app.js                  Express server: static files from public/ and API routers
 ├── package.json            express, mysql2, dotenv, cors, nodemon
 ├── src/                    Back-end: routes → controllers → models, and the database scripts (section 4)

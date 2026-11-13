@@ -15,7 +15,7 @@
   --danger-bg: #f3dcd5;
   --success-bg: #dbe6dc;
   /* Exercise results in charts and tags: right (--win) and wrong (--loss) are opposite poles.
-     Checked for color-blind readers (see "Themes" in .docs/02-site-pessoal.md). */
+     Checked for color-blind readers (see "Themes" in .docs/02-web-data-viz.md). */
   --win: #2e7d4f;
   --loss: #c0492b;
   /* Same in both themes: text on green or photo surfaces, and pieces on the board's squares. */
