@@ -18,7 +18,9 @@
 </div>
 
 <div align="center">
+  <br> <br>
   <img src="assets/manifesto.svg" alt="Toda partida começa igual. Trinta e duas peças, sessenta e quatro casas, o mesmo silêncio antes do primeiro lance. O que muda é quem joga, e o que cada partida deixa em quem joga. O xadrez me ensinou a pensar antes de mexer, a perder sem abandonar o tabuleiro e a enxergar ângulos onde antes eu só via quadrados. Chess Life é o registro dessas partidas." width="100%" />
+  <br> <br>
 </div>
 
 ## ♟️ Sobre o projeto
