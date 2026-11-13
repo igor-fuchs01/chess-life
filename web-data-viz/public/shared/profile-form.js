@@ -3,68 +3,64 @@
 const PROFILE_MAX_RATING = 3500;
 // The first year MySQL's YEAR type accepts, the same limit as the API.
 const PROFILE_FIRST_START_YEAR = 1901;
-// The known openings, mocked here. The profile saves the chosen name as text.
+// The known openings, mocked here and kept in alphabetical order. The profile saves the chosen name as text.
 const OPENINGS = [
-  "Abertura do Peão do Rei",
-  "Abertura do Peão da Dama",
-  "Abertura Inglesa",
-  "Abertura Réti",
   "Abertura Bird",
-  "Abertura Larsen",
-  "Abertura Húngara",
-  "Abertura Italiana",
-  "Giuoco Piano",
-  "Gambito Evans",
-  "Defesa dos Dois Cavalos",
-  "Abertura Espanhola",
-  "Espanhola: Defesa Morphy",
-  "Espanhola: Defesa Berlinense",
-  "Abertura Escocesa",
+  "Abertura Central",
+  "Abertura do Bispo",
+  "Abertura do Peão da Dama",
+  "Abertura do Peão do Rei",
   "Abertura dos Quatro Cavalos",
+  "Abertura Escocesa",
+  "Abertura Espanhola",
+  "Abertura Húngara",
+  "Abertura Inglesa",
+  "Abertura Italiana",
+  "Abertura Larsen",
+  "Abertura Réti",
+  "Abertura Vienense",
+  "Defesa Alekhine",
+  "Defesa Benoni",
+  "Defesa Caro-Kann",
+  "Defesa dos Dois Cavalos",
+  "Defesa Escandinava",
+  "Defesa Eslava",
+  "Defesa Francesa",
+  "Defesa Grünfeld",
+  "Defesa Holandesa",
+  "Defesa Índia",
+  "Defesa Índia da Dama",
+  "Defesa Índia do Rei",
+  "Defesa Moderna",
+  "Defesa Nimzo-Índia",
   "Defesa Petrov",
   "Defesa Philidor",
-  "Gambito do Rei",
-  "Abertura Vienense",
-  "Abertura do Bispo",
-  "Abertura Central",
-  "Defesa Siciliana",
-  "Siciliana: Najdorf",
-  "Siciliana: Dragão",
-  "Siciliana: Dragão Acelerado",
-  "Siciliana: Fechada",
-  "Siciliana: Alapin",
-  "Siciliana: Gambito Smith-Morra",
-  "Defesa Francesa",
-  "Defesa Caro-Kann",
-  "Defesa Escandinava",
-  "Defesa Alekhine",
   "Defesa Pirc",
-  "Defesa Moderna",
+  "Defesa Siciliana",
+  "Espanhola: Defesa Berlinense",
+  "Espanhola: Defesa Morphy",
   "Gambito da Dama",
   "Gambito da Dama Aceito",
   "Gambito da Dama Recusado",
-  "Defesa Eslava",
-  "Sistema Londres",
-  "Defesa Índia",
-  "Defesa Índia do Rei",
-  "Defesa Grünfeld",
-  "Defesa Nimzo-Índia",
-  "Defesa Índia da Dama",
-  "Defesa Benoni",
-  "Defesa Holandesa"
+  "Gambito do Rei",
+  "Gambito Evans",
+  "Giuoco Piano",
+  "Siciliana: Alapin",
+  "Siciliana: Dragão",
+  "Siciliana: Dragão Acelerado",
+  "Siciliana: Fechada",
+  "Siciliana: Gambito Smith-Morra",
+  "Siciliana: Najdorf",
+  "Sistema Londres"
 ];
 
 /**
- * Adds the openings to a select, after the options it already has, in alphabetical order.
+ * Adds the openings to a select, after the options it already has.
  * @param {HTMLSelectElement} select
  */
 function fillOpeningOptions(select) {
-  const openingsByName = [...OPENINGS].sort((first, second) => first.localeCompare(second, "pt-BR"));
-  for (const opening of openingsByName) {
-    const option = document.createElement("option");
-    option.value = opening;
-    option.textContent = opening;
-    select.append(option);
+  for (const opening of OPENINGS) {
+    select.append(new Option(opening, opening));
   }
 }
 
