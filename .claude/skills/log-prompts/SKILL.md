@@ -25,6 +25,8 @@ Append to the end of `.docs/prompts/YYYY-MM-DD.md`:
 ```markdown
 ## N. Short task title
 
+**Model:** Claude Opus 5.5, medium effort
+
 **Prompt:**
 
 > the prompt text, exactly as the user wrote it
@@ -39,6 +41,7 @@ Append to the end of `.docs/prompts/YYYY-MM-DD.md`:
 Rules:
 
 - `N` is the sequential number of the entry within the day's file.
+- **Model** names the model that answered the prompt and its effort level (`low`, `medium`, `high`, `xhigh` or `max`), such as `Claude Opus 5.5, medium effort`. Take the model from the session and the effort from the level set for it (`/effort`, `/model`); if the effort is not known, ask the user. When the model or effort changed during a task, list each one, in order.
 - Write the entry in English, but copy the prompt verbatim in the language it was written in, without fixing or summarizing it. If it is very long (a pasted file, a log), keep the request and replace the pasted part with `[...pasted content omitted: description...]`.
 - If the user sends several messages about the same task, use a single entry and include each message as a separate quote, in order.
 - Under **Decisions**, record the choices made by you and the ones made by the user, always with the reason. Include discarded alternatives when the choice is not obvious. If no decision was made, write `- None.`

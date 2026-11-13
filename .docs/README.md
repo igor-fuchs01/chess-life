@@ -24,7 +24,7 @@ Both are written by the `log-prompts` skill (`.claude/skills/log-prompts/`) at t
 
 ### Prompt diary (*Diário de Prompts*)
 
-The PI challenge requires a prompt diary. `prompts/` is that diary: each entry records what was asked (the prompt, word for word), what the assistant did and changed, and the decisions made. `decisions.md` keeps the decisions that last beyond one task.
+The PI challenge requires a prompt diary. `prompts/` is that diary: each entry records the model and effort level that answered it, what was asked (the prompt, word for word), what the assistant did and changed, and the decisions made. `decisions.md` keeps the decisions that last beyond one task.
 
 | AI assistant | Used for |
 | --- | --- |
