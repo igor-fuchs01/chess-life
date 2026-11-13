@@ -53,7 +53,8 @@ Requer Node.js e MySQL 8.0 ou mais recente.
 
 | Documento | Link |
 |---|---|
-| Documentação | [Word](https://bandteccom-my.sharepoint.com/:w:/g/personal/igor_pereira_sptech_school/cQr0cFNxw2mgTZaOEsmQV-CXEgUBwkGRIq4UOkjpZTjPI2CyIA) |
+| Backlog | [Excel](https://bandteccom-my.sharepoint.com/:x:/g/personal/igor_pereira_sptech_school/cQoB32ROiFJiSq6LbogKJvl1EgUBBY31kn9WjtR-2xRbY0_Dww) |
+| Documentação | [Word](https://bandteccom-my.sharepoint.com/:w:/g/personal/igor_pereira_sptech_school/cQooCKEs-ip5SapBH_Jk1bDXEgUBJ2IY-cSlXTG-Yeqs-WTp9w) |
 | Gerenciador de Tarefas | [Trello](https://trello.com/b/uLpMNg6H/chess-life) |
 | Documentação Técnica | [.docs](.docs/README.md) |
 
