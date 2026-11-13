@@ -20,8 +20,7 @@ CREATE TABLE perfil (
     ano_inicio YEAR NULL,
     bio VARCHAR(280) NULL,
     abertura_favorita VARCHAR(50) NULL,
-    fk_usuario INT NOT NULL,
-    CONSTRAINT uq_perfil_usuario UNIQUE (fk_usuario),
+    fk_usuario INT NOT NULL UNIQUE,
     CONSTRAINT fk_perfil_usuario FOREIGN KEY (fk_usuario) REFERENCES usuario (id)
 );
 
