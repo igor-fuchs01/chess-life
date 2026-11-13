@@ -7,7 +7,16 @@ const MAX_BIO_LENGTH = 50;
 const MAX_OPENING_LENGTH = 50;
 
 /**
- * Replies with the user's profile: 200 with it, 204 when there is none, or 400 for an invalid user id.
+ * Reads the user's player profile (RF17).
+ *
+ * @route GET /perfis/buscar/:idUsuario
+ * @fromRoute {number} idUsuario - The user's id.
+ * @response 200 {object} The profile.
+ * @response 204 The user has no profile.
+ * @response 400 {string} The user id is not a positive whole number.
+ * @response 500 {string} Unexpected server or database error.
+ * @param {object} req
+ * @param {object} res
  */
 async function findProfile(req, res) {
     const userId = parseId(req.params.idUsuario);
@@ -30,8 +39,21 @@ async function findProfile(req, res) {
 }
 
 /**
- * Replaces every field of the user's profile. Replies 204, 400 with the validation error,
- * or 404 when the user has no profile.
+ * Replaces every field of the user's player profile (RF17).
+ *
+ * @route PUT /perfis/atualizar/:idUsuario
+ * @fromHeader {string} Content-Type - "application/json", so Express can read the body.
+ * @fromRoute {number} idUsuario - The user's id.
+ * @fromBody {number} rating - The player's rating, from 0 to 3500.
+ * @fromBody {number} ano_inicio - The year the user started playing, up to the current year.
+ * @fromBody {string} bio - A short text about the user, up to 50 characters.
+ * @fromBody {string} [abertura_favorita] - Optional: the favorite opening's name, up to 50 characters.
+ * @response 204 The profile was updated.
+ * @response 400 {string} The user id is invalid, or a field is missing or breaks a rule.
+ * @response 404 {string} The user has no profile.
+ * @response 500 {string} Unexpected server or database error.
+ * @param {object} req
+ * @param {object} res
  */
 async function updateProfile(req, res) {
     const userId = parseId(req.params.idUsuario);

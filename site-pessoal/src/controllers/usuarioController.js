@@ -13,9 +13,24 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const DUPLICATE_ENTRY_CODE = "ER_DUP_ENTRY";
 
 /**
- * Creates an account and its player profile (RF01, RF02, RF17). Replies 201 with { id }, 400 with the validation error,
- * or 409 when the e-mail is already registered. Error messages are plain text in Portuguese.
- * The profile fields are optional and follow the same rules as PUT /perfis/atualizar.
+ * Creates an account and its player profile in one transaction (RF01, RF02, RF17).
+ * The profile fields follow the same rules as PUT /perfis/atualizar.
+ *
+ * @route POST /usuarios/cadastrar
+ * @fromHeader {string} Content-Type - "application/json", so Express can read the body.
+ * @fromBody {string} nomeServer - The user's name, up to 80 characters.
+ * @fromBody {string} emailServer - The login e-mail, unique (RN01).
+ * @fromBody {string} senhaServer - The password, 8 to 100 characters and strong (RN02).
+ * @fromBody {number} rating - The player's rating, from 0 to 3500.
+ * @fromBody {number} ano_inicio - The year the user started playing, up to the current year.
+ * @fromBody {string} bio - A short text about the user, up to 50 characters.
+ * @fromBody {string} [abertura_favorita] - Optional: the favorite opening's name, up to 50 characters.
+ * @response 201 {{id: number}} The account and the profile were created.
+ * @response 400 {string} A field is missing or breaks a rule.
+ * @response 409 {string} The e-mail is already registered.
+ * @response 500 {string} Unexpected server or database error.
+ * @param {object} req
+ * @param {object} res
  */
 async function registerUser(req, res) {
     const name = String(req.body.nomeServer || "").trim();
@@ -42,8 +57,18 @@ async function registerUser(req, res) {
 }
 
 /**
- * Checks an e-mail and password (RF03). Replies 200 with { id, nome, email }, 400 when a field is missing,
- * or 403 when they do not match. The reply never tells which of the two was wrong.
+ * Checks an e-mail and password (RF03). The reply never tells which of the two was wrong.
+ *
+ * @route POST /usuarios/autenticar
+ * @fromHeader {string} Content-Type - "application/json", so Express can read the body.
+ * @fromBody {string} emailServer - The login e-mail.
+ * @fromBody {string} senhaServer - The password.
+ * @response 200 {{id: number, nome: string, email: string}} The user, to be kept in the browser session.
+ * @response 400 {string} The e-mail or the password is missing.
+ * @response 403 {string} The e-mail and the password do not match.
+ * @response 500 {string} Unexpected server or database error.
+ * @param {object} req
+ * @param {object} res
  */
 async function authenticateUser(req, res) {
     const email = String(req.body.emailServer || "").trim();

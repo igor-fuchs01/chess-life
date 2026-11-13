@@ -4,8 +4,18 @@ const dashboardModel = require("../models/dashboardModel");
 const DAY_FORMAT = /^\d{4}-\d{2}-\d{2}$/;
 
 /**
- * Replies with the user's attempts in the period of the query string: 200 with them, 204 when there are none,
- * or 400 for an invalid user id or period.
+ * Lists the user's attempts in a period, for the dashboard (RF09, RF10).
+ *
+ * @route GET /dashboard/tentativas/:idUsuario
+ * @fromRoute {number} idUsuario - The user's id.
+ * @fromQuery {string} data_inicio - The period's first day, YYYY-MM-DD.
+ * @fromQuery {string} data_fim - The period's last day, YYYY-MM-DD, included.
+ * @response 200 {object[]} The attempts in the period.
+ * @response 204 The user has no attempts in the period.
+ * @response 400 {string} The user id or the period is invalid.
+ * @response 500 {string} Unexpected server or database error.
+ * @param {object} req
+ * @param {object} res
  */
 async function listAttempts(req, res) {
     const userId = parseId(req.params.idUsuario);
@@ -35,8 +45,18 @@ async function listAttempts(req, res) {
 }
 
 /**
- * Replies with the exercise lists and what the user solved in the period of the query string:
- * 200 with them, 204 when there are none, or 400 for an invalid user id or period.
+ * Lists the exercise lists with how many exercises the user solved in a period, for the dashboard (RF09).
+ *
+ * @route GET /dashboard/listasExercicios/:idUsuario
+ * @fromRoute {number} idUsuario - The user's id.
+ * @fromQuery {string} data_inicio - The period's first day, YYYY-MM-DD.
+ * @fromQuery {string} data_fim - The period's last day, YYYY-MM-DD, included.
+ * @response 200 {object[]} The lists, in order.
+ * @response 204 There are no lists.
+ * @response 400 {string} The user id or the period is invalid.
+ * @response 500 {string} Unexpected server or database error.
+ * @param {object} req
+ * @param {object} res
  */
 async function listLists(req, res) {
     const userId = parseId(req.params.idUsuario);

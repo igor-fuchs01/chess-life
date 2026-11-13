@@ -1,8 +1,17 @@
 const exercicioModel = require("../models/exercicioModel");
 
 /**
- * Replies with a list's exercises and whether the user solved each one: 200 with them, 204 when the list has none,
- * or 400 for an invalid list or user id.
+ * Lists a list's exercises in order, with whether the user has solved each one (RF08).
+ *
+ * @route GET /exercicios/listar/:idLista/:idUsuario
+ * @fromRoute {number} idLista - The list's id.
+ * @fromRoute {number} idUsuario - The user's id.
+ * @response 200 {object[]} The exercises.
+ * @response 204 The list has no exercises.
+ * @response 400 {string} The list id or the user id is not a positive whole number.
+ * @response 500 {string} Unexpected server or database error.
+ * @param {object} req
+ * @param {object} res
  */
 async function listExercises(req, res) {
     const listId = parseId(req.params.idLista);
@@ -30,7 +39,16 @@ async function listExercises(req, res) {
 }
 
 /**
- * Replies 200 with an exercise and its solution, 400 for an invalid id, or 404 when it does not exist.
+ * Reads an exercise to solve, with its solution split into moves (RF08).
+ *
+ * @route GET /exercicios/buscar/:idExercicio
+ * @fromRoute {number} idExercicio - The exercise's id.
+ * @response 200 {object} The exercise and its solution.
+ * @response 400 {string} The exercise id is not a positive whole number.
+ * @response 404 {string} The exercise does not exist.
+ * @response 500 {string} Unexpected server or database error.
+ * @param {object} req
+ * @param {object} res
  */
 async function findExercise(req, res) {
     const exerciseId = parseId(req.params.idExercicio);

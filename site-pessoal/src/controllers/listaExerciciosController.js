@@ -1,8 +1,16 @@
 const listaExerciciosModel = require("../models/listaExerciciosModel");
 
 /**
- * Replies with the exercise lists and the user's progress: 200 with them, 204 when there are none,
- * or 400 for an invalid user id.
+ * Lists the exercise lists with how many exercises the user has solved in each (RF08, RF09).
+ *
+ * @route GET /listasExercicios/listar/:idUsuario
+ * @fromRoute {number} idUsuario - The user's id.
+ * @response 200 {object[]} The lists, in order.
+ * @response 204 There are no lists.
+ * @response 400 {string} The user id is not a positive whole number.
+ * @response 500 {string} Unexpected server or database error.
+ * @param {object} req
+ * @param {object} res
  */
 async function listLists(req, res) {
     const userId = parseId(req.params.idUsuario);
