@@ -165,7 +165,7 @@ src/
 │   ├── tentativaModel.js    Saves and lists the attempts
 │   └── dashboardModel.js    Reads the attempts and the lists' progress of a period
 └── database/
-    ├── config.js            Connection pool: query(sql, values) and transaction(runStatements)
+    ├── config.js            Connection pool: query(sql, values)
     ├── 01-schema.sql        Drops and creates the database and its tables
     ├── 02-seed.sql          Openings, lists, exercises and solutions
     └── 03-app-user.sql      MySQL user of the API, with the least privileges it needs
@@ -177,7 +177,7 @@ Conventions for new back-end code:
 - Routes pass the controller function directly (`router.post("/cadastrar", usuarioController.registerUser)`).
 - Every controller function that handles a route has a doc comment modeled on ASP.NET Core's attributes, as JSDoc tags since plain JavaScript has no attributes. After a one-line summary come `@route METHOD /path` (like `[HttpPost]`) and one tag per value it reads, named after the binding attributes: `@fromRoute` for `req.params`, `@fromQuery` for `req.query`, `@fromBody` for `req.body` and `@fromHeader` for a header, each with `{type} name - description`, and `[name]` when optional. Then one `@response STATUS {type} description` per reply (like `[ProducesResponseType]`), and `@param req` and `@param res`. Routes with a body list `@fromHeader {string} Content-Type`, which `express.json()` needs to fill `req.body`; no route reads any other header. The exact error messages stay in [`04-api.md`](04-api.md).
 - Controllers are `async` functions with their own `try`/`catch`, since Express 4 does not catch errors from `async` handlers. They validate on the server even when the page already validated (RF11), reply with the status codes of [`04-api.md`](04-api.md), and log only `error.message` with `console.error`.
-- Models only build and run SQL, always with `?` placeholders, through `database.query`. Statements that must succeed or fail together go through `database.transaction`.
+- Models only build and run SQL, always with `?` placeholders, through `database.query`.
 - Identifiers are in English. Table names, columns, URL paths and request fields stay in Portuguese, as the database and the existing contracts use them.
 - The database connection comes from the `DB_*` variables of the environment file. To use the Chess Life database, `DB_DATABASE` must be `chess_life`, the database created by `01-schema.sql`.
 

@@ -21,32 +21,6 @@ async function query(sql, values) {
     return result;
 }
 
-/**
- * Runs several statements as one transaction: either all of them are saved, or none is when one fails.
- * @param {function(function(string, Array): Promise<object>): Promise<*>} runStatements - Receives a query
- *   function, with the same signature as query(), that runs on the transaction's connection.
- * @returns {Promise<*>} What runStatements returns.
- */
-async function transaction(runStatements) {
-    const connection = await pool.getConnection();
-
-    try {
-        await connection.beginTransaction();
-        const result = await runStatements(async function (sql, values) {
-            const [statementResult] = await connection.query(sql, values);
-            return statementResult;
-        });
-        await connection.commit();
-        return result;
-    } catch (error) {
-        await connection.rollback();
-        throw error;
-    } finally {
-        connection.release();
-    }
-}
-
 module.exports = {
-    query,
-    transaction
+    query
 };
