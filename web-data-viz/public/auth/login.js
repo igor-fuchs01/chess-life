@@ -31,7 +31,7 @@ async function login(event) {
 
     const user = await response.json();
     startSession({ id: user.id, name: user.nome, email: user.email });
-    window.location = `${SITE_ROOT}dashboard/dashboard.html`;
+    window.location = `/play/play.html`;
   } catch {
     showMessage(loginMessage, "Não foi possível conectar ao servidor.", "error");
   }
