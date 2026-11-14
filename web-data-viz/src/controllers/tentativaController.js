@@ -107,7 +107,7 @@ function validateAttempt(body) {
         return "Informe os lances da tentativa.";
     }
     for (const move of body.lances) {
-        if (typeof move !== "string" || move.trim() === "") {
+        if (move === "") {
             return `Lance inválido: ${move}`;
         }
     }

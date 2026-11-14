@@ -1,10 +1,7 @@
 const perfilModel = require("../models/perfilModel");
 
 const MAX_RATING = 3500;
-const FIRST_START_YEAR = 1901; // The first year MySQL's YEAR type accepts.
 const MAX_BIO_LENGTH = 50;
-// The size of the column perfil.abertura_favorita.
-const MAX_OPENING_LENGTH = 50;
 
 /**
  * Reads the user's player profile (RF17).
@@ -95,18 +92,11 @@ function validateProfile(body) {
     if (!isWholeNumberBetween(body.rating, 0, MAX_RATING)) {
         return "Rating inválido.";
     }
-    if (!isWholeNumberBetween(body.ano_inicio, FIRST_START_YEAR, new Date().getFullYear())) {
-        return "Ano de início inválido.";
-    }
-    // A bio that is not text would make trim() throw outside the try, which Express 4 does not catch.
-    if (typeof body.bio !== "string" || body.bio.trim().length > MAX_BIO_LENGTH) {
+    if (body.bio.length > MAX_BIO_LENGTH) {
         return `A bio pode ter no máximo ${MAX_BIO_LENGTH} caracteres.`;
     }
     if (isEmpty(body.abertura_favorita)) {
         return null;
-    }
-    if (typeof body.abertura_favorita !== "string" || body.abertura_favorita.trim().length > MAX_OPENING_LENGTH) {
-        return "Abertura inválida.";
     }
     return null;
 }
@@ -120,17 +110,17 @@ function readProfile(body) {
     return {
         rating: body.rating,
         anoInicio: body.ano_inicio,
-        bio: body.bio.trim(),
-        aberturaFavorita: isEmpty(body.abertura_favorita) ? null : body.abertura_favorita.trim()
+        bio: body.bio,
+        aberturaFavorita: isEmpty(body.abertura_favorita) ? null : body.abertura_favorita
     };
 }
 
 /**
  * @param {*} value
- * @returns {boolean} True when the field was left empty: null, missing or blank text.
+ * @returns {boolean} True when the field was left empty: null, missing or empty text.
  */
 function isEmpty(value) {
-    return value === null || value === undefined || (typeof value === "string" && value.trim() === "");
+    return value === null || value === undefined || value === "";
 }
 
 /**

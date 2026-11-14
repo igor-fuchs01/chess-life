@@ -53,7 +53,7 @@ Body (every field is required except `abertura_favorita`):
 | Reply | Body |
 | --- | --- |
 | `201` | `{ "id": 1 }` |
-| `400` | `Preencha o nome, o e-mail e a senha.`, `O nome pode ter no máximo 80 caracteres.`, `Informe um e-mail válido.`, `A senha pode ter no máximo 100 caracteres.`, or one of the password strength errors: `A senha precisa ter no mínimo 8 caracteres.`, `A senha precisa ter pelo menos uma letra maiúscula.`, `A senha precisa ter pelo menos uma letra minúscula.`, `A senha precisa ter pelo menos um número.`, `A senha precisa ter pelo menos um caractere especial.`, or one of the profile errors: `Preencha o rating, o ano de início e a bio.`, `Rating inválido.`, `Ano de início inválido.`, `A bio pode ter no máximo 50 caracteres.`, `Abertura inválida.` (when it is not text or is longer than 50 characters) |
+| `400` | `Preencha o nome, o e-mail e a senha.`, `O nome pode ter no máximo 80 caracteres.`, `Informe um e-mail válido.`, `A senha pode ter no máximo 100 caracteres.`, or one of the password strength errors: `A senha precisa ter no mínimo 8 caracteres.`, `A senha precisa ter pelo menos uma letra maiúscula.`, `A senha precisa ter pelo menos uma letra minúscula.`, `A senha precisa ter pelo menos um número.`, `A senha precisa ter pelo menos um caractere especial.`, or one of the profile errors: `Preencha o rating, o ano de início e a bio.`, `Rating inválido.`, `Ano de início inválido.`, `A bio pode ter no máximo 50 caracteres.`, `Abertura inválida.` (when it is longer than 50 characters) |
 | `409` | `Este e-mail já está cadastrado.` |
 | `500` | `Não foi possível criar a conta.` |
 
@@ -223,13 +223,13 @@ Body:
 | --- | --- |
 | `rating` | Required. A whole number from 0 to 3500 |
 | `ano_inicio` | Required. A whole number from 1901 (the first year MySQL's `YEAR` accepts) to the current year |
-| `bio` | Required, not blank. Up to 50 characters, a limit of the API (the column holds 280); spaces at the ends are removed |
+| `bio` | Required. Up to 50 characters, a limit of the API (the column holds 280), saved as sent |
 | `abertura_favorita` | Optional (`null` or empty, for a user with no favorite opening). The opening's name, as text of up to 50 characters; the page sends one of the openings mocked in the front-end |
 
 | Reply | Body |
 | --- | --- |
 | `204` | No body: the profile was updated |
-| `400` | `Usuário inválido.`, `Preencha o rating, o ano de início e a bio.`, `Rating inválido.`, `Ano de início inválido.`, `A bio pode ter no máximo 50 caracteres.` or `Abertura inválida.` (when it is not text or is longer than 50 characters) |
+| `400` | `Usuário inválido.`, `Preencha o rating, o ano de início e a bio.`, `Rating inválido.`, `Ano de início inválido.`, `A bio pode ter no máximo 50 caracteres.` or `Abertura inválida.` (when it is longer than 50 characters) |
 | `404` | `Perfil não encontrado.`: the user has no profile to update |
 | `500` | `Não foi possível atualizar o perfil.` |
 

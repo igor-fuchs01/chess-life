@@ -28,8 +28,8 @@ const DUPLICATE_ENTRY_CODE = "ER_DUP_ENTRY";
  * @param {object} res
  */
 async function registerUser(req, res) {
-    const name = String(req.body.nomeServer || "").trim();
-    const email = String(req.body.emailServer || "").trim();
+    const name = String(req.body.nomeServer || "");
+    const email = String(req.body.emailServer || "");
     const password = String(req.body.senhaServer || "");
 
     const error = validateNewUser(name, email, password) || perfilController.validateProfile(req.body);
@@ -66,7 +66,7 @@ async function registerUser(req, res) {
  * @param {object} res
  */
 async function authenticateUser(req, res) {
-    const email = String(req.body.emailServer || "").trim();
+    const email = String(req.body.emailServer || "");
     const password = String(req.body.senhaServer || "");
 
     if (!email || !password) {
