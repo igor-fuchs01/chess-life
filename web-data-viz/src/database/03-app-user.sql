@@ -1,5 +1,5 @@
 DROP USER IF EXISTS 'chess_life_user'@'localhost';
-CREATE USER 'chess_life_user'@'localhost' IDENTIFIED BY 'Urubu100';
+CREATE USER 'chess_life_user'@'localhost' IDENTIFIED BY 'Urubu@100';
 
 GRANT SELECT, INSERT ON chess_life.usuario TO 'chess_life_user'@'localhost';
 GRANT SELECT, INSERT, UPDATE ON chess_life.perfil TO 'chess_life_user'@'localhost';
