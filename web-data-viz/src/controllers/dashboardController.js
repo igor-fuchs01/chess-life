@@ -1,8 +1,5 @@
 const dashboardModel = require("../models/dashboardModel");
 
-// A day as the page's date fields send it.
-const DAY_FORMAT = /^\d{4}-\d{2}-\d{2}$/;
-
 /**
  * Lists the user's attempts in a period, for the dashboard (RF09, RF10).
  *
@@ -86,7 +83,7 @@ async function listLists(req, res) {
 }
 
 /**
- * Checks the period of the query string: two real days, the first one not after the last.
+ * Checks the period of the query string: two dates, the first one not after the last.
  * @param {{start: *, end: *}} period - data_inicio and data_fim from the query string.
  * @returns {string|null} The error message, or null when the period is valid.
  */
@@ -94,28 +91,16 @@ function validatePeriod(period) {
     if (!period.start || !period.end) {
         return "Informe a data de início e a data de fim.";
     }
-    if (!isRealDay(period.start) || !isRealDay(period.end)) {
+
+    const start = Date.parse(period.start);
+    const end = Date.parse(period.end);
+    if (Number.isNaN(start) || Number.isNaN(end)) {
         return "Data inválida.";
     }
-    // Days written as "YYYY-MM-DD" compare as text in date order.
-    if (period.start > period.end) {
+    if (start > end) {
         return "A data de início não pode ser depois da data de fim.";
     }
     return null;
-}
-
-/**
- * Tells whether a value is a real day written as "YYYY-MM-DD".
- * @param {*} value
- * @returns {boolean}
- */
-function isRealDay(value) {
-    if (typeof value !== "string" || !DAY_FORMAT.test(value)) {
-        return false;
-    }
-    const date = new Date(value);
-    // An impossible day such as "2026-02-30" rolls over to March, so only a real day comes back unchanged.
-    return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
 
 /**

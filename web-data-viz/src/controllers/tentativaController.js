@@ -1,8 +1,6 @@
 const tentativaModel = require("../models/tentativaModel");
 const exercicioModel = require("../models/exercicioModel");
 
-// One move in standard algebraic notation: castling, or piece, origin, capture, square, promotion and check.
-const SAN_MOVE = /^(O-O(-O)?|[KQRBN]?[a-h]?[1-8]?x?[a-h][1-8](=[QRBN])?)[+#]?$/;
 const MISSING_REFERENCE_CODE = "ER_NO_REFERENCED_ROW_2";
 
 /**
@@ -92,8 +90,9 @@ async function listAttempts(req, res) {
 }
 
 /**
- * Checks the body of a new attempt: the list and exercise ids and the move format.
- * Move legality is not checked here: the exercise page only allows legal moves.
+ * Checks the body of a new attempt: the list and exercise ids and that every move is filled-in text.
+ * The move format and legality are not checked here: the exercise page only allows legal moves,
+ * and a move in any other form simply does not match the solution.
  * @param {object} body - The request body.
  * @returns {string|null} The error message, or null when the attempt is valid.
  */
@@ -108,7 +107,7 @@ function validateAttempt(body) {
         return "Informe os lances da tentativa.";
     }
     for (const move of body.lances) {
-        if (!SAN_MOVE.test(move)) {
+        if (typeof move !== "string" || move.trim() === "") {
             return `Lance inválido: ${move}`;
         }
     }

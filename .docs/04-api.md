@@ -46,7 +46,7 @@ Body (every field is required except `abertura_favorita`):
 | Field | Rule |
 | --- | --- |
 | `nomeServer` | Required, up to 80 characters |
-| `emailServer` | Required, a valid e-mail, up to 120 characters. Unique, ignoring upper and lower case (RN01) |
+| `emailServer` | Required, with an `@` and a `.`, up to 120 characters. Unique, ignoring upper and lower case (RN01) |
 | `senhaServer` | Required, 8 to 100 characters, with an uppercase letter (`A-Z`), a lowercase letter (`a-z`), a digit and a special character (anything other than `A-Z`, `a-z` and `0-9`) (RN02). Stored as plain text |
 | `rating`, `ano_inicio`, `bio`, `abertura_favorita` | The profile fields, with the rules of `PUT /perfis/atualizar/:idUsuario`: the favorite opening is optional, the others are required |
 
@@ -155,7 +155,7 @@ Body:
 | --- | --- |
 | `fk_lista` | The list the exercise was opened from: a positive whole number |
 | `fk_exercicio` | The exercise: a positive whole number, in that list |
-| `lances` | Every move of the attempt, the opponent's replies included, up to the last one played. At least one, each in standard algebraic notation (SAN), such as `Nf3`, `exd5`, `O-O`, `e8=Q+`. The server checks the format, not the legality: the page only allows the moves each piece can make |
+| `lances` | Every move of the attempt, the opponent's replies included, up to the last one played. At least one, each filled-in text in standard algebraic notation (SAN), such as `Nf3`, `exd5`, `O-O`, `e8=Q+`. The server checks neither the format nor the legality: the page only allows the moves each piece can make, and a move in another form just does not match the solution |
 
 The server reads the exercise's solution and saves `acertou = true` only when `lances` is exactly the whole solution (RN04). The client sends no date: the database sets `data_tentativa` (RN05).
 
@@ -241,10 +241,10 @@ Both routes require the period in the query string, `?data_inicio=2026-11-09&dat
 
 | Parameter | Rule |
 | --- | --- |
-| `data_inicio` | Required. The first day of the period, a real day written `YYYY-MM-DD` |
+| `data_inicio` | Required. The first day of the period, written `YYYY-MM-DD`, as the page's date fields send it |
 | `data_fim` | Required. The last day, written the same way, not before `data_inicio` |
 
-Both days are included: an attempt counts when its `data_tentativa` is from the start of `data_inicio` to the end of `data_fim`, compared in the database's time. A wrong period is a `400`: `Informe a data de início e a data de fim.` (one or both missing), `Data inválida.` (not a real `YYYY-MM-DD` day, such as `2026-02-30`) or `A data de início não pode ser depois da data de fim.`
+Both days are included: an attempt counts when its `data_tentativa` is from the start of `data_inicio` to the end of `data_fim`, compared in the database's time. A wrong period is a `400`: `Informe a data de início e a data de fim.` (one or both missing), `Data inválida.` (text that is not a date, such as `abc`) or `A data de início não pode ser depois da data de fim.`
 
 ### `GET /dashboard/tentativas/:idUsuario` — list the user's attempts in a period (RF09, RF10)
 

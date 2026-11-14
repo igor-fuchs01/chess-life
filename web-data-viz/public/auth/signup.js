@@ -1,4 +1,3 @@
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const REDIRECT_DELAY_MS = 1500;
 
 const signupForm = document.getElementById("signup-form");
@@ -54,7 +53,7 @@ function validateSignup(name, email, password, confirmation) {
   if (!name || !email || !password || !confirmation) {
     return "Preencha o nome, o e-mail, a senha e a confirmação.";
   }
-  if (!EMAIL_PATTERN.test(email)) {
+  if (!email.includes("@") || !email.includes(".")) {
     return "Informe um e-mail válido.";
   }
   const passwordError = validatePasswordStrength(password);

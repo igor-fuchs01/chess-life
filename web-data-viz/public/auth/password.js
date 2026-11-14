@@ -1,8 +1,4 @@
 const MIN_PASSWORD_LENGTH = 8;
-const UPPERCASE_PATTERN = /[A-Z]/;
-const LOWERCASE_PATTERN = /[a-z]/;
-const DIGIT_PATTERN = /[0-9]/;
-const SPECIAL_CHARACTER_PATTERN = /[^A-Za-z0-9]/;
 
 /**
  * Checks that a password is strong (RN02): at least 8 characters, with an uppercase letter,
@@ -14,16 +10,34 @@ function validatePasswordStrength(password) {
   if (password.length < MIN_PASSWORD_LENGTH) {
     return `A senha precisa ter no mínimo ${MIN_PASSWORD_LENGTH} caracteres.`;
   }
-  if (!UPPERCASE_PATTERN.test(password)) {
+
+  let hasUppercase = false;
+  let hasLowercase = false;
+  let hasDigit = false;
+  let hasSpecialCharacter = false;
+
+  for (const character of password) {
+    if (character >= "A" && character <= "Z") {
+      hasUppercase = true;
+    } else if (character >= "a" && character <= "z") {
+      hasLowercase = true;
+    } else if (character >= "0" && character <= "9") {
+      hasDigit = true;
+    } else {
+      hasSpecialCharacter = true;
+    }
+  }
+
+  if (!hasUppercase) {
     return "A senha precisa ter pelo menos uma letra maiúscula.";
   }
-  if (!LOWERCASE_PATTERN.test(password)) {
+  if (!hasLowercase) {
     return "A senha precisa ter pelo menos uma letra minúscula.";
   }
-  if (!DIGIT_PATTERN.test(password)) {
+  if (!hasDigit) {
     return "A senha precisa ter pelo menos um número.";
   }
-  if (!SPECIAL_CHARACTER_PATTERN.test(password)) {
+  if (!hasSpecialCharacter) {
     return "A senha precisa ter pelo menos um caractere especial.";
   }
   return null;
