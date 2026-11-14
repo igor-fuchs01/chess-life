@@ -1,14 +1,10 @@
 USE chess_life;
 
--- The three lists, one per level.
 INSERT INTO lista (id, nome, descricao, ordem) VALUES
     (1, 'Mate em 1', 'Um lance para dar xeque-mate.', 1),
     (2, 'Mate em 2', 'Dois lances seus, com uma resposta do adversário no meio.', 2),
     (3, 'Mate em 3', 'Três lances seus para encurralar o rei.', 3);
 
--- The positions and their solutions in SAN. White is always to move: the user plays White.
--- A position lists each piece with its square: uppercase is White, lowercase is Black, P/p is a pawn.
--- The patterns first played by Black are mirrored, with the board upside down and the colors swapped.
 INSERT INTO exercicio (id, titulo, posicao, solucao) VALUES
     (1, 'Mate do Louco', 'Ke1 Qd1 Ra1 Rh1 Bc1 Bf1 Nb1 Ng1 Pa2 Pb2 Pc2 Pd2 Pf2 Pg2 Ph2 Pe4 ke8 qd8 ra8 rh8 bc8 bf8 nb8 ng8 pg5 pf6 pa7 pb7 pc7 pd7 pe7 ph7', 'Qh5#'),
     (2, 'Mate do Pastor', 'Ke1 Qh5 Ra1 Rh1 Bc1 Bc4 Nb1 Ng1 Pa2 Pb2 Pc2 Pd2 Pf2 Pg2 Ph2 Pe4 ke8 qd8 ra8 rh8 bc8 bf8 nc6 nf6 pe5 pa7 pb7 pc7 pd7 pf7 pg7 ph7', 'Qxf7#'),
@@ -26,7 +22,6 @@ INSERT INTO exercicio (id, titulo, posicao, solucao) VALUES
     (14, 'Mate de Anastasia', 'Kg1 Qh5 Re3 Nd5 Pa2 Pb2 Pc2 Pf2 Pg2 Ph2 kg8 qb8 ra8 rf8 pa7 pb7 pc7 pf7 pg7 ph7', 'Ne7+ Kh8 Qxh7+ Kxh7 Rh3#'),
     (15, 'Mate sufocado', 'Kg1 Qe6 Nf7 Pa2 Pb2 Pf2 Pg2 Ph2 kg8 qa5 rc8 rf8 pa6 pb7 pg7 ph7', 'Nh6+ Kh8 Qg8+ Rxg8 Nf7#');
 
--- Each exercise in its list, at its place.
 INSERT INTO lista_exercicio (fk_lista, fk_exercicio, ordem) VALUES
     (1, 1, 1), (1, 2, 2), (1, 3, 3), (1, 4, 4), (1, 5, 5),
     (2, 6, 1), (2, 7, 2), (2, 8, 3), (2, 9, 4), (2, 10, 5),

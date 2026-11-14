@@ -1,9 +1,5 @@
-// Player profile fields, shared by the sign-up form and the profile dialog of the game's start screen.
-// Both forms name their fields rating, startYear, opening and bio.
 const PROFILE_MAX_RATING = 3500;
-// The first year MySQL's YEAR type accepts, the same limit as the API.
 const PROFILE_FIRST_START_YEAR = 1901;
-// The known openings, mocked here and kept in alphabetical order. The profile saves the chosen name as text.
 const OPENINGS = [
   "Abertura Bird",
   "Abertura Central",
