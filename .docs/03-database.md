@@ -59,18 +59,18 @@ erDiagram
 
     usuario {
         INT id PK
-        VARCHAR nome
         VARCHAR email UK
         VARCHAR senha
-        DATETIME data_cadastro
     }
     perfil {
         INT id PK
         INT fk_usuario FK, UK
+        VARCHAR nome
         INT rating
         YEAR ano_inicio
         VARCHAR bio
         VARCHAR abertura_favorita
+        DATETIME data_cadastro
     }
     lista {
         INT id PK
@@ -106,23 +106,25 @@ erDiagram
 | Column | Type | Null | Key / default | Description |
 | --- | --- | --- | --- | --- |
 | `id` | `INT` | No | PK, `AUTO_INCREMENT` | User identifier |
-| `nome` | `VARCHAR(80)` | No | | Name shown on the site |
 | `email` | `VARCHAR(120)` | No | `UNIQUE` | Login e-mail; one account per e-mail (RN01) |
 | `senha` | `VARCHAR(100)` | No | | Password in plain text, without hashing, by the author's choice. Up to 100 characters, checked by the API |
-| `data_cadastro` | `DATETIME` | No | `CURRENT_TIMESTAMP` | When the account was created |
+
+- The table holds only the login data. The name and the sign-up date are in `perfil`.
 
 ### `perfil`
 
 | Column | Type | Null | Key / default | Description |
 | --- | --- | --- | --- | --- |
 | `id` | `INT` | No | PK, `AUTO_INCREMENT` | Profile identifier |
+| `nome` | `VARCHAR(80)` | No | | Name shown on the site |
 | `rating` | `INT` | Yes | | The user's chess rating, such as 1500 |
 | `ano_inicio` | `YEAR` | Yes | | The year the user started playing chess |
 | `bio` | `VARCHAR(280)` | Yes | | Short text about the user. The API accepts up to 50 characters |
 | `abertura_favorita` | `VARCHAR(50)` | Yes | | The name of the opening the user names as their favorite, such as `Defesa Siciliana`, chosen from the openings mocked in the front-end. `NULL` when there is none. The API accepts text up to 50 characters |
+| `data_cadastro` | `DATETIME` | No | `CURRENT_TIMESTAMP` | When the account was created, which is when its profile is created |
 | `fk_usuario` | `INT` | No | FK → `usuario.id`, `UNIQUE` | The profile's owner. Being unique, it allows at most one profile per user |
 
-- The sign-up creates the profile together with the account, in one transaction, so every user has a row in `perfil`. The API requires rating, starting year and bio at sign-up and on update, and the favorite opening is optional. The columns stay nullable as they were; the API is what makes them required.
+- The sign-up creates the account and then its profile, one statement after the other, so every user has a row in `perfil` unless the second insert fails. The API requires rating, starting year and bio at sign-up and on update, and the favorite opening is optional. The columns stay nullable as they were; the API is what makes them required.
 
 ### `lista`
 
@@ -217,6 +219,13 @@ The legacy template's tables were built for the AquaTech sample project. `usuari
 | `solucao` (table) | Removed; the solution is the column `exercicio.solucao` | An exercise has exactly one solution, so one column is enough |
 | `abertura` | Removed; the openings are mocked in the front-end (`public/shared/profile-form.js`) | Only the profile's favorite opening uses them, and no rule reads them from the database. The profile keeps the name as text (`perfil.abertura_favorita`) |
 | — | `lista`, `exercicio`, `lista_exercicio`, new | The three levels and their exercises, in an N:N relationship |
+
+### Login data apart from the profile (2026-11-14)
+
+| Before | Now | Reason |
+| --- | --- | --- |
+| `usuario.nome` | `perfil.nome` | `usuario` keeps only the login data (`email`, `senha`); what describes the person is in `perfil` |
+| `usuario.data_cadastro` | `perfil.data_cadastro` | Same reason. The profile is created with the account, so the date is the same |
 
 ## 7. Physical model (MySQL scripts)
 
@@ -315,8 +324,8 @@ ORDER BY t.data_tentativa DESC, t.id DESC;
 
 The routes are in [`04-api.md`](04-api.md).
 
-- **Connection**: `src/database/config.js` keeps one connection pool, with `query(sql, values)` for single statements and `transaction(runStatements)` for statements that must succeed or fail together.
-- **`usuario` and `perfil`**: sign-up stores the password as plain text and creates the profile in the same transaction (`usuarioModel.createUser`). A duplicate e-mail fails on `uq_usuario_email` (`ER_DUP_ENTRY`) and becomes a `409`. A favorite opening that is not text or is longer than 50 characters is refused by `perfilController.validateProfile` with a `400` before any query runs. `perfilModel.findProfile` reads the profile's fields, and `updateProfile` replaces every field.
+- **Connection**: `src/database/config.js` keeps one connection pool, with `query(sql, values)` for every statement.
+- **`usuario` and `perfil`**: sign-up stores the e-mail and the plain-text password in `usuario` and then creates the profile, with the name, in a second statement (`usuarioModel.createUser`). There is no transaction: if the profile insert fails, the account stays without a profile. Login (`usuarioModel.findUserByEmail`) joins `perfil` to reply with the name. A duplicate e-mail fails on `uq_usuario_email` (`ER_DUP_ENTRY`) and becomes a `409`. A favorite opening that is not text or is longer than 50 characters is refused by `perfilController.validateProfile` with a `400` before any query runs. `perfilModel.findProfile` reads the profile's fields, and `updateProfile` replaces every field.
 - **Openings**: no table and no model. The list is in `public/shared/profile-form.js`, and the API only checks the id.
 - **`lista`**: `listaExerciciosModel.listLists` runs the progress query above.
 - **`exercicio` and `lista_exercicio`**: `exercicioModel.listExercises` reads a list's exercises in order, with whether the user has solved each one. `findExercise` reads the exercise, and `findSolution` reads its `solucao` column and splits it into the array of moves.

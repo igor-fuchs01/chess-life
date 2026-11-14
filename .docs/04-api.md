@@ -27,7 +27,7 @@ The code follows `routes/<resource>.js` → `controllers/<resource>Controller.js
 
 ### `POST /usuarios/cadastrar` — create an account and its profile (RF01, RF02, RF17)
 
-Used by `public/auth/signup.js`. It creates the user and their player profile (`perfil`) in one transaction: if either fails, neither is saved, so every account made here has a profile.
+Used by `public/auth/signup.js`. It creates the user and their player profile (`perfil`) one after the other, with no transaction: a duplicate e-mail fails before the profile is created, but if the profile insert fails the account is kept without a profile, and that user cannot log in, since login reads the name from `perfil`.
 
 Body (every field is required except `abertura_favorita`):
 

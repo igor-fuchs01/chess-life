@@ -153,8 +153,8 @@ The database is modeled in MySQL. The full model (entity-relationship diagram, d
 
 | Table | Columns | Notes |
 | --- | --- | --- |
-| `usuario` | `id` (PK), `nome`, `email` (unique), `senha`, `data_cadastro` | Access data |
-| `perfil` | `id` (PK), `fk_usuario` (FK → `usuario.id`, unique), `rating`, `ano_inicio`, `bio`, `abertura_favorita` | Chess details of a user: 1:1 with `usuario`, non-identifying relationship. The favorite opening is the name of one of the openings mocked in the front-end, stored as text, with no table |
+| `usuario` | `id` (PK), `email` (unique), `senha` | Access data only |
+| `perfil` | `id` (PK), `fk_usuario` (FK → `usuario.id`, unique), `nome`, `rating`, `ano_inicio`, `bio`, `abertura_favorita`, `data_cadastro` | Name, sign-up date and chess details of a user: 1:1 with `usuario`, non-identifying relationship. The favorite opening is the name of one of the openings mocked in the front-end, stored as text, with no table |
 | `lista` | `id` (PK), `nome` (unique), `descricao`, `ordem` (unique) | An exercise list: "Mate em 1", "Mate em 2" or "Mate em 3" |
 | `exercicio` | `id` (PK), `titulo`, `posicao` (unique), `solucao` | A position to solve, written as each piece with its square (`Kh1 Rg1 Nf6 kh8 ph7`), always with White to move: the user plays White. `solucao` is its one solution, the moves in SAN separated by spaces |
 | `lista_exercicio` | `fk_lista` (PK, FK → `lista.id`), `fk_exercicio` (PK, FK → `exercicio.id`), `ordem` | N:N between lists and exercises, with each exercise's place in the list |
@@ -276,7 +276,7 @@ The flow, with login as an example:
 
 ```
 login.html / login.js          app.js → routes/usuarios.js → usuarioController.js → usuarioModel.js          MySQL (VM)
-validates the fields  --POST /usuarios/autenticar-->  checks the fields and compares the password  --SELECT-->  usuario
+validates the fields  --POST /usuarios/autenticar-->  checks the fields and compares the password  --SELECT-->  usuario + perfil
 saves the user in     <--200 { id, nome, email }---  replies with the user, or 403                <--row----
 sessionStorage
 ```
