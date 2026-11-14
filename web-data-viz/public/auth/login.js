@@ -8,7 +8,7 @@ const loginMessage = document.getElementById("login-message");
 async function login(event) {
   event.preventDefault();
 
-  const email = loginForm.email.value.trim();
+  const email = loginForm.email.value;
   const password = loginForm.password.value;
 
   if (!email || !password) {

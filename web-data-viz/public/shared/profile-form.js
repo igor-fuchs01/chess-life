@@ -66,7 +66,7 @@ function fillOpeningOptions(select) {
  * @returns {{rating: number|null, ano_inicio: number|null, bio: string|null, abertura_favorita: string|null}}
  */
 function readProfileFields(form) {
-  const bio = form.bio.value.trim();
+  const bio = form.bio.value;
 
   return {
     rating: readNumberField(form.rating.value),

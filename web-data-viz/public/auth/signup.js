@@ -10,8 +10,8 @@ const signupMessage = document.getElementById("signup-message");
 async function createAccount(event) {
   event.preventDefault();
 
-  const name = signupForm.name.value.trim();
-  const email = signupForm.email.value.trim();
+  const name = signupForm.name.value;
+  const email = signupForm.email.value;
   const password = signupForm.password.value;
   const confirmation = signupForm.confirmation.value;
 
