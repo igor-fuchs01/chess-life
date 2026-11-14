@@ -1,6 +1,4 @@
-// "producao" reads .env (remote database); "desenvolvimento" reads .env.dev (local database).
-const ENVIRONMENT = "desenvolvimento";
-const ENVIRONMENT_FILE = ENVIRONMENT === "producao" ? ".env" : ".env.dev";
+const ENVIRONMENT_FILE = process.env.NODE_ENV === 'dev' ? '.env.dev' : '.env';
 
 require("dotenv").config({ path: ENVIRONMENT_FILE });
 
