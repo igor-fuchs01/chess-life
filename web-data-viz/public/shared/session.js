@@ -1,7 +1,4 @@
-// Address of the public/ folder, taken from this script's own address so links work both
-// through the server and when a page is opened straight from disk.
-const SITE_ROOT = document.currentScript.src.replace(/shared\/session\.js.*$/, "");
-const LOGIN_PAGE = `${SITE_ROOT}auth/login.html`;
+const LOGIN_PAGE = `/auth/login.html`;
 
 /**
  * Returns the logged-in user saved in this browser tab.

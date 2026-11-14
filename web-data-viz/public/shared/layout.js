@@ -15,7 +15,7 @@ function renderSidebar() {
   for (const link of getNavigationLinks(user)) {
     const isActive = isCurrentPage(link.path) || (link.relatedPath && isCurrentPage(link.relatedPath));
     const activeClass = isActive ? " active" : "";
-    let address = SITE_ROOT + link.path;
+    let address = '/' + link.path;
 
     navigation += `
       <a href="${address}" class="sidebar-item${activeClass}" title="${link.label}">
@@ -35,16 +35,16 @@ function renderSidebar() {
   } else {
     const activeClass = isCurrentPage(LOGIN_PATH) ? " active" : "";
     bottomButtons += `
-      <a href="${SITE_ROOT}${LOGIN_PATH}" class="sidebar-item${activeClass}" title="Entrar">
-        <img class="sidebar-icon door" src="${SITE_ROOT}assets/porta.svg" alt=""><span class="sidebar-label">Entrar</span>
+      <a href="/${LOGIN_PATH}" class="sidebar-item${activeClass}" title="Entrar">
+        <img class="sidebar-icon door" src="/assets/porta.svg" alt=""><span class="sidebar-label">Entrar</span>
       </a>`;
   }
 
   const sidebar = document.getElementById("site-sidebar");
   sidebar.className = "sidebar";
   sidebar.innerHTML = `
-    <a href="${SITE_ROOT}index.html" class="sidebar-brand">
-      <img src="${SITE_ROOT}assets/logo.svg" alt=""><span class="sidebar-label">Chess <span>Life</span></span>
+    <a href="/index.html" class="sidebar-brand">
+      <img src="/assets/logo.svg" alt=""><span class="sidebar-label">Chess <span>Life</span></span>
     </a>
     <nav class="sidebar-nav" aria-label="Menu principal">${navigation}</nav>
     <div class="sidebar-bottom">${bottomButtons}</div>`;
