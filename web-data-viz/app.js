@@ -1,5 +1,5 @@
 const ENVIRONMENT_FILE = process.env.NODE_ENV === 'dev' ? '.env.dev' : '.env';
-
+console.log(ENVIRONMENT_FILE)
 require("dotenv").config({ path: ENVIRONMENT_FILE });
 
 const express = require("express");
