@@ -19,10 +19,8 @@ const nextLink = document.getElementById("next-link");
 let listId;
 let exercise;
 let board;
-// The moves played so far in SAN, the opponent's replies included. The user's moves are at even indexes.
 let moves;
 let lastMove;
-// null while the attempt goes on, then "solved" or "wrong".
 let result;
 let selectedSquare;
 let targets;
@@ -34,8 +32,8 @@ let targets;
 function startPage() {
   const address = new URLSearchParams(window.location.search);
   listId = address.get("lista");
-  // A number, as the ids the API sends, so loadNextExercise can find it in the list.
   const exerciseId = Number(address.get("exercicio"));
+
   if (!listId || !exerciseId) {
     window.location = START_PAGE;
     return;
@@ -337,7 +335,6 @@ function renderStatus() {
     return;
   }
 
-  // The solution alternates the user's moves and the replies, so the user's moves left are half of the rest, rounded up.
   const movesLeft = Math.ceil((exercise.solucao.length - moves.length) / 2);
   statusElement.textContent = `Brancas jogam e dão mate em ${movesLeft}.`;
 }
