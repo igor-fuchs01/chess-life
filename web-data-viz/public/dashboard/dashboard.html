@@ -38,14 +38,20 @@
         <div class="panels">
           <div class="stats">
             <div class="stat">
-              <p class="stat-label">Acertos no período</p>
+              <div class="stat-head">
+                <p class="stat-label">Acertos no período</p>
+                <span class="stat-dates" id="solved-in-period-dates"></span>
+              </div>
               <b id="solved-in-period">0</b>
-              <span class="change" id="solved-in-period-detail"></span>
+              <span class="change" id="solved-in-period-progress"></span>
             </div>
             <div class="stat">
-              <p class="stat-label">Taxa de acerto</p>
+              <div class="stat-head">
+                <p class="stat-label">Taxa de acerto</p>
+                <span class="stat-dates" id="hit-rate-dates"></span>
+              </div>
               <b id="hit-rate">0%</b>
-              <span class="change" id="hit-rate-detail"></span>
+              <span class="change" id="hit-rate-progress"></span>
             </div>
             <div class="stat">
               <p class="stat-label">Exercícios resolvidos</p>

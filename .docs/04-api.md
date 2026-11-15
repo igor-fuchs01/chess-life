@@ -246,22 +246,26 @@ Both routes require the period in the query string, `?data_inicio=2026-11-09&dat
 
 Both days are included: an attempt counts when its `data_tentativa` is from the start of `data_inicio` to the end of `data_fim`, compared in the database's time. A wrong period is a `400`: `Informe a data de início e a data de fim.` (one or both missing), `Data inválida.` (text that is not a date, such as `abc`) or `A data de início não pode ser depois da data de fim.`
 
-### `GET /dashboard/tentativas/:idUsuario` — list the user's attempts in a period (RF09, RF10)
+### `GET /dashboard/tentativas/:idUsuario` — list the user's attempts in a period, with the previous period's totals (RF09, RF10)
 
 | Reply | Body |
 | --- | --- |
-| `200` | The attempts of the period, newest first |
-| `204` | No body: the user has no attempts in the period |
+| `200` | The attempts of the period, newest first, and the totals of the previous period. Also sent when there are no attempts, since the previous period may have some |
 | `400` | `Usuário inválido.` or a period error |
 | `500` | `Não foi possível listar as tentativas.` |
 
-The body is the same as in `GET /tentativas/listar/:idUsuario` (section 5):
-
 ```json
-[
-  { "id": 1, "acertou": true, "data_tentativa": "2026-11-09T19:15:25.000Z", "lista": "Mate em 2", "exercicio": "Mate de Légal" }
-]
+{
+  "tentativas": [
+    { "id": 1, "acertou": true, "data_tentativa": "2026-11-09T19:15:25.000Z", "lista": "Mate em 2", "exercicio": "Mate de Légal" }
+  ],
+  "periodo_anterior": { "total": 4, "acertos": 2 }
+}
 ```
+
+- `tentativas` has the same items as `GET /tentativas/listar/:idUsuario` (section 5), and is `[]` when the period has none.
+- `periodo_anterior` counts the attempts (`total`) and the right ones (`acertos`) of the 7 days before `data_inicio`, whatever the period's length. For a week from Monday to Sunday, it is the previous week. The page compares it with the chosen period to show the progress in the indicators.
+- Until 2026-11-15 the body was only the attempts array, with a `204` when it was empty. Only the dashboard used this route.
 
 ### `GET /dashboard/listasExercicios/:idUsuario` — list the exercise lists with what the user solved in a period (RF09)
 

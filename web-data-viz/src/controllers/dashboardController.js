@@ -1,14 +1,13 @@
 const dashboardModel = require("../models/dashboardModel");
 
 /**
- * Lists the user's attempts in a period, for the dashboard (RF09, RF10).
+ * Lists the user's attempts in a period, with the totals of the previous period, for the dashboard (RF09, RF10).
  *
  * @route GET /dashboard/tentativas/:idUsuario
  * @fromRoute {number} idUsuario - The user's id.
  * @fromQuery {string} data_inicio - The period's first day, YYYY-MM-DD.
  * @fromQuery {string} data_fim - The period's last day, YYYY-MM-DD, included.
- * @response 200 {object[]} The attempts in the period.
- * @response 204 The user has no attempts in the period.
+ * @response 200 {object} { tentativas, periodo_anterior: { total, acertos } }, also when there are no attempts.
  * @response 400 {string} The user id or the period is invalid.
  * @response 500 {string} Unexpected server or database error.
  * @param {object} req
@@ -30,11 +29,8 @@ async function listAttempts(req, res) {
 
     try {
         const attempts = await dashboardModel.listAttempts(userId, period);
-        if (attempts.length === 0) {
-            res.status(204).send();
-            return;
-        }
-        res.status(200).json(attempts);
+        const previousPeriod = await dashboardModel.countPreviousAttempts(userId, period.start);
+        res.status(200).json({ tentativas: attempts, periodo_anterior: previousPeriod });
     } catch (error) {
         console.error("Error listing the dashboard attempts:", error.message);
         res.status(500).send("Não foi possível listar as tentativas.");

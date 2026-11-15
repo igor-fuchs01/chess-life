@@ -25,6 +25,25 @@ async function listAttempts(userId, period) {
 }
 
 /**
+ * Counts a user's attempts, and the right ones, in the 7 days before a period starts.
+ * For a week from Monday to Sunday, that is the previous week.
+ * @param {number} userId
+ * @param {string} start - The first day of the chosen period, written "YYYY-MM-DD".
+ * @returns {Promise<{total: number, acertos: number}>}
+ */
+async function countPreviousAttempts(userId, start) {
+    const sql = `
+        SELECT COUNT(*) AS total, COUNT(CASE WHEN acertou THEN 1 END) AS acertos
+        FROM tentativa
+        WHERE fk_usuario = ?
+            AND DATE(data_tentativa) >= ? - INTERVAL 7 DAY
+            AND DATE(data_tentativa) < ?;
+    `;
+    const rows = await database.query(sql, [userId, start, start]);
+    return rows[0];
+}
+
+/**
  * Lists the exercise lists in their order, with how many exercises each has and how many of them the user
  * solved at least once in that list during a period.
  * @param {number} userId
@@ -50,5 +69,6 @@ function listLists(userId, period) {
 
 module.exports = {
     listAttempts,
+    countPreviousAttempts,
     listLists
 };

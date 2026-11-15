@@ -62,10 +62,12 @@ async function loadDashboard(period) {
   periodMessage.className = "message";
   attemptsMessage.className = "message";
 
-  const attempts = await fetchDashboardData("tentativas", period);
-  const lists = await fetchDashboardData("listasExercicios", period);
+  const noAttempts = { tentativas: [], periodo_anterior: { total: 0, acertos: 0 } };
+  const attemptsData = await fetchDashboardData("tentativas", period, noAttempts);
+  const lists = await fetchDashboardData("listasExercicios", period, []);
+  const attempts = attemptsData.tentativas;
 
-  renderStats(attempts, lists, period);
+  renderStats(attempts, attemptsData.periodo_anterior, lists, period);
   renderCharts(attempts, lists, period);
   renderTable(attempts);
 }
@@ -74,31 +76,35 @@ async function loadDashboard(period) {
  * Fetches one of the /dashboard routes for the logged-in user and a period.
  * @param {string} route - "tentativas" or "listasExercicios".
  * @param {{start: string, end: string}} period
- * @returns {Promise<object[]>} The rows, or an empty array when there are none or the request fails.
+ * @param {*} emptyData - Returned when there is no data or the request fails, so the page still draws.
+ * @returns {Promise<*>} The reply's JSON, or emptyData.
  */
-async function fetchDashboardData(route, period) {
+async function fetchDashboardData(route, period, emptyData) {
   const url = `/dashboard/${route}/${currentUser.id}?data_inicio=${period.start}&data_fim=${period.end}`;
 
   try {
     const response = await fetch(url);
     if (response.status !== 200) {
-      return [];
+      return emptyData;
     }
     return await response.json();
   } catch {
     showMessage(attemptsMessage, "Não foi possível carregar os dados do dashboard.", "error");
-    return [];
+    return emptyData;
   }
 }
 
 /**
  * Fills the three indicator cards and the numbers next to the donut chart.
+ * The first two cards also show the progress compared with the previous period.
  * @param {object[]} attempts
+ * @param {{total: number, acertos: number}} previousPeriod - The totals of the period right before, to compare with.
  * @param {object[]} lists
  * @param {{start: string, end: string}} period
  */
-function renderStats(attempts, lists, period) {
+function renderStats(attempts, previousPeriod, lists, period) {
   const results = countResults(attempts);
+  const progress = calculateProgress(attempts, previousPeriod);
   const hitRate = calculateRate(results.right, attempts.length) + "%";
   const periodText = formatToDayMonthYear(period.start) + " a " + formatToDayMonthYear(period.end);
 
@@ -110,15 +116,35 @@ function renderStats(attempts, lists, period) {
   }
 
   document.getElementById("solved-in-period").textContent = results.right;
-  document.getElementById("solved-in-period-detail").textContent = periodText;
+  document.getElementById("solved-in-period-dates").textContent = periodText;
+  renderProgress("solved-in-period-progress", progress.solved, "");
+
   document.getElementById("hit-rate").textContent = hitRate;
-  document.getElementById("hit-rate-detail").textContent = periodText;
+  document.getElementById("hit-rate-dates").textContent = periodText;
+  renderProgress("hit-rate-progress", progress.hitRate, " p.p.");
+
   document.getElementById("solved-exercises").textContent = solvedExercises + "/" + totalExercises;
   document.getElementById("solved-exercises-detail").textContent = calculateRate(solvedExercises, totalExercises) + "% dos exercícios";
 
   document.getElementById("results-acerto").textContent = results.right;
   document.getElementById("results-erro").textContent = results.wrong;
   document.getElementById("results-hit-rate").textContent = hitRate;
+}
+
+/**
+ * Writes a progress with its sign, such as "+3 em relação à semana anterior", and marks it as up or down.
+ * The CSS writes ▲ before "up" and ▼ before "down", and colors them.
+ * @param {string} elementId
+ * @param {number} difference - Positive when it went up, negative when it went down.
+ * @param {string} unit - Written after the number, such as " p.p.".
+ */
+function renderProgress(elementId, difference, unit) {
+  const comparedPeriod = periodSelect.value === "custom" ? "em relação aos 7 dias anteriores" : "em relação à semana anterior";
+  const element = document.getElementById(elementId);
+
+  element.textContent = (difference > 0 ? "+" : "") + difference + unit + " " + comparedPeriod;
+  element.classList.toggle("up", difference > 0);
+  element.classList.toggle("down", difference < 0);
 }
 
 /**
@@ -339,6 +365,24 @@ function calculateListHitRate(attempts, listName) {
     }
   }
   return calculateRate(countResults(listAttempts).right, listAttempts.length);
+}
+
+/**
+ * Compares the attempts of the period with the totals of the previous period, sent by the API.
+ * @param {object[]} attempts
+ * @param {{total: number, acertos: number}} previousPeriod
+ * @returns {{solved: number, hitRate: number}} How much the right attempts and the hit rate (in percentage points)
+ *   went up, as positive numbers, or down, as negative ones.
+ */
+function calculateProgress(attempts, previousPeriod) {
+  const right = countResults(attempts).right;
+  const hitRate = calculateRate(right, attempts.length);
+  const previousHitRate = calculateRate(previousPeriod.acertos, previousPeriod.total);
+
+  return {
+    solved: right - previousPeriod.acertos,
+    hitRate: Number((hitRate - previousHitRate).toFixed(2))
+  };
 }
 
 /**

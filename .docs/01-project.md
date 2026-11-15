@@ -168,8 +168,9 @@ The dashboard, titled "Desempenho no Xadrez", fetches the user's attempts and th
 
 - **Period**: a select next to the title offers "Semana atual" (the default when the page opens), "Semana anterior" and "Data personalizada". Weeks run from Monday to Sunday. Choosing a week loads the page again at once. "Data personalizada" shows two date fields, start and end, and loads only when "Filtrar" is clicked; an empty field or a start after the end shows an error message.
 - **Indicators**:
-  - Right attempts in the period ("Acertos no período"), with the period written below.
-  - Hit rate ("Taxa de acerto") of the attempts in the period, with the period written below.
+  - Right attempts in the period ("Acertos no período").
+  - Hit rate ("Taxa de acerto") of the attempts in the period.
+  - Both cards show the period's dates at their top right and, below the value, the progress compared with the 7 days before the period's first day, which is the previous week when a week is chosen, and also 7 days for a custom period of any length. The API sends the previous period's totals with the attempts, in the same request. The progress is the difference in right attempts, or in percentage points ("p.p.") for the hit rate, written with its sign ("+3 em relação à semana anterior", "-12.5 p.p. em relação à semana anterior", "0 em relação à semana anterior"; "aos 7 dias anteriores" for a custom period). When it went up it has a ▲ and `--green-text`, and when it went down a ▼ and `--danger`.
   - Exercises solved ("Exercícios resolvidos"): how many of the 15 exercises the user solved at least once in the period, and the share that is.
 - **Stacked bar chart** ("Tentativas por dia"): attempts on each day of the period, split into right and wrong.
 - **Donut chart**: share of right and wrong attempts, with the hit rate in its middle and the count of each next to it.

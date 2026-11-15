@@ -111,7 +111,8 @@ main {
   min-height: 0;
 }
 
-/* Indicators: label, value and the comparison below, on cards with a brass top edge. */
+/* Indicators: label with the period's dates on the right, value and the progress below,
+   on cards with a brass top edge. */
 .stats {
   display: flex;
   gap: 12px;
@@ -124,9 +125,20 @@ main {
   border-top: 3px solid var(--brass);
   background: var(--card);
 }
+.stat-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0 8px;
+}
 .stat-label {
   color: var(--muted);
   font-size: 14px;
+}
+.stat-dates {
+  color: var(--muted);
+  font-size: 12px;
 }
 .stat b {
   display: block;
@@ -139,6 +151,19 @@ main {
 .change {
   color: var(--muted);
   font-size: 13px;
+}
+
+.change.up {
+  color: var(--green-text);
+}
+.change.up::before {
+  content: "▲ ";
+}
+.change.down {
+  color: var(--danger);
+}
+.change.down::before {
+  content: "▼ ";
 }
 
 /* Legends: a colored square next to each name, so a color never carries the meaning alone. */
