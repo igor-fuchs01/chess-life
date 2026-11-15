@@ -7,7 +7,6 @@ const database = require("../database/config");
  * @returns {Promise<object[]>} Attempts { id, acertou, data_tentativa, lista, exercicio }, with acertou true or false.
  */
 async function listAttempts(userId, period) {
-    // Before the day after the end, so the whole last day is included.
     const sql = `
         SELECT t.id, t.acertou, t.data_tentativa, l.nome AS lista, e.titulo AS exercicio
         FROM tentativa t
@@ -19,7 +18,6 @@ async function listAttempts(userId, period) {
     `;
     const attempts = await database.query(sql, [userId, period.start, period.end]);
 
-    // BOOLEAN is TINYINT(1) in MySQL, so it comes back as 1 or 0.
     for (const attempt of attempts) {
         attempt.acertou = attempt.acertou === 1;
     }
@@ -34,8 +32,6 @@ async function listAttempts(userId, period) {
  * @returns {Promise<object[]>} Lists { id, nome, descricao, total_exercicios, resolvidos }.
  */
 function listLists(userId, period) {
-    // The derived table holds each exercise the user solved in the period, once per list, so it is counted only once.
-    // Before the day after the end, so the whole last day is included.
     const sql = `
         SELECT l.id, l.nome, l.descricao, COUNT(le.fk_exercicio) AS total_exercicios, COUNT(r.fk_exercicio) AS resolvidos
         FROM lista l

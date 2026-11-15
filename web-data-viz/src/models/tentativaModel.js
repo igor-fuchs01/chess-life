@@ -32,7 +32,6 @@ async function listAttempts(userId) {
     `;
     const attempts = await database.query(sql, [userId]);
 
-    // BOOLEAN is TINYINT(1) in MySQL, so it comes back as 1 or 0.
     for (const attempt of attempts) {
         attempt.acertou = attempt.acertou === 1;
     }

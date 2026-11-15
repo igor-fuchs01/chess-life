@@ -7,7 +7,6 @@ const database = require("../database/config");
  * @returns {Promise<object[]>} Exercises { id, titulo, ordem, resolvido }, with resolvido true or false.
  */
 async function listExercises(listId, userId) {
-    // The derived table holds each exercise the user has solved, once per list, so the join never repeats a row.
     const sql = `
         SELECT e.id, e.titulo, le.ordem,
             CASE 
@@ -26,7 +25,6 @@ async function listExercises(listId, userId) {
     `;
     const exercises = await database.query(sql, [userId, listId]);
 
-    // MySQL returns TRUE and FALSE as 1 and 0.
     for (const exercise of exercises) {
         exercise.resolvido = exercise.resolvido === 1;
     }

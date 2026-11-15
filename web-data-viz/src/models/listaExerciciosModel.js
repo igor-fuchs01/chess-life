@@ -7,7 +7,6 @@ const database = require("../database/config");
  * @returns {Promise<object[]>} Lists { id, nome, descricao, total_exercicios, resolvidos }.
  */
 function listLists(userId) {
-    // The derived table holds each exercise the user has solved, once per list, so it is counted only once.
     const sql = `
         SELECT l.id, l.nome, l.descricao, COUNT(le.fk_exercicio) AS total_exercicios, COUNT(r.fk_exercicio) AS resolvidos
         FROM lista l
