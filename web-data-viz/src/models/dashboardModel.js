@@ -13,7 +13,7 @@ async function listAttempts(userId, period) {
             JOIN lista l ON l.id = t.fk_lista
             JOIN exercicio e ON e.id = t.fk_exercicio
         WHERE t.fk_usuario = ?
-            AND t.data_tentativa >= ? AND t.data_tentativa < DATE_ADD(?, INTERVAL 1 DAY)
+            AND DATE(t.data_tentativa) BETWEEN ? AND ?
         ORDER BY t.data_tentativa DESC, t.id DESC;
     `;
     const attempts = await database.query(sql, [userId, period.start, period.end]);
@@ -40,7 +40,7 @@ function listLists(userId, period) {
                 SELECT DISTINCT fk_lista, fk_exercicio
                 FROM tentativa
                 WHERE fk_usuario = ? AND acertou = TRUE
-                    AND data_tentativa >= ? AND data_tentativa < DATE_ADD(?, INTERVAL 1 DAY)
+                    AND DATE(data_tentativa) BETWEEN ? AND ?
             ) r ON r.fk_lista = le.fk_lista AND r.fk_exercicio = le.fk_exercicio
         GROUP BY l.id
         ORDER BY l.ordem;

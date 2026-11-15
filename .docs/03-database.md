@@ -308,7 +308,7 @@ WHERE t.fk_usuario = ?
 ORDER BY t.data_tentativa DESC, t.id DESC;
 ```
 
-The dashboard runs the same two queries limited to a period, with the first and last days (`YYYY-MM-DD`) as two more values. The condition is `data_tentativa >= ? AND data_tentativa < DATE_ADD(?, INTERVAL 1 DAY)`, so the whole last day is included. It goes in the attempts query's `WHERE` (with the `t.` prefix) and in the derived table of the progress query, so `resolvidos` counts only the exercises solved in the period and `total_exercicios` stays the same:
+The dashboard runs the same two queries limited to a period, with the first and last days (`YYYY-MM-DD`) as two more values. The condition is `DATE(data_tentativa) BETWEEN ? AND ?`: `DATE` keeps only the attempt's day, and `BETWEEN` includes both ends, so the whole last day is included. It goes in the attempts query's `WHERE` (with the `t.` prefix) and in the derived table of the progress query, so `resolvidos` counts only the exercises solved in the period and `total_exercicios` stays the same:
 
 ```sql
 SELECT t.id, t.acertou, t.data_tentativa, l.nome AS lista, e.titulo AS exercicio
@@ -316,7 +316,7 @@ FROM tentativa t
     JOIN lista l ON l.id = t.fk_lista
     JOIN exercicio e ON e.id = t.fk_exercicio
 WHERE t.fk_usuario = ?
-    AND t.data_tentativa >= ? AND t.data_tentativa < DATE_ADD(?, INTERVAL 1 DAY)
+    AND DATE(t.data_tentativa) BETWEEN ? AND ?
 ORDER BY t.data_tentativa DESC, t.id DESC;
 ```
 
