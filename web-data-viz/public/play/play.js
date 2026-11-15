@@ -14,11 +14,12 @@ const exerciseList = document.getElementById("exercise-list");
  */
 async function startLists() {
   const lists = await loadLists();
-  const listIdInAddress = parsePositiveId(new URLSearchParams(window.location.search).get("lista"));
-  const listInAddress = lists.find((list) => list.id === listIdInAddress);
+  const listIdInAddress = Number(new URLSearchParams(window.location.search).get("lista"));
 
-  if (listInAddress) {
-    openList(listInAddress);
+  for (const list of lists) {
+    if (list.id === listIdInAddress) {
+      openList(list);
+    }
   }
 }
 
@@ -147,14 +148,4 @@ function createTextElement(tagName, className, text) {
   element.className = className;
   element.textContent = text;
   return element;
-}
-
-/**
- * Reads an id from the address.
- * @param {string|null} value
- * @returns {number|null} The id, or null when it is not a positive whole number.
- */
-function parsePositiveId(value) {
-  const id = Number(value);
-  return Number.isInteger(id) && id > 0 ? id : null;
 }

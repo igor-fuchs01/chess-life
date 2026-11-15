@@ -247,18 +247,6 @@ The PI challenge (*Desafio do Semestre — Projeto Individual*) asks the project
 | Pesquisa e Inovação | Context, planning, dashboard and indicators | Context and planning in this document (sections 1 to 8); the "Desempenho no Xadrez" dashboard with three indicators and three Chart.js charts (section 7) | Done |
 | Socioemocional | Applying the concepts worked in class | The home page's "Competências socioemocionais" section (section 9) and the presentation below | Section done; presentation to do |
 
-### Socio-emotional presentation
-
-The presentation must "sell the idea" of the site to the audience. Besides the site, it answers the questions below. The left column is what the challenge asks; the right column is what the project already has to answer it, or what the author still has to write.
-
-| Question | Material |
-| --- | --- |
-| When, in the author's life, did the interest in the theme start? How is it part of daily life, and why this theme? | The 4th-grade chess selection and the gold medal won with the school (section 9, "Minha história" on the home page). How chess is part of daily life today: to be written by the author |
-| Which of the author's values does the project represent? | The eight competencies on the home page, each linked to the story (section 9) |
-| What was the hardest part of building the project or of the theme? | To be written by the author |
-| What was the biggest achievement in this challenge? | To be written by the author |
-| Is there someone who deserves thanks for the result? | The author's father, mother and grandmother, for their encouragement at decisive moments: the "Agradecimentos" section of the home page |
-
 ### Use of AI and the prompt diary
 
 The challenge allows AI as support (answering questions, reviewing, generating tests and code within the proposed architecture), but the understanding cannot be outsourced. Generating the whole project, changing the proposed architecture, bringing technologies outside the material or delivering code the author cannot explain is not accepted.

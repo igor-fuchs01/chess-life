@@ -51,13 +51,13 @@ function renderSidebar() {
   if (user) {
     document.getElementById("logout-button").addEventListener("click", endSession);
   }
-
+  
   const themeButton = document.getElementById("theme-button");
+  document.documentElement.dataset.theme = "dark";
   updateThemeButton(themeButton);
   themeButton.addEventListener("click", () => {
     toggleTheme();
     updateThemeButton(themeButton);
-    // A clicked button keeps the focus, and :focus-within would keep the sidebar open after the mouse leaves.
     themeButton.blur();
   });
 }
@@ -67,12 +67,28 @@ function renderSidebar() {
  * @param {HTMLButtonElement} button
  */
 function updateThemeButton(button) {
-  const isDark = getCurrentTheme() === DARK_THEME;
+  const isDark = getCurrentTheme() === "dark";
   const label = isDark ? "Modo claro" : "Modo escuro";
 
   button.querySelector(".sidebar-icon").textContent = isDark ? "☀" : "☾";
   button.querySelector(".sidebar-label").textContent = label;
   button.title = label;
+}
+
+/**
+ * Returns the theme the page is showing.
+ * @returns {"dark"|"light"}
+ */
+function getCurrentTheme() {
+  return document.documentElement.dataset.theme;
+}
+
+/**
+ * Switches between the light and dark themes and saves the choice.
+ */
+function toggleTheme() {
+  const theme = getCurrentTheme() === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = theme;
 }
 
 /**
