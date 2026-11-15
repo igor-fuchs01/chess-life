@@ -1,6 +1,3 @@
-// The board is an 8×8 matrix: board[row][column] holds a piece letter ("K" is the white king, "p" a black pawn)
-// or "" for an empty square. Uppercase letters are White. Row 0 is the 1st rank and column 0 is the a-file.
-// Only the movement of each piece is checked: there is no castling, en passant or promotion, since no exercise uses them.
 const BOARD_SIZE = 8;
 const FILES = "abcdefgh";
 const SAN_PIECE_LETTERS = "KQRBN";
@@ -88,6 +85,7 @@ function getSlideTargets(board, row, column, directions) {
       if (board[targetRow][targetColumn] !== "") {
         break;
       }
+
       targetRow += rowStep;
       targetColumn += columnStep;
     }
@@ -101,25 +99,16 @@ function getSlideTargets(board, row, column, directions) {
  * Only White's pawns are moved: the user plays White and Black's replies are never pawn moves.
  */
 function getPawnTargets(board, row, column) {
-  const nextRow = row + 1;
   const targets = [];
 
-  if (board[nextRow][column] === "") {
-    targets.push({ row: nextRow, column: column });
+  if (board[row + 1][column] === "") {
+    targets.push({ row: row + 1, column: column });
 
     if (row === WHITE_PAWN_START_ROW && board[row + 2][column] === "") {
       targets.push({ row: row + 2, column: column });
     }
   }
 
-  for (const targetColumn of [column - 1, column + 1]) {
-    const hasBlackPiece = isInsideBoard(nextRow, targetColumn)
-      && board[nextRow][targetColumn] !== ""
-      && !isWhitePiece(board[nextRow][targetColumn]);
-    if (hasBlackPiece) {
-      targets.push({ row: nextRow, column: targetColumn });
-    }
-  }
   return targets;
 }
 

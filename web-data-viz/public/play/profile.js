@@ -1,16 +1,9 @@
-// Player profile on the game's start screen: the player card and the dialog that edits it.
-// The profile is created at sign-up, so the dialog only updates it.
-const NO_PROFILE_TEXT = "Perfil não encontrado.";
-const NO_BIO_TEXT = "Sem bio.";
-const EMPTY_FIELD_TEXT = "—";
-
 const profileUser = getSessionUser();
 const profileDialog = document.getElementById("profile-dialog");
 const profileForm = document.getElementById("profile-form");
 const profileMessage = document.getElementById("profile-message");
 const bioField = document.getElementById("bio");
 
-// The user's profile as the API returned it, or null when it was not found.
 let savedProfile = null;
 
 /**
@@ -53,14 +46,14 @@ function renderPlayerCard() {
   document.getElementById("profile-button").hidden = !hasProfile;
 
   if (!hasProfile) {
-    document.getElementById("player-bio").textContent = NO_PROFILE_TEXT;
+    document.getElementById("player-bio").textContent = "Perfil não encontrado.";
     return;
   }
 
-  document.getElementById("player-bio").textContent = savedProfile.bio ?? NO_BIO_TEXT;
-  document.getElementById("player-rating").textContent = savedProfile.rating ?? EMPTY_FIELD_TEXT;
-  document.getElementById("player-start-year").textContent = savedProfile.ano_inicio ?? EMPTY_FIELD_TEXT;
-  document.getElementById("player-opening").textContent = savedProfile.abertura_favorita ?? EMPTY_FIELD_TEXT;
+  document.getElementById("player-bio").textContent = savedProfile.bio ?? "Sem bio.";
+  document.getElementById("player-rating").textContent = savedProfile.rating ?? "—";
+  document.getElementById("player-start-year").textContent = savedProfile.ano_inicio ?? "—";
+  document.getElementById("player-opening").textContent = savedProfile.abertura_favorita ?? "—";
 }
 
 /**

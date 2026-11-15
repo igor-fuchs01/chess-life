@@ -1,11 +1,8 @@
-// The exercise page: the user plays the solution's moves, and the page plays the opponent's replies.
 const PIECE_SYMBOLS = {
   K: "♔", Q: "♕", R: "♖", B: "♗", N: "♘", P: "♙",
   k: "♚", q: "♛", r: "♜", b: "♝", n: "♞", p: "♟"
 };
-// The start screen with the lists; ?lista= opens the list the exercise came from.
 const START_PAGE = "play.html";
-// The opponent's reply waits a moment, so the user sees their own move first.
 const OPPONENT_DELAY_MS = 500;
 
 const currentUser = getSessionUser();
@@ -276,7 +273,6 @@ function createSquare(row, column, checkedKing) {
   const piece = board[row][column];
   const square = document.createElement("button");
   square.type = "button";
-  // a1 (row 0, column 0) is a dark square.
   square.className = (row + column) % 2 === 0 ? "dark" : "light";
   square.textContent = PIECE_SYMBOLS[piece] || "";
   square.addEventListener("click", () => handleSquareClick(row, column));
@@ -348,7 +344,6 @@ function renderMoveList() {
 
   for (let index = 0; index < moves.length; index += 2) {
     const line = document.createElement("li");
-    // slice stops at the end of the array, so the last line holds only the user's move while the reply is missing.
     const movePair = moves.slice(index, index + 2).join(" ");
     line.textContent = `${index / 2 + 1}. ${movePair}`;
     moveListElement.appendChild(line);

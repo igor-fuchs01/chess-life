@@ -1,6 +1,3 @@
-// The start screen's exercise lists: one card per list, and the table of the chosen list's exercises.
-
-// The exercise links on the start screen open this page.
 const EXERCISE_PAGE = "game.html";
 const SOLVED_STATUS = "✓ Resolvido";
 const PENDING_STATUS = "Pendente";
