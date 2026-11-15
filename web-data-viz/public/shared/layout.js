@@ -1,4 +1,3 @@
-const FOOTER_TEXT = "Chess Life · Projeto Individual de Pesquisa e Inovação · SPTech 2026 · Igor Fuchs Pereira";
 const HOME_PATH = "index.html";
 const LOGIN_PATH = "auth/login.html";
 
@@ -119,7 +118,7 @@ function isCurrentPage(path) {
 function renderFooter() {
   const footer = document.getElementById("site-footer");
   footer.className = "site-footer";
-  footer.textContent = FOOTER_TEXT;
+  footer.textContent = "Chess Life · Projeto Individual de Pesquisa e Inovação · SPTech 2026 · Igor Fuchs Pereira";
 }
 
 /**
