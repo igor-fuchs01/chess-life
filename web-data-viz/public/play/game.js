@@ -2,8 +2,6 @@ const PIECE_SYMBOLS = {
   K: "♔", Q: "♕", R: "♖", B: "♗", N: "♘", P: "♙",
   k: "♚", q: "♛", r: "♜", b: "♝", n: "♞", p: "♟"
 };
-const START_PAGE = "play.html";
-const OPPONENT_DELAY_MS = 500;
 
 const currentUser = getSessionUser();
 const boardElement = document.getElementById("board");
@@ -32,11 +30,11 @@ function startPage() {
   const exerciseId = Number(address.get("exercicio"));
 
   if (!listId || !exerciseId) {
-    window.location = START_PAGE;
+    window.location = "play.html";
     return;
   }
 
-  document.getElementById("back-link").href = `${START_PAGE}?lista=${listId}`;
+  document.getElementById("back-link").href = `play.html?lista=${listId}`;
   retryButton.addEventListener("click", startAttempt);
 
   loadExercise(exerciseId);
@@ -159,7 +157,7 @@ function playUserMove(from, to) {
     return;
   }
   render();
-  setTimeout(playOpponentReply, OPPONENT_DELAY_MS);
+  setTimeout(playOpponentReply, 500);
 }
 
 /**
