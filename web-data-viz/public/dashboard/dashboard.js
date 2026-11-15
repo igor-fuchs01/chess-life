@@ -443,7 +443,7 @@ function formatToBrazilIsoDate(isoDate) {
  * @returns {string}
  */
 function readCssVariable(name) {
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return getComputedStyle(document.documentElement).getPropertyValue(name);
 }
 
 startDashboard();
