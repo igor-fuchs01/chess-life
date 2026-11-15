@@ -66,5 +66,50 @@ function validateSignup(name, email, password, confirmation) {
   return null;
 }
 
+
+/**
+ * Checks that a password is strong (RN02): at least 8 characters, with an uppercase letter,
+ * a lowercase letter, a digit and a special character. Used by the sign-up page.
+ * @param {string} password
+ * @returns {string|null} The error message, or null when the password is strong.
+ */
+function validatePasswordStrength(password) {
+  if (password.length < 8) {
+    return `A senha precisa ter no mínimo 8 caracteres.`;
+  }
+
+  let hasUppercase = false;
+  let hasLowercase = false;
+  let hasDigit = false;
+  let hasSpecialCharacter = false;
+
+  for (const character of password) {
+    if (character >= "A" && character <= "Z") {
+      hasUppercase = true;
+    } else if (character >= "a" && character <= "z") {
+      hasLowercase = true;
+    } else if (character >= "0" && character <= "9") {
+      hasDigit = true;
+    } else {
+      hasSpecialCharacter = true;
+    }
+  }
+
+  if (!hasUppercase) {
+    return "A senha precisa ter pelo menos uma letra maiúscula.";
+  }
+  if (!hasLowercase) {
+    return "A senha precisa ter pelo menos uma letra minúscula.";
+  }
+  if (!hasDigit) {
+    return "A senha precisa ter pelo menos um número.";
+  }
+  if (!hasSpecialCharacter) {
+    return "A senha precisa ter pelo menos um caractere especial.";
+  }
+  return null;
+}
+
+
 signupForm.addEventListener("submit", createAccount);
 fillOpeningOptions(signupForm.opening);
