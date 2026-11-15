@@ -62,7 +62,7 @@ async function registerAttempt(req, res) {
  *
  * @route GET /tentativas/listar/:idUsuario
  * @fromRoute {number} idUsuario - The user's id.
- * @response 200 {object[]} The attempts.
+ * @response 200 {{id: number, acertou: boolean, data_tentativa: string, lista: string, exercicio: string}[]} The attempts, newest first.
  * @response 204 The user has no attempts.
  * @response 400 {string} The user id is not a positive whole number.
  * @response 500 {string} Unexpected server or database error.

@@ -6,7 +6,7 @@ const exercicioModel = require("../models/exercicioModel");
  * @route GET /exercicios/listar/:idLista/:idUsuario
  * @fromRoute {number} idLista - The list's id.
  * @fromRoute {number} idUsuario - The user's id.
- * @response 200 {object[]} The exercises.
+ * @response 200 {{id: number, titulo: string, ordem: number, resolvido: boolean}[]} The exercises, in order.
  * @response 204 The list has no exercises.
  * @response 400 {string} The list id or the user id is not a positive whole number.
  * @response 500 {string} Unexpected server or database error.
@@ -43,7 +43,7 @@ async function listExercises(req, res) {
  *
  * @route GET /exercicios/buscar/:idExercicio
  * @fromRoute {number} idExercicio - The exercise's id.
- * @response 200 {object} The exercise and its solution.
+ * @response 200 {{id: number, titulo: string, posicao: string, solucao: string[]}} The exercise and its solution's moves in SAN.
  * @response 400 {string} The exercise id is not a positive whole number.
  * @response 404 {string} The exercise does not exist.
  * @response 500 {string} Unexpected server or database error.

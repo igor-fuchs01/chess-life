@@ -5,7 +5,7 @@ const listaExerciciosModel = require("../models/listaExerciciosModel");
  *
  * @route GET /listasExercicios/listar/:idUsuario
  * @fromRoute {number} idUsuario - The user's id.
- * @response 200 {object[]} The lists, in order.
+ * @response 200 {{id: number, nome: string, descricao: string, total_exercicios: number, resolvidos: number}[]} The lists, in order.
  * @response 204 There are no lists.
  * @response 400 {string} The user id is not a positive whole number.
  * @response 500 {string} Unexpected server or database error.

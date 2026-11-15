@@ -8,7 +8,7 @@ const MAX_BIO_LENGTH = 50;
  *
  * @route GET /perfis/buscar/:idUsuario
  * @fromRoute {number} idUsuario - The user's id.
- * @response 200 {object} The profile.
+ * @response 200 {{rating: number, ano_inicio: number, bio: string, abertura_favorita: string|null}} The profile.
  * @response 204 The user has no profile.
  * @response 400 {string} The user id is not a positive whole number.
  * @response 500 {string} Unexpected server or database error.

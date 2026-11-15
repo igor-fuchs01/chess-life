@@ -7,7 +7,7 @@ const dashboardModel = require("../models/dashboardModel");
  * @fromRoute {number} idUsuario - The user's id.
  * @fromQuery {string} data_inicio - The period's first day, YYYY-MM-DD.
  * @fromQuery {string} data_fim - The period's last day, YYYY-MM-DD, included.
- * @response 200 {object} { tentativas, periodo_anterior: { total, acertos } }, also when there are no attempts.
+ * @response 200 {{tentativas: {id: number, acertou: boolean, data_tentativa: string, lista: string, exercicio: string}[], periodo_anterior: {total: number, acertos: number}}} The attempts, newest first, also when there are none.
  * @response 400 {string} The user id or the period is invalid.
  * @response 500 {string} Unexpected server or database error.
  * @param {object} req
@@ -44,7 +44,7 @@ async function listAttempts(req, res) {
  * @fromRoute {number} idUsuario - The user's id.
  * @fromQuery {string} data_inicio - The period's first day, YYYY-MM-DD.
  * @fromQuery {string} data_fim - The period's last day, YYYY-MM-DD, included.
- * @response 200 {object[]} The lists, in order.
+ * @response 200 {{id: number, nome: string, descricao: string, total_exercicios: number, resolvidos: number}[]} The lists, in order.
  * @response 204 There are no lists.
  * @response 400 {string} The user id or the period is invalid.
  * @response 500 {string} Unexpected server or database error.
