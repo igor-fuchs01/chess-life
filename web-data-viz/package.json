@@ -7,6 +7,11 @@
     "start": "node app.js",
     "dev": "nodemon --exec node app.js"
   },
+  "nodemonConfig": {
+    "env": {
+      "NODE_ENV": "dev"
+    }
+  },
   "author": "Feito pelos desenvolvedores @ São Paulo Tech School / Bandtec Digital School",
   "license": "MIT",
   "dependencies": {
