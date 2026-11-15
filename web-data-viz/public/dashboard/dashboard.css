@@ -20,7 +20,7 @@ main {
   min-width: 0;
   max-width: calc(1400px + var(--sidebar-space));
 }
-/* Title: the ornament, the title and a short description on one line. */
+/* Title: the ornament, the title and the period filter on one line. */
 .dash-title {
   display: flex;
   flex-wrap: wrap;
@@ -33,9 +33,6 @@ main {
 }
 .dash-title h1 {
   font-size: 30px;
-}
-.dash-title p {
-  color: var(--muted);
 }
 /* Period filter: on the title's line, pushed to the right; the date fields show only for a custom period. */
 .period,

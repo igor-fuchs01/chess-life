@@ -20,7 +20,7 @@
         <div class="dash-title">
           <span class="ornament">♛</span>
           <h1>Desempenho no Xadrez</h1>
-          <form class="period" id="period-form">
+          <div class="period">
             <select id="period-select" aria-label="Período" autocomplete="off">
               <option value="current-week" selected>Semana atual</option>
               <option value="previous-week">Semana anterior</option>
@@ -29,9 +29,9 @@
             <div class="custom-period" id="custom-period" hidden>
               <input type="date" id="start-date" aria-label="Data de início">
               <input type="date" id="end-date" aria-label="Data de fim">
-              <button class="btn" type="submit">Filtrar</button>
+              <button class="btn" type="button" id="filter-button">Filtrar</button>
             </div>
-          </form>
+          </div>
         </div>
         <div class="message" id="period-message" role="alert"></div>
 

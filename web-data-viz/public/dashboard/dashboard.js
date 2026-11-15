@@ -1,199 +1,174 @@
-// Results in chart order, with their labels: right attempts first, then wrong ones.
-const RESULTS_IN_CHARTS = ["acerto", "erro"];
-const RESULT_LABELS = { acerto: "Acerto", erro: "Erro" };
-const RESULT_CHART_LABELS = { acerto: "Acertos", erro: "Erros" };
-// Values of the period select's options.
-const PREVIOUS_WEEK = "previous-week";
-const CUSTOM_PERIOD = "custom";
-const DAYS_IN_WEEK = 7;
-const FULL_RATE = 100;
 const currentUser = getSessionUser();
-const attemptsMessage = document.getElementById("attempts-message");
-const periodMessage = document.getElementById("period-message");
 const periodSelect = document.getElementById("period-select");
-const customPeriodFields = document.getElementById("custom-period");
-const startDateInput = document.getElementById("start-date");
-const endDateInput = document.getElementById("end-date");
+const periodMessage = document.getElementById("period-message");
+const attemptsMessage = document.getElementById("attempts-message");
+const filterConfirmButton = document.getElementById("filter-button");
 
-// Read once from the theme's CSS variables: the result colors (--win for right, --loss for wrong),
-// the bar color of the levels chart, the panel color for the gaps between marks and the text color.
-const chartColors = {
-  acerto: readCssVariable("--win"),
-  erro: readCssVariable("--loss"),
-  brass: readCssVariable("--brass"),
-  card: readCssVariable("--card"),
-  ink: readCssVariable("--ink")
-};
-
-let attempts = [];
-let lists = [];
 let charts = [];
-// The period shown on the page, as { start, end } days written "YYYY-MM-DD", both included.
-let period;
 
 /**
- * Prepares the page and loads the attempts and the lists of the current week.
+ * Sets the chart style from the page's CSS variables and loads the current week.
  */
 function startDashboard() {
   Chart.defaults.font.family = readCssVariable("--font-body");
-  // Each chart fills its .chart box, whose height the CSS sets, instead of keeping a fixed proportion.
-  Chart.defaults.maintainAspectRatio = false;
-  Chart.defaults.plugins.legend.display = false;
   Chart.defaults.color = readCssVariable("--muted");
   Chart.defaults.borderColor = readCssVariable("--line");
-  Chart.register(barValuesPlugin);
+  Chart.defaults.maintainAspectRatio = false;
+  Chart.defaults.plugins.legend.display = false;
+
   periodSelect.addEventListener("change", handlePeriodChange);
-  document.getElementById("period-form").addEventListener("submit", handleCustomPeriodSubmit);
+  filterConfirmButton.addEventListener("click", handleFilterClick);
 
   loadDashboard(getWeekPeriod(0));
 }
 
 /**
- * Loads the page again as soon as another week is chosen. A custom period only shows the date fields,
- * and loads when the button is clicked.
+ * Loads the chosen week at once. A custom period only shows the date fields; it loads on "Filtrar".
  */
 function handlePeriodChange() {
-  const isCustomPeriod = periodSelect.value === CUSTOM_PERIOD;
-  customPeriodFields.hidden = !isCustomPeriod;
-  periodMessage.className = "message";
+  document.getElementById("custom-period").hidden = periodSelect.value !== "custom";
 
-  if (isCustomPeriod) {
-    return;
+  if (periodSelect.value === "current-week") {
+    loadDashboard(getWeekPeriod(0));
+  } else if (periodSelect.value === "previous-week") {
+    loadDashboard(getWeekPeriod(1));
   }
-  const weeksAgo = periodSelect.value === PREVIOUS_WEEK ? 1 : 0;
-  loadDashboard(getWeekPeriod(weeksAgo));
 }
 
 /**
- * Checks the custom period's days and loads the page with them.
- * @param {SubmitEvent} event
+ * Checks the custom period's dates and loads the page with them.
  */
-function handleCustomPeriodSubmit(event) {
-  event.preventDefault();
-  const customPeriod = { start: startDateInput.value, end: endDateInput.value };
+function handleFilterClick() {
+  const start = document.getElementById("start-date").value;
+  const end = document.getElementById("end-date").value;
 
-  if (!customPeriod.start || !customPeriod.end) {
+  if (!start || !end) {
     showMessage(periodMessage, "Informe a data de início e a data de fim.", "error");
     return;
   }
-  // Days written as "YYYY-MM-DD" compare as text in date order.
-  if (customPeriod.start > customPeriod.end) {
+  // Dates written as "YYYY-MM-DD" compare as text in date order.
+  if (start > end) {
     showMessage(periodMessage, "A data de início não pode ser depois da data de fim.", "error");
     return;
   }
-  loadDashboard(customPeriod);
+  loadDashboard({ start: start, end: end });
 }
 
 /**
  * Fetches the attempts and the lists of a period and draws the whole page with them.
- * @param {{start: string, end: string}} chosenPeriod - Days written "YYYY-MM-DD", both included.
+ * @param {{start: string, end: string}} period - Days written "YYYY-MM-DD", both included.
  */
-async function loadDashboard(chosenPeriod) {
-  period = chosenPeriod;
+async function loadDashboard(period) {
   periodMessage.className = "message";
   attemptsMessage.className = "message";
 
-  attempts = await fetchPeriodData("tentativas", "Não foi possível carregar as tentativas.");
-  lists = await fetchPeriodData("listasExercicios", "Não foi possível carregar as listas de exercícios.");
+  const attempts = await fetchDashboardData("tentativas", period);
+  const lists = await fetchDashboardData("listasExercicios", period);
 
-  renderStats();
-  renderCharts();
-  renderTable();
+  renderStats(attempts, lists, period);
+  renderCharts(attempts, lists, period);
+  renderTable(attempts);
 }
 
 /**
- * Fetches one of the dashboard routes for the current user and the period shown on the page.
- * @param {string} route - "tentativas" (attempts, newest first) or "listasExercicios" (lists, in their order).
- * @param {string} errorText - Shown above the table when the request fails.
- * @returns {Promise<object[]>} The rows, or an empty array when there are none (204) or they could not be loaded.
+ * Fetches one of the /dashboard routes for the logged-in user and a period.
+ * @param {string} route - "tentativas" or "listasExercicios".
+ * @param {{start: string, end: string}} period
+ * @returns {Promise<object[]>} The rows, or an empty array when there are none or the request fails.
  */
-async function fetchPeriodData(route, errorText) {
+async function fetchDashboardData(route, period) {
+  const url = `/dashboard/${route}/${currentUser.id}?data_inicio=${period.start}&data_fim=${period.end}`;
+
   try {
-    const response = await fetch(`/dashboard/${route}/${currentUser.id}?data_inicio=${period.start}&data_fim=${period.end}`);
-    if (response.status === 200) {
-      return await response.json();
+    const response = await fetch(url);
+    if (response.status !== 200) {
+      return [];
     }
-    return [];
+    return await response.json();
   } catch {
-    showMessage(attemptsMessage, errorText, "error");
+    showMessage(attemptsMessage, "Não foi possível carregar os dados do dashboard.", "error");
     return [];
   }
 }
 
 /**
- * Fills the three indicator cards at the top of the page and the numbers next to the results chart.
+ * Fills the three indicator cards and the numbers next to the donut chart.
+ * @param {object[]} attempts
+ * @param {object[]} lists
+ * @param {{start: string, end: string}} period
  */
-function renderStats() {
-  const results = countResults();
-  const hitRate = `${calculateRate(results.acerto, attempts.length)}%`;
-  const periodText = describePeriod();
+function renderStats(attempts, lists, period) {
+  const results = countResults(attempts);
+  const hitRate = calculateRate(results.right, attempts.length) + "%";
+  const periodText = formatToDayMonthYear(period.start) + " a " + formatToDayMonthYear(period.end);
+
   let solvedExercises = 0;
   let totalExercises = 0;
-
   for (const list of lists) {
     solvedExercises += list.resolvidos;
     totalExercises += list.total_exercicios;
   }
 
-  document.getElementById("solved-in-period").textContent = results.acerto;
+  document.getElementById("solved-in-period").textContent = results.right;
   document.getElementById("solved-in-period-detail").textContent = periodText;
   document.getElementById("hit-rate").textContent = hitRate;
   document.getElementById("hit-rate-detail").textContent = periodText;
-  document.getElementById("solved-exercises").textContent = `${solvedExercises}/${totalExercises}`;
-  document.getElementById("solved-exercises-detail").textContent =`${calculateRate(solvedExercises, totalExercises)}% dos exercícios`;
-  document.getElementById("results-acerto").textContent = results.acerto;
-  document.getElementById("results-erro").textContent = results.erro;
+  document.getElementById("solved-exercises").textContent = solvedExercises + "/" + totalExercises;
+  document.getElementById("solved-exercises-detail").textContent = calculateRate(solvedExercises, totalExercises) + "% dos exercícios";
+
+  document.getElementById("results-acerto").textContent = results.right;
+  document.getElementById("results-erro").textContent = results.wrong;
   document.getElementById("results-hit-rate").textContent = hitRate;
 }
 
 /**
- * Describes the period shown on the page, such as "09/11/2026 a 15/11/2026", or only the day when it has one.
- * @returns {string}
+ * Draws the three charts again with the data of the period.
+ * @param {object[]} attempts
+ * @param {object[]} lists
+ * @param {{start: string, end: string}} period
  */
-function describePeriod() {
-  if (period.start === period.end) {
-    return formatDay(period.start);
-  }
-  return `${formatDay(period.start)} a ${formatDay(period.end)}`;
-}
-
-/**
- * Draws the three charts again from the current attempts and lists.
- */
-function renderCharts() {
-  // Chart.js cannot reuse a canvas until the previous chart on it is destroyed.
+function renderCharts(attempts, lists, period) {
   for (const chart of charts) {
     chart.destroy();
   }
 
-  charts = [createDailyChart(), createResultsChart(), createLevelsChart()];
+  charts = [
+    createDailyChart(attempts, period),
+    createResultsChart(attempts),
+    createLevelsChart(attempts, lists)
+  ];
 }
 
 /**
- * Stacked bar chart with the right and wrong attempts of each day of the period.
- * A 2px gap in the panel color separates the stacked results; only the top of each bar is rounded.
+ * Stacked bar chart ("Tentativas por dia") with the right and wrong attempts of each day of the period.
+ * @param {object[]} attempts
+ * @param {{start: string, end: string}} period
  * @returns {Chart}
  */
-function createDailyChart() {
+function createDailyChart(attempts, period) {
+  const days = countAttemptsPerDay(attempts, period);
   const labels = [];
   const rightCounts = [];
   const wrongCounts = [];
 
-  for (const day of countAttemptsPerDay()) {
+  for (const day of days) {
     labels.push(day.label);
-    rightCounts.push(day.acerto);
-    wrongCounts.push(day.erro);
+    rightCounts.push(day.right);
+    wrongCounts.push(day.wrong);
   }
 
-  const barStyle = { borderColor: chartColors.card, borderWidth: { top: 2 }, borderSkipped: false, maxBarThickness: 28 };
-  const datasets = [
-    { ...barStyle, label: RESULT_CHART_LABELS.acerto, data: rightCounts, backgroundColor: chartColors.acerto },
-    { ...barStyle, label: RESULT_CHART_LABELS.erro, data: wrongCounts, backgroundColor: chartColors.erro, borderRadius: { topLeft: 4, topRight: 4 } }
-  ];
+  // A 2px line in the panel color on top of each segment keeps right and wrong apart for color-blind readers.
+  const gapColor = readCssVariable("--card");
 
   return new Chart(document.getElementById("daily-chart"), {
     type: "bar",
-    data: { labels: labels, datasets: datasets },
+    data: {
+      labels: labels,
+      datasets: [
+        { label: "Acertos", data: rightCounts, backgroundColor: readCssVariable("--win"), borderColor: gapColor, borderWidth: { top: 2 } },
+        { label: "Erros", data: wrongCounts, backgroundColor: readCssVariable("--loss"), borderColor: gapColor, borderWidth: { top: 2 } }
+      ]
+    },
     options: {
       scales: {
         x: { stacked: true, grid: { display: false } },
@@ -204,98 +179,88 @@ function createDailyChart() {
 }
 
 /**
- * Donut chart with the number of right and wrong attempts; the hit rate is written in its middle by the page.
+ * Donut chart ("Resultados") with the number of right and wrong attempts. The hit rate in its middle is HTML.
+ * @param {object[]} attempts
  * @returns {Chart}
  */
-function createResultsChart() {
-  const results = countResults();
-  const labels = [];
-  const counts = [];
-  const colors = [];
-
-  for (const result of RESULTS_IN_CHARTS) {
-    labels.push(RESULT_CHART_LABELS[result]);
-    counts.push(results[result]);
-    colors.push(chartColors[result]);
-  }
+function createResultsChart(attempts) {
+  const results = countResults(attempts);
 
   return new Chart(document.getElementById("results-chart"), {
     type: "doughnut",
     data: {
-      labels: labels,
-      datasets: [{ data: counts, backgroundColor: colors, borderColor: chartColors.card, borderWidth: 3 }]
+      labels: ["Acertos", "Erros"],
+      datasets: [{
+        data: [results.right, results.wrong],
+        backgroundColor: [readCssVariable("--win"), readCssVariable("--loss")],
+        borderColor: readCssVariable("--card"),
+        borderWidth: 3
+      }]
     },
     options: { cutout: "68%" }
   });
 }
 
 /**
- * Horizontal bar chart with the hit rate of each list, in the lists' order, with the percentage at the end of each bar.
+ * Horizontal bar chart ("Acerto por nível") with the hit rate of each list, written after the end of each bar.
+ * @param {object[]} attempts
+ * @param {object[]} lists
  * @returns {Chart}
  */
-function createLevelsChart() {
+function createLevelsChart(attempts, lists) {
   const labels = [];
   const rates = [];
 
   for (const list of lists) {
     labels.push(list.nome);
-    rates.push(calculateListHitRate(list.nome));
+    rates.push(calculateListHitRate(attempts, list.nome));
   }
+
+  const writeRates = {
+    id: "writeRates",
+    afterDatasetsDraw(chart) {
+      const context = chart.ctx;
+      const bars = chart.getDatasetMeta(0).data;
+
+      context.save();
+      context.fillStyle = readCssVariable("--ink");
+      context.font = "600 12px " + Chart.defaults.font.family;
+      context.textBaseline = "middle";
+      for (let index = 0; index < bars.length; index++) {
+        context.fillText(rates[index] + "%", bars[index].x + 6, bars[index].y);
+      }
+      context.restore();
+    }
+  };
 
   return new Chart(document.getElementById("levels-chart"), {
     type: "bar",
     data: {
       labels: labels,
-      datasets: [{ data: rates, backgroundColor: chartColors.brass, borderRadius: 4, borderSkipped: "start", maxBarThickness: 20 }]
+      datasets: [{ data: rates, backgroundColor: readCssVariable("--brass"), maxBarThickness: 20 }]
     },
     options: {
       indexAxis: "y",
       // Room on the right for the percentage written after the longest bar.
       layout: { padding: { right: 40 } },
-      plugins: { barValues: { display: true } },
       scales: {
-        x: { beginAtZero: true, max: FULL_RATE },
+        x: { beginAtZero: true, max: 100 },
         y: { grid: { display: false } }
       }
-    }
+    },
+    plugins: [writeRates]
   });
 }
 
 /**
- * Chart.js plugin that writes each bar's percentage after its end, for the horizontal charts that turn it on
- * with `plugins: { barValues: { display: true } }`. The brass bars are light, so their numbers are written in text too.
+ * Fills the attempts table, or shows the empty message when the period has no attempts.
+ * @param {object[]} attempts
  */
-const barValuesPlugin = {
-  id: "barValues",
-  defaults: { display: false },
-  afterDatasetsDraw(chart, args, settings) {
-    if (!settings.display) {
-      return;
-    }
-
-    const context = chart.ctx;
-    const values = chart.data.datasets[0].data;
-    context.save();
-    context.fillStyle = chartColors.ink;
-    context.font = `600 12px ${Chart.defaults.font.family}`;
-    context.textBaseline = "middle";
-
-    chart.getDatasetMeta(0).data.forEach((bar, index) => {
-      context.fillText(`${values[index]}%`, bar.x + 6, bar.y);
-    });
-    context.restore();
-  }
-};
-
-/**
- * Fills the attempts table, or shows the empty message when there are no attempts.
- */
-function renderTable() {
+function renderTable(attempts) {
   const tableBody = document.getElementById("attempts-body");
-  const hasAttempts = attempts.length > 0;
 
-  document.getElementById("attempts-empty").hidden = hasAttempts;
-  document.getElementById("attempts-table").hidden = !hasAttempts;
+  document.getElementById("attempts-empty").hidden = attempts.length > 0;
+  document.getElementById("attempts-table").hidden = attempts.length === 0;
 
   tableBody.innerHTML = "";
   for (const attempt of attempts) {
@@ -310,24 +275,27 @@ function renderTable() {
  */
 function createAttemptRow(attempt) {
   const row = document.createElement("tr");
-  const result = getResult(attempt);
-
-  row.appendChild(createCell(formatDate(attempt.data_tentativa)));
+  row.appendChild(createCell(formatToBrazilIsoDate(attempt.data_tentativa)));
   row.appendChild(createCell(attempt.lista));
   row.appendChild(createCell(attempt.exercicio));
 
-  const resultTag = document.createElement("span");
-  resultTag.className = `tag ${result}`;
-  resultTag.textContent = RESULT_LABELS[result];
-  const resultCell = createCell("");
-  resultCell.appendChild(resultTag);
-  row.appendChild(resultCell);
+  const tag = document.createElement("span");
+  if (attempt.acertou) {
+    tag.className = "tag acerto";
+    tag.textContent = "Acerto";
+  } else {
+    tag.className = "tag erro";
+    tag.textContent = "Erro";
+  }
 
+  const resultCell = document.createElement("td");
+  resultCell.appendChild(tag);
+  row.appendChild(resultCell);
   return row;
 }
 
 /**
- * Creates a table cell. Uses textContent, so text from the database is never read as HTML.
+ * Creates a table cell with textContent, so text from the database is never read as HTML.
  * @param {string} text
  * @returns {HTMLTableCellElement}
  */
@@ -338,76 +306,73 @@ function createCell(text) {
 }
 
 /**
- * Names an attempt's result as the charts and tags do.
- * @param {{acertou: boolean}} attempt
- * @returns {"acerto"|"erro"}
- */
-function getResult(attempt) {
-  return attempt.acertou ? "acerto" : "erro";
-}
-
-/**
  * Counts the right and wrong attempts.
- * @returns {{acerto: number, erro: number}}
+ * @param {object[]} attempts
+ * @returns {{right: number, wrong: number}}
  */
-function countResults() {
-  const results = { acerto: 0, erro: 0 };
+function countResults(attempts) {
+  let right = 0;
+  let wrong = 0;
 
   for (const attempt of attempts) {
-    results[getResult(attempt)]++;
+    if (attempt.acertou) {
+      right++;
+    } else {
+      wrong++;
+    }
   }
-
-  return results;
+  return { right: right, wrong: wrong };
 }
 
 /**
  * Calculates the hit rate of the attempts made in one list.
- * @param {string} listName - The list's name, as the attempts carry it.
+ * @param {object[]} attempts
+ * @param {string} listName
  * @returns {number} The percentage, 0 when the list has no attempts.
  */
-function calculateListHitRate(listName) {
-  let total = 0;
-  let right = 0;
+function calculateListHitRate(attempts, listName) {
+  const listAttempts = [];
 
   for (const attempt of attempts) {
-    if (attempt.lista !== listName) {
-      continue;
-    }
-    total++;
-    if (attempt.acertou) {
-      right++;
+    if (attempt.lista === listName) {
+      listAttempts.push(attempt);
     }
   }
-
-  return calculateRate(right, total);
+  return calculateRate(countResults(listAttempts).right, listAttempts.length);
 }
 
 /**
  * Counts the right and wrong attempts of each day of the period, from its first day to its last.
- * Days are labeled as "DD/MM".
- * @returns {{key: string, label: string, acerto: number, erro: number}[]}
+ * @param {object[]} attempts
+ * @param {{start: string, end: string}} period
+ * @returns {{key: string, label: string, right: number, wrong: number}[]} One item per day, labeled "DD/MM".
  */
-function countAttemptsPerDay() {
+function countAttemptsPerDay(attempts, period) {
   const days = [];
-  // "T00:00" makes the browser read the day at midnight in the user's time zone, not in UTC.
-  const day = new Date(`${period.start}T00:00`);
-  const lastDay = new Date(`${period.end}T00:00`);
+  // "T00:00" reads the day at midnight in the user's time zone, not in UTC.
+  const day = new Date(period.start + "T00:00");
+  const lastDay = new Date(period.end + "T00:00");
 
   while (day <= lastDay) {
     const label = day.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
-    days.push({ key: getDayKey(day), label: label, acerto: 0, erro: 0 });
+    days.push({ key: formatToYearMonthDay(day), label: label, right: 0, wrong: 0 });
     day.setDate(day.getDate() + 1);
   }
 
   for (const attempt of attempts) {
-    const attemptDayKey = getDayKey(new Date(attempt.data_tentativa));
-    const attemptDay = days.find((item) => item.key === attemptDayKey);
+    const attemptDayKey = formatToYearMonthDay(new Date(attempt.data_tentativa));
 
-    if (attemptDay) {
-      attemptDay[getResult(attempt)]++;
+    for (const item of days) {
+      if (item.key !== attemptDayKey) {
+        continue;
+      }
+      if (attempt.acertou) {
+        item.right++;
+      } else {
+        item.wrong++;
+      }
     }
   }
-
   return days;
 }
 
@@ -417,31 +382,18 @@ function countAttemptsPerDay() {
  * @returns {{start: string, end: string}} Days written "YYYY-MM-DD".
  */
 function getWeekPeriod(weeksAgo) {
+  const DAYS_IN_WEEK = 7;
   const today = new Date();
-  // getDay() counts from Sunday (0); this counts from Monday instead.
+
   const daysSinceMonday = (today.getDay() + 6) % DAYS_IN_WEEK;
-  // Date moves days outside the month, such as day 0 or 32, into the previous or next month.
-  const monday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysSinceMonday - weeksAgo * DAYS_IN_WEEK);
-  const sunday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + DAYS_IN_WEEK - 1);
-  return { start: getDayKey(monday), end: getDayKey(sunday) };
-}
 
-/**
- * Turns a date into its day in the user's time zone, so attempts can be grouped by day.
- * @param {Date} date
- * @returns {string} Day as "YYYY-MM-DD".
- */
-function getDayKey(date) {
-  let month = date.getMonth() + 1;
-  let day = date.getDate();
+  const monday = new Date();
+  monday.setDate(today.getDate() - daysSinceMonday - weeksAgo * DAYS_IN_WEEK);
 
-  if (month < 10) {
-    month = "0" + month;
-  }
-  if (day < 10) {
-    day = "0" + day;
-  }
-  return date.getFullYear() + "-" + month + "-" + day;
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + DAYS_IN_WEEK - 1);
+
+  return { start: formatToYearMonthDay(monday), end: formatToYearMonthDay(sunday) };
 }
 
 /**
@@ -454,35 +406,44 @@ function calculateRate(part, total) {
   if (total === 0) {
     return 0;
   }
-  return Number(((part / total) * FULL_RATE).toFixed(2));
+  return Number(((part / total) * 100).toFixed(2));
 }
 
 /**
- * Reads a design variable from the :root block of shared/style.css, so charts use the same colors as the page.
- * @param {string} name - Variable name, such as "--green".
+ * Writes a date as its day in the user's time zone, so attempts can be grouped by day.
+ * @param {Date} date
+ * @returns {string} Day as "YYYY-MM-DD".
+ */
+function formatToYearMonthDay(date) {
+  return date.toLocaleDateString("en-CA");
+}
+
+/**
+ * Writes a day of the period in the Brazilian format.
+ * @param {string} dayKey - Day written "YYYY-MM-DD".
+ * @returns {string} Day as "DD/MM/YYYY".
+ */
+function formatToDayMonthYear(dayKey) {
+  const parts = dayKey.split("-");
+  return parts[2] + "/" + parts[1] + "/" + parts[0];
+}
+
+/**
+ * Writes a date and time from the API in the Brazilian format, in the user's time zone.
+ * @param {string} isoDate - Such as "2026-11-09T18:30:00.000Z".
+ * @returns {string} Such as "09/11/2026, 15:30:00".
+ */
+function formatToBrazilIsoDate(isoDate) {
+  return new Date(isoDate).toLocaleString("pt-BR");
+}
+
+/**
+ * Reads a variable from the :root block of shared/style.css, so the charts use the page's colors.
+ * @param {string} name - Such as "--win".
  * @returns {string}
  */
 function readCssVariable(name) {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-}
-
-/**
- * Turns a date and time from the API into the Brazilian format, in the user's time zone.
- * @param {string} isoDate - Date as sent by the API, such as "2026-11-09T18:30:00.000Z".
- * @returns {string} Date as "DD/MM/YYYY, HH:MM".
- */
-function formatDate(isoDate) {
-  return new Date(isoDate).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
-}
-
-/**
- * Turns a day of the period into the Brazilian format.
- * @param {string} dayKey - Day written "YYYY-MM-DD".
- * @returns {string} Day as "DD/MM/YYYY".
- */
-function formatDay(dayKey) {
-  const [year, month, day] = dayKey.split("-");
-  return `${day}/${month}/${year}`;
 }
 
 startDashboard();
