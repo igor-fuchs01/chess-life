@@ -8,14 +8,13 @@ const database = require("../database/config");
  */
 function listLists(userId) {
     const sql = `
-        SELECT l.id, l.nome, l.descricao, COUNT(le.fk_exercicio) AS total_exercicios, COUNT(r.fk_exercicio) AS resolvidos
+        SELECT l.id, l.nome, l.descricao,
+            COUNT(DISTINCT le.fk_exercicio) AS total_exercicios,
+            COUNT(DISTINCT t.fk_exercicio) AS resolvidos
         FROM lista l
             JOIN lista_exercicio le ON le.fk_lista = l.id
-            LEFT JOIN (
-                SELECT DISTINCT fk_lista, fk_exercicio
-                FROM tentativa
-                WHERE fk_usuario = ? AND acertou = TRUE
-            ) r ON r.fk_lista = le.fk_lista AND r.fk_exercicio = le.fk_exercicio
+            LEFT JOIN tentativa t ON t.fk_lista = le.fk_lista AND t.fk_exercicio = le.fk_exercicio
+                AND t.fk_usuario = ? AND t.acertou = TRUE
         GROUP BY l.id
         ORDER BY l.ordem;
     `;

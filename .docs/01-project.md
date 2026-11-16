@@ -164,7 +164,7 @@ Gallery photos are not stored in the database: the image files stay in `public/a
 
 ## 7. Dashboard charts
 
-The dashboard, titled "Desempenho no Xadrez", fetches the user's attempts and the lists of a period from the API (`/dashboard` routes) and shows only that period.
+The dashboard, titled "Desempenho no Xadrez", fetches the user's attempts and the lists of a period from the API (`GET /dashboard/desempenho`) and shows only that period.
 
 - **Period**: a select next to the title offers "Semana atual" (the default when the page opens), "Semana anterior" and "Data personalizada". Weeks run from Monday to Sunday. Choosing a week loads the page again at once. "Data personalizada" shows two date fields, start and end, and loads only when "Filtrar" is clicked; an empty field or a start after the end shows an error message.
 - **Indicators**:

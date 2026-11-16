@@ -73,7 +73,7 @@ The site uses the "classic" direction chosen by the user: cream paper (`--paper`
 | `/auth/signup.html` | `auth/` | Public | `POST /usuarios/cadastrar` |
 | `/play/play.html` (`?lista=` opens a list) | `play/` | Restricted | `GET /perfis/buscar`, `PUT /perfis/atualizar`, `GET /listasExercicios/listar`, `GET /exercicios/listar` |
 | `/play/game.html` (`?lista=2&exercicio=6`) | `play/` | Restricted | `GET /exercicios/buscar`, `GET /exercicios/listar`, `POST /tentativas/cadastrar` |
-| `/dashboard/dashboard.html` | `dashboard/` | Restricted | `GET /dashboard/tentativas`, `GET /dashboard/listasExercicios` (with the chosen period) |
+| `/dashboard/dashboard.html` | `dashboard/` | Restricted | `GET /dashboard/desempenho` (with the chosen period) |
 
 ### Conventions
 
@@ -156,7 +156,7 @@ src/
 │   ├── listaExerciciosController.js List the exercise lists with the user's progress
 │   ├── exercicioController.js List a list's exercises, read one exercise with its solution
 │   ├── tentativaController.js Save an attempt (compares it with the solution) and list the attempts
-│   └── dashboardController.js Check the period and list the dashboard's attempts and lists in it
+│   └── dashboardController.js Check the period and send the dashboard's attempts and lists in it
 ├── models/                  Build and run the SQL
 │   ├── usuarioModel.js
 │   ├── perfilModel.js       Reads and updates a user's profile

@@ -78,7 +78,7 @@ Body:
 
 ### `GET /listasExercicios/listar/:idUsuario` — list the exercise lists with the user's progress (RF08, RF09)
 
-Used by `public/play/play.js` on the start screen. The dashboard reads the lists from `GET /dashboard/listasExercicios/:idUsuario` (section 7), which counts only a period.
+Used by `public/play/play.js` on the start screen. The dashboard reads the lists from `GET /dashboard/desempenho/:idUsuario` (section 7), which counts only a period.
 
 | Reply | Body |
 | --- | --- |
@@ -168,7 +168,7 @@ The server reads the exercise's solution and saves `acertou = true` only when `l
 
 ### `GET /tentativas/listar/:idUsuario` — list a user's attempts (RF09, RF10)
 
-Lists every attempt, with no period. No page uses it since 2026-11-10, when the dashboard moved to `GET /dashboard/tentativas/:idUsuario` (section 7); it is kept so the contract does not break.
+Lists every attempt, with no period. No page uses it since 2026-11-10, when the dashboard moved to its own route, now `GET /dashboard/desempenho/:idUsuario` (section 7); it is kept so the contract does not break.
 
 | Reply | Body |
 | --- | --- |
@@ -235,9 +235,9 @@ Body:
 
 ## 7. Dashboard — `/dashboard`
 
-The data of the "Desempenho no Xadrez" page, always limited to a period. Used only by `public/dashboard/dashboard.js`, which sends the period chosen on the page: the current week (the default), the previous week, or a custom interval. The routes have their own controller and model (`dashboardController`, `dashboardModel`), apart from the lists and attempts ones.
+The data of the "Desempenho no Xadrez" page, always limited to a period. Used only by `public/dashboard/dashboard.js`, which sends the period chosen on the page: the current week (the default), the previous week, or a custom interval. The route has its own controller and model (`dashboardController`, `dashboardModel`), apart from the lists and attempts ones.
 
-Both routes require the period in the query string, `?data_inicio=2026-11-09&data_fim=2026-11-15`:
+The route requires the period in the query string, `?data_inicio=2026-11-09&data_fim=2026-11-15`:
 
 | Parameter | Rule |
 | --- | --- |
@@ -246,45 +246,29 @@ Both routes require the period in the query string, `?data_inicio=2026-11-09&dat
 
 Both days are included: an attempt counts when its `data_tentativa` is from the start of `data_inicio` to the end of `data_fim`, compared in the database's time. A wrong period is a `400`: `Informe a data de início e a data de fim.` (one or both missing), `Data inválida.` (text that is not a date, such as `abc`) or `A data de início não pode ser depois da data de fim.`
 
-### `GET /dashboard/tentativas/:idUsuario` — list the user's attempts in a period, with the previous period's totals (RF09, RF10)
+### `GET /dashboard/desempenho/:idUsuario` — the user's attempts and lists progress in a period, with the previous period's totals (RF09, RF10)
 
 | Reply | Body |
 | --- | --- |
-| `200` | The attempts of the period, newest first, and the totals of the previous period. Also sent when there are no attempts, since the previous period may have some |
+| `200` | Everything the page draws, in one reply. Also sent when there are no attempts or lists |
 | `400` | `Usuário inválido.` or a period error |
-| `500` | `Não foi possível listar as tentativas.` |
+| `500` | `Não foi possível carregar o desempenho.` |
 
 ```json
 {
   "tentativas": [
     { "id": 1, "acertou": true, "data_tentativa": "2026-11-09T19:15:25.000Z", "lista": "Mate em 2", "exercicio": "Mate de Légal" }
   ],
-  "periodo_anterior": { "total": 4, "acertos": 2 }
+  "periodo_anterior": { "total": 4, "acertos": 2 },
+  "listas": [
+    { "id": 1, "nome": "Mate em 1", "descricao": "Um lance para dar xeque-mate.", "total_exercicios": 5, "resolvidos": 2 }
+  ]
 }
 ```
 
-- `tentativas` has the same items as `GET /tentativas/listar/:idUsuario` (section 5), and is `[]` when the period has none.
+- `tentativas` are the attempts of the period, newest first, with the same items as `GET /tentativas/listar/:idUsuario` (section 5). It is `[]` when the period has none.
 - `periodo_anterior` counts the attempts (`total`) and the right ones (`acertos`) of the 7 days before `data_inicio`, whatever the period's length. For a week from Monday to Sunday, it is the previous week. The page compares it with the chosen period to show the progress in the indicators.
-- Until 2026-11-15 the body was only the attempts array, with a `204` when it was empty. Only the dashboard used this route.
-
-### `GET /dashboard/listasExercicios/:idUsuario` — list the exercise lists with what the user solved in a period (RF09)
-
-| Reply | Body |
-| --- | --- |
-| `200` | The lists, in their order |
-| `204` | No body: there are no lists (the seed was not loaded) |
-| `400` | `Usuário inválido.` or a period error |
-| `500` | `Não foi possível listar as listas de exercícios.` |
-
-The body is the same as in `GET /listasExercicios/listar/:idUsuario` (section 3):
-
-```json
-[
-  { "id": 1, "nome": "Mate em 1", "descricao": "Um lance para dar xeque-mate.", "total_exercicios": 5, "resolvidos": 2 }
-]
-```
-
-- `resolvidos` counts the list's exercises the user solved at least once in this list during the period. `total_exercicios` does not depend on the period.
+- `listas` are the exercise lists in their order, with the same items as `GET /listasExercicios/listar/:idUsuario` (section 3). `resolvidos` counts the list's exercises the user solved at least once in this list during the period; `total_exercicios` does not depend on the period. It is `[]` when there are no lists (the seed was not loaded).
 
 ## 8. Security
 
@@ -304,3 +288,5 @@ The legacy template's routes were deleted on 2026-10-15, since no page used them
 `GET /partidas/listar/:idUsuario` and `POST /partidas/cadastrar/:idUsuario` were removed on 2026-11-09, with the `partida` and `lance` tables and the opening identification: the site no longer saves games between two people. The lists, exercises and attempts routes (sections 3 to 5) took their place.
 
 `GET /aberturas/listar` was removed on 2026-11-09, with the `abertura` table: the openings are mocked in the front-end, and the profile keeps the chosen name as text.
+
+`GET /dashboard/tentativas/:idUsuario` and `GET /dashboard/listasExercicios/:idUsuario` were replaced on 2026-11-16 by `GET /dashboard/desempenho/:idUsuario` (section 7), which sends both in one reply. Only the dashboard used them.

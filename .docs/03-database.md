@@ -282,18 +282,17 @@ The API does not connect as `root`. It uses `chess_life_user`, which can only ru
 
 ### Example queries
 
-The lists with the user's progress: the derived table holds each exercise the user has solved at least once in each list.
+The lists with the user's progress. The user's conditions stay in the `ON`, so a list with no right attempts is still listed, with `resolvidos` 0. `DISTINCT` counts each exercise once, even when the user solved it many times.
 
 ```sql
-SELECT l.id, l.nome, l.descricao, COUNT(le.fk_exercicio) AS total_exercicios, COUNT(r.fk_exercicio) AS resolvidos
+SELECT l.id, l.nome, l.descricao,
+    COUNT(DISTINCT le.fk_exercicio) AS total_exercicios,
+    COUNT(DISTINCT t.fk_exercicio) AS resolvidos
 FROM lista l
     JOIN lista_exercicio le ON le.fk_lista = l.id
-    LEFT JOIN (
-        SELECT DISTINCT fk_lista, fk_exercicio
-        FROM tentativa
-        WHERE fk_usuario = ? AND acertou = TRUE
-    ) r ON r.fk_lista = le.fk_lista AND r.fk_exercicio = le.fk_exercicio
-GROUP BY l.id, l.nome, l.descricao, l.ordem
+    LEFT JOIN tentativa t ON t.fk_lista = le.fk_lista AND t.fk_exercicio = le.fk_exercicio
+        AND t.fk_usuario = ? AND t.acertou = TRUE
+GROUP BY l.id
 ORDER BY l.ordem;
 ```
 
@@ -342,4 +341,4 @@ The routes are in [`04-api.md`](04-api.md).
 - **`lista`**: `listaExerciciosModel.listLists` runs the progress query above.
 - **`exercicio` and `lista_exercicio`**: `exercicioModel.listExercises` reads a list's exercises in order, with whether the user has solved each one. `findExercise` reads the exercise, and `findSolution` reads its `solucao` column and splits it into the array of moves.
 - **`tentativa`**: `tentativaController.registerAttempt` reads the solution, compares it with the moves sent, and `tentativaModel.registerAttempt` inserts the result. A user, or a list and exercise pair, that does not exist fails on a foreign key (`ER_NO_REFERENCED_ROW_2`) and becomes a `404`. `listAttempts` runs the attempts query above.
-- **Dashboard**: `dashboardModel` has its own copies of the two reading queries, limited to a period: `listAttempts` (`tentativa`, `lista`, `exercicio`) and `listLists` (`lista`, `lista_exercicio`, `tentativa`), plus `countPreviousAttempts` (`tentativa`), the previous period's totals. `dashboardController` checks the period before any query runs, and `listAttempts` replies with the attempts and those totals together. They only read tables the API user can already read, so `03-app-user.sql` needs no new `GRANT`.
+- **Dashboard**: `dashboardModel` has its own copies of the two reading queries, limited to a period: `listAttempts` (`tentativa`, `lista`, `exercicio`) and `listLists` (`lista`, `lista_exercicio`, `tentativa`), plus `countPreviousAttempts` (`tentativa`), the previous period's totals. `dashboardController` checks the period before any query runs, and `findPerformance` replies with the attempts, those totals and the lists together. They only read tables the API user can already read, so `03-app-user.sql` needs no new `GRANT`.
