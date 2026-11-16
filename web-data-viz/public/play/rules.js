@@ -17,7 +17,10 @@ const WHITE_PAWN_START_ROW = 1;
 function readBoardFromPosition(position) {
   const board = [];
   for (let row = 0; row < BOARD_SIZE; row++) {
-    board.push(Array(BOARD_SIZE).fill(""));
+    board.push([]);
+    for (let column = 0; column < BOARD_SIZE; column++) {
+      board[row].push("");
+    }
   }
 
   for (const pieceText of position.split(" ")) {
