@@ -62,35 +62,33 @@ async function loadDashboard(period) {
   periodMessage.className = "message";
   attemptsMessage.className = "message";
 
-  const noAttempts = { tentativas: [], periodo_anterior: { total: 0, acertos: 0 } };
-  const attemptsData = await fetchDashboardData("tentativas", period, noAttempts);
-  const lists = await fetchDashboardData("listasExercicios", period, []);
-  const attempts = attemptsData.tentativas;
+  const performance = await fetchPerformance(period);
+  const attempts = performance.tentativas;
 
-  renderStats(attempts, attemptsData.periodo_anterior, lists, period);
-  renderCharts(attempts, lists, period);
+  renderStats(attempts, performance.periodo_anterior, performance.listas, period);
+  renderCharts(attempts, performance.listas, period);
   renderTable(attempts);
 }
 
 /**
- * Fetches one of the /dashboard routes for the logged-in user and a period.
- * @param {string} route - "tentativas" or "listasExercicios".
+ * Fetches the logged-in user's performance in a period.
  * @param {{start: string, end: string}} period
- * @param {*} emptyData - Returned when there is no data or the request fails, so the page still draws.
- * @returns {Promise<*>} The reply's JSON, or emptyData.
+ * @returns {Promise<{tentativas: object[], periodo_anterior: {total: number, acertos: number}, listas: object[]}>}
+ *   The reply's JSON, or empty data when the request fails, so the page still draws.
  */
-async function fetchDashboardData(route, period, emptyData) {
-  const url = `/dashboard/${route}/${currentUser.id}?data_inicio=${period.start}&data_fim=${period.end}`;
+async function fetchPerformance(period) {
+  const url = `/dashboard/desempenho/${currentUser.id}?data_inicio=${period.start}&data_fim=${period.end}`;
+  const emptyPerformance = { tentativas: [], periodo_anterior: { total: 0, acertos: 0 }, listas: [] };
 
   try {
     const response = await fetch(url);
     if (response.status !== 200) {
-      return emptyData;
+      return emptyPerformance;
     }
     return await response.json();
   } catch {
     showMessage(attemptsMessage, "Não foi possível carregar os dados do dashboard.", "error");
-    return emptyData;
+    return emptyPerformance;
   }
 }
 

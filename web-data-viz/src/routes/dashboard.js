@@ -3,7 +3,6 @@ const dashboardController = require("../controllers/dashboardController");
 
 const router = express.Router();
 
-router.get("/tentativas/:idUsuario", dashboardController.listAttempts);
-router.get("/listasExercicios/:idUsuario", dashboardController.listLists);
+router.get("/desempenho/:idUsuario", dashboardController.findPerformance);
 
 module.exports = router;

@@ -1,19 +1,20 @@
 const dashboardModel = require("../models/dashboardModel");
 
 /**
- * Lists the user's attempts in a period, with the totals of the previous period, for the dashboard (RF09, RF10).
+ * Sends the user's attempts and exercise lists progress in a period, with the totals of the previous period,
+ * for the dashboard (RF09, RF10).
  *
- * @route GET /dashboard/tentativas/:idUsuario
+ * @route GET /dashboard/desempenho/:idUsuario
  * @fromRoute {number} idUsuario - The user's id.
  * @fromQuery {string} data_inicio - The period's first day, YYYY-MM-DD.
  * @fromQuery {string} data_fim - The period's last day, YYYY-MM-DD, included.
- * @response 200 {{tentativas: {id: number, acertou: boolean, data_tentativa: string, lista: string, exercicio: string}[], periodo_anterior: {total: number, acertos: number}}} The attempts, newest first, also when there are none.
+ * @response 200 {{tentativas: {id: number, acertou: boolean, data_tentativa: string, lista: string, exercicio: string}[], periodo_anterior: {total: number, acertos: number}, listas: {id: number, nome: string, descricao: string, total_exercicios: number, resolvidos: number}[]}} The attempts, newest first, and the lists, in order, also when there are none.
  * @response 400 {string} The user id or the period is invalid.
  * @response 500 {string} Unexpected server or database error.
  * @param {object} req
  * @param {object} res
  */
-async function listAttempts(req, res) {
+async function findPerformance(req, res) {
     const userId = parseId(req.params.idUsuario);
     if (!userId) {
         res.status(400).send("Usuário inválido.");
@@ -30,51 +31,11 @@ async function listAttempts(req, res) {
     try {
         const attempts = await dashboardModel.listAttempts(userId, period);
         const previousPeriod = await dashboardModel.countPreviousAttempts(userId, period.start);
-        res.status(200).json({ tentativas: attempts, periodo_anterior: previousPeriod });
-    } catch (error) {
-        console.error("Error listing the dashboard attempts:", error.message);
-        res.status(500).send("Não foi possível listar as tentativas.");
-    }
-}
-
-/**
- * Lists the exercise lists with how many exercises the user solved in a period, for the dashboard (RF09).
- *
- * @route GET /dashboard/listasExercicios/:idUsuario
- * @fromRoute {number} idUsuario - The user's id.
- * @fromQuery {string} data_inicio - The period's first day, YYYY-MM-DD.
- * @fromQuery {string} data_fim - The period's last day, YYYY-MM-DD, included.
- * @response 200 {{id: number, nome: string, descricao: string, total_exercicios: number, resolvidos: number}[]} The lists, in order.
- * @response 204 There are no lists.
- * @response 400 {string} The user id or the period is invalid.
- * @response 500 {string} Unexpected server or database error.
- * @param {object} req
- * @param {object} res
- */
-async function listLists(req, res) {
-    const userId = parseId(req.params.idUsuario);
-    if (!userId) {
-        res.status(400).send("Usuário inválido.");
-        return;
-    }
-
-    const period = { start: req.query.data_inicio, end: req.query.data_fim };
-    const periodError = validatePeriod(period);
-    if (periodError) {
-        res.status(400).send(periodError);
-        return;
-    }
-
-    try {
         const lists = await dashboardModel.listLists(userId, period);
-        if (lists.length === 0) {
-            res.status(204).send();
-            return;
-        }
-        res.status(200).json(lists);
+        res.status(200).json({ tentativas: attempts, periodo_anterior: previousPeriod, listas: lists });
     } catch (error) {
-        console.error("Error listing the dashboard exercise lists:", error.message);
-        res.status(500).send("Não foi possível listar as listas de exercícios.");
+        console.error("Error loading the dashboard performance:", error.message);
+        res.status(500).send("Não foi possível carregar o desempenho.");
     }
 }
 
@@ -110,6 +71,5 @@ function parseId(value) {
 }
 
 module.exports = {
-    listAttempts,
-    listLists
+    findPerformance
 };
